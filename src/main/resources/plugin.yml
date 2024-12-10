@@ -1,5 +1,7 @@
-name: NexoPopulators
+name: NexoAddon
 version: '1.0.0'
-main: zone.vao.nexoPopulators.NexoPopulators
+main: zone.vao.nexoAddon.NexoAddon
 api-version: '1.20'
 authors: [ Naimad (discord: 4g0) ]
+depend:
+  - Nexo
