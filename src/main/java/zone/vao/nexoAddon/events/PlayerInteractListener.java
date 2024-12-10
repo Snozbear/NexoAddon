@@ -51,6 +51,7 @@ public class PlayerInteractListener implements Listener {
         break;
     }
 
+    if(helmet == null) return;
     player.getInventory().addItem(helmet);
   }
 }
