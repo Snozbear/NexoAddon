@@ -1,0 +1,5 @@
+name: NexoPopulators
+version: '1.0.0'
+main: zone.vao.nexoPopulators.NexoPopulators
+api-version: '1.20'
+authors: [ Naimad (discord: 4g0) ]
