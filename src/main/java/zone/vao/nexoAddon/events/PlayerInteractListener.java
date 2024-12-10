@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.events;
 
 import com.nexomc.nexo.api.NexoItems;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,11 +25,32 @@ public class PlayerInteractListener implements Listener {
 
     if(componentItem == null) return;
 
-    if(!componentItem.isEquippable()) return;
+    if(componentItem.getEquippable() == null) return;
 
     ItemStack item = player.getInventory().getItemInMainHand().clone();
     item.setAmount(1);
     InventoryUtil.removePartialStack(player, 1);
-    player.getInventory().setHelmet(item);
+
+    ItemStack helmet = player.getInventory().getHelmet();
+    if(helmet != null && helmet.getType() != Material.AIR){
+      helmet = helmet.clone();
+    }
+
+    switch(componentItem.getEquippable().getSlot()){
+      case "CHESTPLATE":
+        player.getInventory().setChestplate(item);
+        break;
+      case "LEGGINGS":
+        player.getInventory().setLeggings(item);
+        break;
+      case "BOOTS":
+        player.getInventory().setBoots(item);
+        break;
+      default:
+        player.getInventory().setHelmet(item);
+        break;
+    }
+
+    player.getInventory().addItem(helmet);
   }
 }
