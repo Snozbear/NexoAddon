@@ -35,9 +35,16 @@ public class ItemConfigUtil {
 
         ConfigurationSection itemSection = file.getConfigurationSection(itemId);
         if (itemSection != null && itemSection.contains("Components")) {
+
+          if(!NexoAddon.getInstance().getComponents().containsKey(itemId))
+            NexoAddon.getInstance().getComponents().put(itemId, new Components(itemId));
+          Components component = NexoAddon.getInstance().getComponents().get(itemId);
+
           boolean isEquippable = itemSection.contains("Components.equippable");
-          NexoAddon.getInstance().getComponents().put(itemId, new Components(itemId, isEquippable)
-          );
+          if(isEquippable) {
+            String equippableSlot = itemSection.getString("Components.equippable.slot", "HEAD");
+            component.setEquippable(equippableSlot);
+          }
         }
       }
     }

@@ -1,16 +1,21 @@
 package zone.vao.nexoAddon.classes;
 
 import lombok.Getter;
+import zone.vao.nexoAddon.classes.component.Equippable;
 
 @Getter
 public class Components {
 
   public String id;
-  public boolean equippable;
+  public Equippable equippable;
 
-  public Components(String id, boolean equippable) {
+  public Components(String id) {
     this.id = id;
-    this.equippable = equippable;
+  }
+
+  public void setEquippable(String slot) {
+    this.equippable = new Equippable(slot);
   }
 
 }
+
