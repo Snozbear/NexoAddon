@@ -17,7 +17,6 @@ public class PlayerInteractListener implements Listener {
   public void onPlayerInteract(PlayerInteractEvent event) {
     Player player = event.getPlayer();
 
-    player.sendMessage(event.getAction().name());
     String itemId = NexoItems.idFromItem(player.getInventory().getItemInMainHand());
     if(itemId == null) return;
     if(!NexoAddon.getInstance().isComponentSupport()) return;
