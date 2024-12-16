@@ -6,7 +6,7 @@
 
     <groupId>zone.vao</groupId>
     <artifactId>NexoAddon</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.1</version>
     <packaging>jar</packaging>
 
     <name>NexoAddon</name>
@@ -77,13 +77,13 @@
         <dependency>
             <groupId>com.nexomc</groupId>
             <artifactId>nexo</artifactId>
-            <version>0.5.0-dev.8</version>
+            <version>0.6.0-dev.7</version>
             <scope>provided</scope>
             <classifier>dev</classifier>
             <exclusions>
                 <exclusion>
-                    <groupId>net.byteflux</groupId>
-                    <artifactId>libby-bukkit</artifactId>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
