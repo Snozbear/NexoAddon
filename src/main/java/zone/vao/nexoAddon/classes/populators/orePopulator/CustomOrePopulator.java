@@ -1,10 +1,11 @@
 package zone.vao.nexoAddon.classes.populators.orePopulator;
 
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
+import zone.vao.nexoAddon.NexoAddon;
 
 import java.util.Random;
 
@@ -46,21 +47,47 @@ public class CustomOrePopulator extends BlockPopulator {
 
       if (ore.getReplace() != null) {
         if (ore.getReplace().contains(blockType) && ore.getBiomes().contains(limitedRegion.getBiome(x, y, z))) {
-          if (ore.getNexoBlocks().getBlockData() == null) return;
-
-          limitedRegion.setBlockData(x, y, z, ore.getNexoBlocks().getBlockData());
+          if (ore.getNexoBlocks() != null && ore.getNexoBlocks().getBlockData() != null)
+            limitedRegion.setBlockData(x, y, z, ore.getNexoBlocks().getBlockData());
+          else {
+            Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
+              World world = Bukkit.getWorld(worldInfo.getUID());
+              if (world != null) {
+                Chunk chunk = world.getChunkAt(x >> 4, z >> 4);
+                if (!chunk.isLoaded()) {
+                  chunk.load();
+                }
+                Location loc = new Location(world, x, y, z);
+                ore.getNexoFurnitures().place(loc);
+              }
+            }, 1L);
+          }
           successfulPlacements++;
         }
       }
       else if (ore.getPlaceOn() != null) {
         if (ore.getPlaceOn().contains(blockType) && ore.getBiomes().contains(limitedRegion.getBiome(x, y, z))) {
-          if (ore.getNexoBlocks().getBlockData() == null) return;
 
           if (!limitedRegion.getType(x, y + 1, z).isAir()) {
             continue;
           }
 
-          limitedRegion.setBlockData(x, y + 1, z, ore.getNexoBlocks().getBlockData());
+          if (ore.getNexoBlocks() != null && ore.getNexoBlocks().getBlockData() != null)
+            limitedRegion.setBlockData(x, y + 1, z, ore.getNexoBlocks().getBlockData());
+          else {
+            Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
+              World world = Bukkit.getWorld(worldInfo.getUID());
+              if (world != null) {
+                Chunk chunk = world.getChunkAt(x >> 4, z >> 4);
+                if (!chunk.isLoaded()) {
+                  chunk.load();
+                }
+                Location loc = new Location(world, x, y + 1, z);
+                ore.getNexoFurnitures().place(loc);
+              }
+            }, 1L);
+          }
+
           successfulPlacements++;
         }
       }

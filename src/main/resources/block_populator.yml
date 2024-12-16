@@ -1,4 +1,4 @@
-#custom_block:            # ID of custom block
+#custom_block:            # ID of Nexo custom block or Nexo furniture
 #  iterations: 50         # How many blocks should be iterated
 #  worlds: [ world ]      # World where custom blocks should be spawned
 #  maxY: 50               # Max Y of chunk where custom block should be spawned

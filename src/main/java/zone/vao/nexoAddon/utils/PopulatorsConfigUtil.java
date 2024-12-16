@@ -1,7 +1,9 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoBlocks;
+import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
+import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -104,7 +106,7 @@ public class PopulatorsConfigUtil {
       if (section == null) continue;
 
 //      System.out.println("isCustomBlock: "+NexoBlocks.isCustomBlock(key));
-      if (!NexoBlocks.isCustomBlock(key)) continue;
+      if (!NexoBlocks.isCustomBlock(key) && !NexoFurniture.isFurniture(key)) continue;
       int maxY = section.getInt("maxY");
       int minY = section.getInt("minY");
       maxY = Math.max(maxY, minY);
@@ -157,12 +159,17 @@ public class PopulatorsConfigUtil {
       if(replaceMaterialsFinal.isEmpty()) replaceMaterialsFinal = null;
       if(placeOnMaterialsFinal.isEmpty()) placeOnMaterialsFinal = null;
 
-      System.out.println(replaceMaterialsFinal != null ? replaceMaterialsFinal.toString(): replaceMaterialsFinal);
-      System.out.println(placeOnMaterialsFinal != null ? placeOnMaterialsFinal.toString(): placeOnMaterialsFinal);
+//      System.out.println(replaceMaterialsFinal != null ? replaceMaterialsFinal.toString(): replaceMaterialsFinal);
+//      System.out.println(placeOnMaterialsFinal != null ? placeOnMaterialsFinal.toString(): placeOnMaterialsFinal);
 
       try {
         CustomBlockMechanic nexoBlock = NexoBlocks.customBlockMechanic(key);
-        Ore ore = new Ore(nexoBlock, minY, maxY, chance, replaceMaterialsFinal, placeOnMaterialsFinal, worlds, biomes, iterations);
+        FurnitureMechanic nexoFurniture = NexoFurniture.furnitureMechanic(key);
+        Ore ore;
+        if(nexoBlock != null)
+          ore = new Ore(nexoBlock, minY, maxY, chance, replaceMaterialsFinal, placeOnMaterialsFinal, worlds, biomes, iterations);
+        else
+          ore = new Ore(nexoFurniture, minY, maxY, chance, replaceMaterialsFinal, placeOnMaterialsFinal, worlds, biomes, iterations);
         ores.add(ore);
       } catch (IllegalArgumentException e) {
         NexoAddon.getInstance().getLogger().severe("Invalid custom block ID: " + key);
@@ -180,7 +187,7 @@ public class PopulatorsConfigUtil {
       ConfigurationSection section = config.getConfigurationSection(key);
       if (section == null) continue;
 
-      if(!section.contains("logs") || !section.contains("leaves")) continue;
+      if(!section.contains("logs")|| !section.contains("leaves")) continue;
       String logs = section.getString("logs");
       String leaves = section.getString("leaves");
 
