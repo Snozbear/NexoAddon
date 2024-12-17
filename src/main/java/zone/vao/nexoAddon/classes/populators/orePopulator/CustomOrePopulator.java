@@ -78,8 +78,10 @@ public class CustomOrePopulator extends BlockPopulator {
   private void placeBlock(PlacementPosition position, Ore ore, WorldInfo worldInfo, LimitedRegion limitedRegion, boolean isAbove) {
     if (ore.getNexoBlocks() != null && ore.getNexoBlocks().getBlockData() != null) {
       limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getNexoBlocks().getBlockData());
-    } else {
+    } else if(ore.getNexoFurnitures() != null) {
       scheduleBlockPlacement(position, ore, worldInfo, position.y());
+    } else{
+      limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getVanillaMaterial().createBlockData());
     }
   }
 
