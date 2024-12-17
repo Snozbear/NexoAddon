@@ -89,7 +89,7 @@ public class PopulatorsConfigUtil {
     FileConfiguration config = loadConfigFile("block_populator.yml");
     ConfigurationSection section = config.getConfigurationSection(key);
 
-    if (section == null || (!NexoBlocks.isCustomBlock(key) && !NexoFurniture.isFurniture(key))) {
+    if (section == null || (!NexoBlocks.isCustomBlock(key) && !NexoFurniture.isFurniture(key) && Material.matchMaterial(key) == null)) {
       return null;
     }
 
@@ -110,9 +110,13 @@ public class PopulatorsConfigUtil {
     try {
       CustomBlockMechanic block = NexoBlocks.customBlockMechanic(key);
       FurnitureMechanic furniture = NexoFurniture.furnitureMechanic(key);
-      return (block != null)
-          ? new Ore(block, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations)
-          : new Ore(furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations);
+      Material material = Material.matchMaterial(key);
+      if (block != null)
+        return new Ore(block, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations);
+      else if (furniture != null)
+        return new Ore(furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations);
+      else
+        return new Ore(material, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations);
     } catch (IllegalArgumentException e) {
       logError("Invalid custom block ID: " + key);
       return null;
