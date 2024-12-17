@@ -25,30 +25,37 @@ public class CustomTreePopulator extends BlockPopulator {
 
   private void replaceTrees(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion, CustomTree tree) {
     if (random.nextDouble() > tree.getChance()) return;
-    for (int x = (chunkX << 4); x < (chunkX << 4) + 16; x++) {
-      for (int z = (chunkZ << 4); z < (chunkZ << 4) + 16; z++) {
-        for (int y = tree.getMinLevel(); y <= tree.getMaxLevel(); y++) {
-          if (!limitedRegion.isInRegion(x, y, z)) {
-            continue;
-          }
-          if(!tree.biomes.contains(limitedRegion.getBiome(x, y, z))) continue;
-          Material currentMaterial = limitedRegion.getType(x, y, z);
-          if (currentMaterial.toString().endsWith("_LOG") || currentMaterial.toString().endsWith("_LEAVES")) {
-            replaceTreeBlock(limitedRegion, x, y, z, tree);
-          }
-        }
+
+    int startX = chunkX << 4;
+    int startZ = chunkZ << 4;
+
+    for (int x = startX; x < startX + 16; x++) {
+      for (int z = startZ; z < startZ + 16; z++) {
+        replaceTreeBlocksInColumn(x, z, limitedRegion, tree);
       }
     }
   }
 
-  private void replaceTreeBlock(LimitedRegion limitedRegion, int x, int y, int z, CustomTree tree) {
-    Material currentMaterial = limitedRegion.getType(x, y, z);
+  private void replaceTreeBlocksInColumn(int x, int z, LimitedRegion limitedRegion, CustomTree tree) {
+    for (int y = tree.getMinLevel(); y <= tree.getMaxLevel(); y++) {
+      if (!limitedRegion.isInRegion(x, y, z)) continue;
+      if (!tree.biomes.contains(limitedRegion.getBiome(x, y, z))) continue;
 
-    if (currentMaterial.toString().endsWith("_LOG")) {
-      limitedRegion.setBlockData(x, y, z, tree.getLog().getBlockData());
+      Material currentMaterial = limitedRegion.getType(x, y, z);
+
+      if (isLog(currentMaterial) && tree.getLog().getBlockData() != null) {
+        limitedRegion.setBlockData(x, y, z, tree.getLog().getBlockData());
+      } else if (isLeaves(currentMaterial) && tree.getLeaves().getBlockData() != null) {
+        limitedRegion.setBlockData(x, y, z, tree.getLeaves().getBlockData());
+      }
     }
-    else if (currentMaterial.toString().endsWith("_LEAVES")) {
-      limitedRegion.setBlockData(x, y, z, tree.getLeaves().getBlockData());
-    }
+  }
+
+  private boolean isLog(Material material) {
+    return material.toString().endsWith("_LOG");
+  }
+
+  private boolean isLeaves(Material material) {
+    return material.toString().endsWith("_LEAVES");
   }
 }

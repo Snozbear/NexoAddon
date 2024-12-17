@@ -22,6 +22,7 @@ import zone.vao.nexoAddon.events.NexoFurnitureBreakListener;
 import zone.vao.nexoAddon.events.NexoItemsLoadedListener;
 import zone.vao.nexoAddon.events.PlayerInteractListener;
 import zone.vao.nexoAddon.events.PlayerMovementListener;
+import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
 import zone.vao.nexoAddon.utils.PopulatorsConfigUtil;
@@ -94,6 +95,7 @@ public final class NexoAddon extends JavaPlugin {
         .registerEvents(new PlayerMovementListener(), this);
     getServer().getPluginManager()
         .registerEvents(new NexoFurnitureBreakListener(), this);
+    new Metrics(this, 24168);
   }
 
   @Override
