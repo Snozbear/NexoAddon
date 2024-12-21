@@ -158,6 +158,7 @@ public class PopulatorsConfigUtil {
 
     try {
       return new CustomTree(
+          key,
           NexoBlocks.customBlockMechanic(logs),
           NexoBlocks.customBlockMechanic(leaves),
           minY, maxY, chance, worlds, biomes);

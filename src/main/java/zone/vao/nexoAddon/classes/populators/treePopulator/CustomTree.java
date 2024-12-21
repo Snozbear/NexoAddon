@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 public class CustomTree {
+  String id;
   CustomBlockMechanic log;
   CustomBlockMechanic leaves;
   public int maxLevel;
@@ -17,7 +18,8 @@ public class CustomTree {
   public List<World> worlds;
   public List<Biome> biomes;
 
-  public CustomTree(CustomBlockMechanic log, CustomBlockMechanic leaves, int minLevel, int maxLevel, double chance, List<World> worlds, List<Biome> biomes) {
+  public CustomTree(String id, CustomBlockMechanic log, CustomBlockMechanic leaves, int minLevel, int maxLevel, double chance, List<World> worlds, List<Biome> biomes) {
+    this.id = id;
     this.log = log;
     this.leaves = leaves;
     this.maxLevel = maxLevel;
