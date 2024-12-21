@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.Listener;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,76 +35,37 @@ import java.util.*;
 @Getter
 public final class NexoAddon extends JavaPlugin {
 
-  public boolean componentSupport = false;
-  Set<File> nexoFiles = new HashSet<>();
-  Map<String, Components> components = new HashMap<>();
-  Map<UUID, BossBarUtil> bossBars = new HashMap<>();
-  FileConfiguration globalConfig;
-  PopulatorsConfigUtil populatorsConfig;
-  List<Ore> ores = new ArrayList<>();
-  List<CustomTree> trees = new ArrayList<>();
-
   @Getter
-  private static NexoAddon instance;
-  private final OrePopulator orePopulator = new OrePopulator();
-  private final TreePopulator treePopulator = new TreePopulator();
+  public static NexoAddon instance;
+  public boolean componentSupport = false;
+  public Set<File> nexoFiles = new HashSet<>();
+  public Map<String, Components> components = new HashMap<>();
+  public Map<UUID, BossBarUtil> bossBars = new HashMap<>();
+  public FileConfiguration globalConfig;
+  public PopulatorsConfigUtil populatorsConfig;
+  public List<Ore> ores = new ArrayList<>();
+  public List<CustomTree> trees = new ArrayList<>();
+  public final OrePopulator orePopulator = new OrePopulator();
+  public final TreePopulator treePopulator = new TreePopulator();
+  public Map<String, List<BlockPopulator>> worldPopulators = new HashMap<>();
 
   @Override
   public void onEnable() {
-    // Plugin startup logic
     instance = this;
-
     saveDefaultConfig();
-    this.globalConfig = getConfig();
+    globalConfig = getConfig();
 
-    this.populatorsConfig = new PopulatorsConfigUtil(getDataFolder(), getClassLoader());
-
-    if(VersionUtil.isVersionLessThan("1.21.2")){
-      this.componentSupport = true;
-    }
-    PaperCommandManager manager = new PaperCommandManager(this);
-    manager.registerCommand(new NexoAddonCommand());
-
-    ores = this.populatorsConfig.loadOresFromConfig();
-    trees = this.populatorsConfig.loadTreesFromConfig();
-    for (Ore ore : ores) {
-      orePopulator.addOre(ore);
-    }
-    for (CustomTree tree : trees) {
-      treePopulator.addTree(tree);
-    }
-    for (Ore ore : orePopulator.getOres()) {
-      for (World world : ore.getWorlds()) {
-
-        addPopulatorToWorld(world, new CustomOrePopulator(orePopulator));
-        Bukkit.getLogger().info("BlockPopulator added to world: " + world.getName());
-      }
-    }
-    for (CustomTree tree : treePopulator.getTrees()) {
-      for (World world : tree.getWorlds()) {
-
-        addPopulatorToWorld(world, new CustomTreePopulator(treePopulator));
-        Bukkit.getLogger().info("TreePopulator added to world: " + world.getName());
-      }
-    }
-
-    getServer().getPluginManager()
-        .registerEvents(new NexoItemsLoadedListener(), this);
-    getServer().getPluginManager()
-        .registerEvents(new PlayerInteractListener(), this);
-    getServer().getPluginManager()
-        .registerEvents(new PlayerMovementListener(), this);
-    getServer().getPluginManager()
-        .registerEvents(new NexoFurnitureBreakListener(), this);
-    new Metrics(this, 24168);
+    checkComponentSupport();
+    initializeCommandManager();
+    initializePopulators();
+    registerEvents();
+    initializeMetrics();
   }
 
   @Override
   public void onDisable() {
-    // Plugin shutdown logic
-
-    getBossBars().forEach((uuid, bossBar) -> bossBar.removeBar());
-
+    bossBars.values().forEach(BossBarUtil::removeBar);
+    clearPopulators();
   }
 
   @Override
@@ -111,55 +73,119 @@ public final class NexoAddon extends JavaPlugin {
     return new CustomChunkGenerator(orePopulator);
   }
 
+  public void reload() {
+    reloadConfig();
+    globalConfig = getConfig();
+    clearPopulators();
+    initializePopulators();
+    reloadNexoFiles();
+    loadComponentsIfSupported();
+  }
 
-  public void reload(){
-    this.reloadConfig();
-    this.globalConfig = getConfig();
+  private void checkComponentSupport() {
+    componentSupport = VersionUtil.isVersionLessThan("1.21.2");
+  }
 
-    for (World world : Bukkit.getWorlds()) {
-      world.getPopulators().clear();
-    }
+  private void initializeCommandManager() {
+    PaperCommandManager manager = new PaperCommandManager(this);
+    manager.registerCommand(new NexoAddonCommand());
+  }
 
-    this.populatorsConfig = new PopulatorsConfigUtil(getDataFolder(), getClassLoader());
-    this.ores = populatorsConfig.loadOresFromConfig();
+  private void initializePopulators() {
+    populatorsConfig = new PopulatorsConfigUtil(getDataFolder(), getClassLoader());
+    initializeOres();
+    initializeTrees();
+  }
+
+  private void initializeOres() {
+    ores = populatorsConfig.loadOresFromConfig();
     orePopulator.clearOres();
-    for (Ore ore : ores) {
-      orePopulator.addOre(ore);
-    }
-    for (Ore ore : orePopulator.getOres()) {
+    ores.forEach(orePopulator::addOre);
+    orePopulator.getOres().forEach(ore -> {
       for (World world : ore.getWorlds()) {
-        addPopulatorToWorld(world, new CustomOrePopulator(orePopulator));
-        Bukkit.getLogger().info("BlockPopulator added to world: " + world.getName());
+
+        CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
+        if(!worldPopulators.containsKey(world.getName())) {
+          worldPopulators.put(world.getName(), new ArrayList<>());
+        }
+        addPopulatorToWorld(world, customOrePopulator);
+        worldPopulators.get(world.getName()).add(customOrePopulator);
+        logPopulatorAdded("BlockPopulator", world);
       }
-    }
-    this.trees = populatorsConfig.loadTreesFromConfig();
+    });
+  }
+
+  private void initializeTrees() {
+    trees = populatorsConfig.loadTreesFromConfig();
     treePopulator.clearTrees();
-    for (CustomTree tree : trees) {
-      treePopulator.addTree(tree);
-    }
-    for (CustomTree tree : treePopulator.getTrees()) {
+    trees.forEach(treePopulator::addTree);
+    treePopulator.getTrees().forEach(tree -> {
       for (World world : tree.getWorlds()) {
-        addPopulatorToWorld(world, new CustomTreePopulator(treePopulator));
-        Bukkit.getLogger().info("TreePopulator added to world: " + world.getName());
+        CustomTreePopulator customTreePopulator = new CustomTreePopulator(treePopulator);
+        if(!worldPopulators.containsKey(world.getName())) {
+          worldPopulators.put(world.getName(), new ArrayList<>());
+        }
+        addPopulatorToWorld(world, customTreePopulator);
+        worldPopulators.get(world.getName()).add(customTreePopulator);
+        logPopulatorAdded("TreePopulator", world);
       }
-    }
+    });
+  }
 
-    this.getNexoFiles().clear();
-    this.getNexoFiles().addAll(ItemConfigUtil.getItemFiles());
+  private void registerEvents() {
+    registerEvent(new NexoItemsLoadedListener());
+    registerEvent(new PlayerInteractListener());
+    registerEvent(new PlayerMovementListener());
+    registerEvent(new NexoFurnitureBreakListener());
+  }
 
-    if(this.isComponentSupport()){
+  private void initializeMetrics() {
+    new Metrics(this, 24168);
+  }
 
+  private void reloadNexoFiles() {
+    nexoFiles.clear();
+    nexoFiles.addAll(ItemConfigUtil.getItemFiles());
+  }
+
+  private void loadComponentsIfSupported() {
+    if (componentSupport) {
       ItemConfigUtil.loadComponents();
     }
   }
+
+  private void clearPopulators() {
+    worldPopulators.forEach((worldName, populators) -> {
+      World world = Bukkit.getWorld(worldName);
+      if (world == null) {
+        Bukkit.getLogger().warning("World '" + worldName + "' not found. Skipping populator removal.");
+        return;
+      }
+      populators.forEach(populator -> {
+        if (world.getPopulators().remove(populator)) {
+          Bukkit.getLogger().info("Populator removed from world: " + worldName);
+        }
+      });
+    });
+    worldPopulators.clear();
+  }
+
 
   public void addPopulatorToWorld(World world, BlockPopulator populator) {
     if (world == null) {
       Bukkit.getLogger().severe("World is null. Cannot add Populator.");
       return;
     }
+    if (!world.getPopulators().contains(populator)) {
+      world.getPopulators().add(populator);
+    }
+  }
 
-    if(world.getPopulators().contains(populator)) return;
-    world.getPopulators().add(populator);
+  private void logPopulatorAdded(String type, World world) {
+    Bukkit.getLogger().info(type + " added to world: " + world.getName());
+  }
+
+  private void registerEvent(Listener listener) {
+    getServer().getPluginManager().registerEvents(listener, this);
   }
 }
