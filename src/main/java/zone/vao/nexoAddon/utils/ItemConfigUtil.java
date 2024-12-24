@@ -40,10 +40,14 @@ public class ItemConfigUtil {
             NexoAddon.getInstance().getComponents().put(itemId, new Components(itemId));
           Components component = NexoAddon.getInstance().getComponents().get(itemId);
 
-          boolean isEquippable = itemSection.contains("Components.equippable");
-          if(isEquippable) {
+          if(itemSection.contains("Components.equippable")) {
             String equippableSlot = itemSection.getString("Components.equippable.slot", "HEAD");
             component.setEquippable(equippableSlot);
+          }
+
+          if(itemSection.contains("Components.jukebox_playable2") && itemSection.contains("Components.jukebox_playable2.song_key")) {
+            String songKey = itemSection.getString("Components.jukebox_playable2.song_key");
+            component.setPlayable(songKey);
           }
         }
       }
