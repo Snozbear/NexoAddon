@@ -79,28 +79,31 @@ public class CustomOrePopulator extends BlockPopulator {
     if (ore.getNexoBlocks() != null && ore.getNexoBlocks().getBlockData() != null) {
       limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getNexoBlocks().getBlockData());
     } else if(ore.getNexoFurnitures() != null) {
-      scheduleBlockPlacement(position, ore, worldInfo, position.y());
+      scheduleBlockPlacement(position, ore, worldInfo);
     } else{
       limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getVanillaMaterial().createBlockData());
     }
   }
 
 
-  private void scheduleBlockPlacement(PlacementPosition position, Ore ore, WorldInfo worldInfo, int y) {
-    Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
+  private void scheduleBlockPlacement(PlacementPosition position, Ore ore, WorldInfo worldInfo) {
+//    World world = Bukkit.getWorld(worldInfo.getUID());
+//    Chunk chunk = world.getChunkAt(position.x() >> 4, position.z() >> 4);
+//    ChunkLoadListener.queuePlacementsForPos(new ChunkPosition(chunk.getX(), chunk.getZ(), worldInfo.getUID()), position, ore);
+        Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
       World world = Bukkit.getWorld(worldInfo.getUID());
       if (world != null) {
         Chunk chunk = world.getChunkAt(position.x() >> 4, position.z() >> 4);
         if (!chunk.isLoaded()) {
           chunk.load();
         }
-        Location loc = new Location(world, position.x(), y, position.z());
+        Location loc = new Location(world, position.x(), position.y(), position.z());
         ore.getNexoFurnitures().place(loc);
       }
     }, 1L);
   }
 
-  private record PlacementPosition(int x, int y, int z, Material blockType, Biome biome, LimitedRegion limitedRegion) {
+  public record PlacementPosition(int x, int y, int z, Material blockType, Biome biome, LimitedRegion limitedRegion) {
 
     PlacementPosition above() {
       return new PlacementPosition(x, y + 1, z, limitedRegion.getType(x, y + 1, z), biome, limitedRegion);

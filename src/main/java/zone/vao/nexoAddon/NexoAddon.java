@@ -3,6 +3,7 @@ package zone.vao.nexoAddon;
 import co.aikar.commands.PaperCommandManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -19,10 +20,7 @@ import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTree;
 import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTreePopulator;
 import zone.vao.nexoAddon.classes.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
-import zone.vao.nexoAddon.events.NexoFurnitureBreakListener;
-import zone.vao.nexoAddon.events.NexoItemsLoadedListener;
-import zone.vao.nexoAddon.events.PlayerInteractListener;
-import zone.vao.nexoAddon.events.PlayerMovementListener;
+import zone.vao.nexoAddon.events.*;
 import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
@@ -48,6 +46,7 @@ public final class NexoAddon extends JavaPlugin {
   public final OrePopulator orePopulator = new OrePopulator();
   public final TreePopulator treePopulator = new TreePopulator();
   public Map<String, List<BlockPopulator>> worldPopulators = new HashMap<>();
+  public Map<String, String> jukeboxLocations = new HashMap<>();
 
   @Override
   public void onEnable() {
@@ -137,6 +136,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new PlayerInteractListener());
     registerEvent(new PlayerMovementListener());
     registerEvent(new NexoFurnitureBreakListener());
+    registerEvent(new BlockBreakListener());
   }
 
   private void initializeMetrics() {
