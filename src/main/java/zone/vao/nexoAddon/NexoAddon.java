@@ -3,7 +3,6 @@ package zone.vao.nexoAddon;
 import co.aikar.commands.PaperCommandManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;

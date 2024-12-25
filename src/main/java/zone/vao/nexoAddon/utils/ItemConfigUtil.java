@@ -45,8 +45,8 @@ public class ItemConfigUtil {
             component.setEquippable(equippableSlot);
           }
 
-          if(itemSection.contains("Components.jukebox_playable2") && itemSection.contains("Components.jukebox_playable2.song_key")) {
-            String songKey = itemSection.getString("Components.jukebox_playable2.song_key");
+          if(itemSection.contains("Components.jukebox_playable") && itemSection.contains("Components.jukebox_playable.song_key")) {
+            String songKey = itemSection.getString("Components.jukebox_playable.song_key");
             component.setPlayable(songKey);
           }
         }

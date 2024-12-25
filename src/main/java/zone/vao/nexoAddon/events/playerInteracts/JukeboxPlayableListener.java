@@ -1,24 +1,20 @@
 package zone.vao.nexoAddon.events.playerInteracts;
 
-import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Jukebox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 import zone.vao.nexoAddon.utils.VersionUtil;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class JukeboxPlayableListener {
 
@@ -46,8 +42,6 @@ public class JukeboxPlayableListener {
       }
 
       jukebox.eject();
-      jukebox.setRecord(null);
-      jukebox.update();
       NexoAddon.getInstance().jukeboxLocations.remove(jukebox.getLocation().toString());
       return;
     }
@@ -73,8 +67,8 @@ public class JukeboxPlayableListener {
         jukebox.getLocation(),
         componentItem.getPlayable().getSongKey(),
         SoundCategory.RECORDS,
-        0.2f,
-        1.0f
+        1f,
+        1f
     );
 
     NexoAddon.getInstance().jukeboxLocations.put(jukebox.getLocation().toString(), componentItem.getPlayable().getSongKey());
