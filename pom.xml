@@ -6,7 +6,7 @@
 
     <groupId>zone.vao</groupId>
     <artifactId>NexoAddon</artifactId>
-    <version>1.2.5</version>
+    <version>1.2.6</version>
     <packaging>jar</packaging>
 
     <name>NexoAddon</name>
@@ -65,6 +65,11 @@
             <name>Nexo Repository</name>
             <url>https://repo.nexomc.com/snapshots</url>
         </repository>
+        <repository>
+            <id>oraxen-releases</id>
+            <name>Oraxen Repository</name>
+            <url>https://repo.oraxen.com/releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -109,10 +114,11 @@
             <version>0.5.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.jeff-media</groupId>
-            <artifactId>MorePersistentDataTypes</artifactId>
-            <version>2.4.0</version>
+            <groupId>io.th0rgal</groupId>
+            <artifactId>protectionlib</artifactId>
+            <version>1.8.0</version>
             <scope>compile</scope>
         </dependency>
+
     </dependencies>
 </project>
