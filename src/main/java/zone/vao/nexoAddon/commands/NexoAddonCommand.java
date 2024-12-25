@@ -20,18 +20,4 @@ public class NexoAddonCommand extends BaseCommand {
     NexoAddon.getInstance().reload();
     sender.sendMessage("Reloaded "+ NexoAddon.getInstance().getName());
   }
-
-  @Subcommand("test")
-  @Syntax("<name>")
-  public void onTest(CommandSender sender, String name) {
-    if(!(sender instanceof Player player)) return;
-
-    player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().set(
-        new NamespacedKey(NexoAddon.getInstance(), "song_key"),
-        PersistentDataType.STRING,
-        name
-    );
-    
-    player.sendMessage("set to "+name);
-  }
 }
