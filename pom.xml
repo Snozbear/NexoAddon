@@ -65,6 +65,11 @@
             <name>Nexo Repository</name>
             <url>https://repo.nexomc.com/snapshots</url>
         </repository>
+        <repository>
+            <id>oraxen-releases</id>
+            <name>Oraxen Repository</name>
+            <url>https://repo.oraxen.com/releases</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -108,5 +113,12 @@
             <artifactId>acf-paper</artifactId>
             <version>0.5.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>io.th0rgal</groupId>
+            <artifactId>protectionlib</artifactId>
+            <version>1.8.0</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 </project>

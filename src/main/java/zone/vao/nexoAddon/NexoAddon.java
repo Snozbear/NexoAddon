@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon;
 
 import co.aikar.commands.PaperCommandManager;
+import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -50,6 +51,7 @@ public final class NexoAddon extends JavaPlugin {
   @Override
   public void onEnable() {
     instance = this;
+    ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
 
