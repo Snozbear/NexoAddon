@@ -52,15 +52,20 @@ public class EquippableListener {
     itemToEquip.setAmount(1);
     InventoryUtil.removePartialStack(player, 1);
 
-    ItemStack existingHelmet = cloneHelmet(player.getInventory().getHelmet());
+    ItemStack previousItem = getPreviouslyEquippedItem(player, componentItem.getEquippable().getSlot());
 
     equipToSlot(player, componentItem, itemToEquip);
 
-    returnHelmetToInventory(player, existingHelmet);
+    returnPreviousItemToInventory(player, previousItem);
   }
 
-  private static ItemStack cloneHelmet(ItemStack helmet) {
-    return (helmet != null && helmet.getType() != Material.AIR) ? helmet.clone() : null;
+  private static ItemStack getPreviouslyEquippedItem(Player player, String slot) {
+    return switch (slot) {
+      case "CHESTPLATE" -> player.getInventory().getChestplate();
+      case "LEGGINGS" -> player.getInventory().getLeggings();
+      case "BOOTS" -> player.getInventory().getBoots();
+      default -> player.getInventory().getHelmet();
+    };
   }
 
   private static void equipToSlot(Player player, Components componentItem, ItemStack itemToEquip) {
@@ -72,14 +77,14 @@ public class EquippableListener {
     }
   }
 
-  private static void returnHelmetToInventory(Player player, ItemStack existingHelmet) {
-    if (existingHelmet != null) {
+  private static void returnPreviousItemToInventory(Player player, ItemStack previousItem) {
+    if (previousItem != null && previousItem.getType() != Material.AIR) {
       new BukkitRunnable() {
         @Override
         public void run() {
-          player.getInventory().addItem(existingHelmet);
+          player.getInventory().addItem(previousItem);
         }
-      }.runTaskLater(NexoAddon.getInstance(), 2);
+      }.runTaskLater(NexoAddon.getInstance(), 1);
     }
   }
 
