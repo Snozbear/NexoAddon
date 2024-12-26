@@ -6,8 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class InventoryUtil {
 
-  public static void removePartialStack(Player player, int amountToRemove) {
-    ItemStack mainHandItem = player.getInventory().getItemInMainHand();
+  public static void removePartialStack(Player player, ItemStack mainHandItem, int amountToRemove) {
 
     if (mainHandItem.getType() == Material.AIR || mainHandItem.getAmount() < amountToRemove) {
       return;
