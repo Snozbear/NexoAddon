@@ -79,6 +79,6 @@ public class JukeboxPlayableListener {
     );
 
     NexoAddon.getInstance().jukeboxLocations.put(jukebox.getLocation().toString(), component.getPlayable().getSongKey());
-    InventoryUtil.removePartialStack(player, 1);
+    InventoryUtil.removePartialStack(player, player.getInventory().getItemInMainHand(), 1);
   }
 }

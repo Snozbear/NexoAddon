@@ -50,7 +50,7 @@ public class EquippableListener {
 
     ItemStack itemToEquip = player.getInventory().getItemInMainHand().clone();
     itemToEquip.setAmount(1);
-    InventoryUtil.removePartialStack(player, 1);
+    InventoryUtil.removePartialStack(player, player.getInventory().getItemInMainHand(), 1);
 
     ItemStack previousItem = getPreviouslyEquippedItem(player, componentItem.getEquippable().getSlot());
 
