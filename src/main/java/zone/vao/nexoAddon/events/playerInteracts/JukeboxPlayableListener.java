@@ -33,7 +33,7 @@ public class JukeboxPlayableListener {
 
     if (jukebox.hasRecord() && handleEjectRecord(jukebox, event)) return;
 
-    if(jukebox.hasRecord()){
+    if(jukebox.hasRecord() && jukebox.getRecord().getItemMeta() != null){
       String itemId = jukebox.getRecord().getItemMeta().getDisplayName();
       ItemBuilder itemBuilder = NexoItems.itemFromId(itemId);
       if (itemBuilder == null) return;
@@ -53,14 +53,18 @@ public class JukeboxPlayableListener {
   }
 
   private static boolean handleEjectRecord(Jukebox jukebox, PlayerInteractEvent event) {
+    if(jukebox.getRecord().getItemMeta() == null) return false;
     String itemId = jukebox.getRecord().getItemMeta().getDisplayName();
     ItemBuilder itemBuilder = NexoItems.itemFromId(itemId);
     if (itemBuilder == null) return false;
 
     Components component = NexoAddon.getInstance().getComponents().get(itemId);
     if (component != null && component.getPlayable() != null) {
-      Bukkit.getOnlinePlayers().forEach(player ->
-          player.stopSound(component.getPlayable().getSongKey(), SoundCategory.RECORDS));
+      jukebox.getWorld().getNearbyEntities(jukebox.getLocation(), 16,16,16).forEach(entity -> {
+        if(entity instanceof Player player){
+          player.stopSound(component.getPlayable().getSongKey(), SoundCategory.RECORDS);
+        }
+      });
     }
 
     event.setCancelled(true);
@@ -86,16 +90,23 @@ public class JukeboxPlayableListener {
     ItemMeta meta = is.getItemMeta();
     meta.setDisplayName(itemId);
     is.setItemMeta(meta);
-    jukebox.setRecord(is);
-    jukebox.update();
-    event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§r"));
+    new BukkitRunnable(){
+
+      @Override
+      public void run() {
+        jukebox.setRecord(is);
+        jukebox.update();
+        event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§r"));
+      }
+    }.runTaskLater(NexoAddon.getInstance(), 1L);
+
     new BukkitRunnable(){
 
       @Override
       public void run() {
         jukebox.stopPlaying();
       }
-    }.runTaskLater(NexoAddon.getInstance(), 1L);
+    }.runTaskLater(NexoAddon.getInstance(), 2L);
 
     jukebox.getWorld().playSound(
         jukebox.getLocation(),

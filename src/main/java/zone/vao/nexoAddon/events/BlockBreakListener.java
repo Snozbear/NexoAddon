@@ -5,6 +5,7 @@ import com.nexomc.nexo.items.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Jukebox;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -21,6 +22,8 @@ public class BlockBreakListener implements Listener {
 
       Jukebox jukebox = (Jukebox) event.getBlock().getState();
 
+      if(jukebox.getRecord().getItemMeta() == null) return;
+
       String itemId = jukebox.getRecord().getItemMeta().getDisplayName();
       ItemBuilder itemBuilder = NexoItems.itemFromId(itemId);
       if(itemBuilder == null) return;
@@ -28,7 +31,11 @@ public class BlockBreakListener implements Listener {
       jukebox.update();
       jukebox.getWorld().dropItemNaturally(jukebox.getLocation(), itemBuilder.build().clone());
 
-      event.getBlock().getWorld().getPlayers().forEach(player -> player.stopSound(soundKey, SoundCategory.RECORDS));
+      event.getBlock().getWorld().getNearbyEntities(jukebox.getLocation(), 16,16,16).forEach(entity -> {
+        if(entity instanceof Player player){
+          player.stopSound(soundKey, SoundCategory.RECORDS);
+        }
+      });
       NexoAddon.getInstance().jukeboxLocations.remove(event.getBlock().getLocation().toString());
     }
   }
