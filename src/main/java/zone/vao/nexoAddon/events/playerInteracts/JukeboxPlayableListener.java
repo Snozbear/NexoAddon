@@ -1,7 +1,10 @@
 package zone.vao.nexoAddon.events.playerInteracts;
 
 import com.nexomc.nexo.api.NexoItems;
+import com.nexomc.nexo.items.ItemBuilder;
 import io.th0rgal.protectionlib.ProtectionLib;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
@@ -11,6 +14,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.utils.InventoryUtil;
@@ -26,7 +31,13 @@ public class JukeboxPlayableListener {
 
     Jukebox jukebox = (Jukebox) event.getClickedBlock().getState();
 
-    if (jukebox.hasRecord() && handleEjectRecord(jukebox)) return;
+    if (jukebox.hasRecord() && handleEjectRecord(jukebox, event)) return;
+
+    if(jukebox.hasRecord()){
+      String itemId = jukebox.getRecord().getItemMeta().getDisplayName();
+      ItemBuilder itemBuilder = NexoItems.itemFromId(itemId);
+      if (itemBuilder == null) return;
+    }
 
     handleInsertRecord(event, player, jukebox);
   }
@@ -41,17 +52,21 @@ public class JukeboxPlayableListener {
         && event.getClickedBlock().getState() instanceof Jukebox;
   }
 
-  private static boolean handleEjectRecord(Jukebox jukebox) {
-    String recordId = NexoItems.idFromItem(jukebox.getRecord());
-    if (recordId == null) return false;
+  private static boolean handleEjectRecord(Jukebox jukebox, PlayerInteractEvent event) {
+    String itemId = jukebox.getRecord().getItemMeta().getDisplayName();
+    ItemBuilder itemBuilder = NexoItems.itemFromId(itemId);
+    if (itemBuilder == null) return false;
 
-    Components component = NexoAddon.getInstance().getComponents().get(recordId);
+    Components component = NexoAddon.getInstance().getComponents().get(itemId);
     if (component != null && component.getPlayable() != null) {
       Bukkit.getOnlinePlayers().forEach(player ->
           player.stopSound(component.getPlayable().getSongKey(), SoundCategory.RECORDS));
     }
 
-    jukebox.eject();
+    event.setCancelled(true);
+    jukebox.setRecord(null);
+    jukebox.update();
+    jukebox.getWorld().dropItemNaturally(jukebox.getLocation().add(0,1,0), itemBuilder.build().clone());
     NexoAddon.getInstance().jukeboxLocations.remove(jukebox.getLocation().toString());
     return true;
   }
@@ -67,8 +82,20 @@ public class JukeboxPlayableListener {
 
     ItemStack item = player.getInventory().getItemInMainHand().clone();
     item.setAmount(1);
-    jukebox.setRecord(item);
+    ItemStack is = new ItemStack(Material.MUSIC_DISC_CAT);
+    ItemMeta meta = is.getItemMeta();
+    meta.setDisplayName(itemId);
+    is.setItemMeta(meta);
+    jukebox.setRecord(is);
     jukebox.update();
+    event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§r"));
+    new BukkitRunnable(){
+
+      @Override
+      public void run() {
+        jukebox.stopPlaying();
+      }
+    }.runTaskLater(NexoAddon.getInstance(), 1L);
 
     jukebox.getWorld().playSound(
         jukebox.getLocation(),
