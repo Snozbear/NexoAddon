@@ -79,8 +79,10 @@ public class CustomOrePopulator extends BlockPopulator {
   private void placeBlock(PlacementPosition position, Ore ore, WorldInfo worldInfo, LimitedRegion limitedRegion, boolean isAbove) {
     if (ore.getNexoBlocks() != null && ore.getNexoBlocks().getBlockData() != null) {
       if(ore.isTall()) {
-        limitedRegion.setBlockData(position.x(), position.y()+1, position.z(), ore.getNexoBlocks().getBlockData());
-        limitedRegion.setBlockData(position.x(), position.y(), position.z(), Material.TRIPWIRE.createBlockData());
+        limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getNexoBlocks().getBlockData());
+        World world = Bukkit.getWorld(worldInfo.getUID());
+        if(limitedRegion.getType(new Location(world, position.x(), position.y()+1, position.z())).isAir())
+          limitedRegion.setBlockData(position.x(), position.y()+1, position.z(), Material.TRIPWIRE.createBlockData());
       }else{
         limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getNexoBlocks().getBlockData());
       }
