@@ -23,8 +23,9 @@ public class Ore {
   public List<World> worlds;
   public List<Biome> biomes;
   int iterations;
+  boolean tall;
 
-  public Ore(Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations) {
+  public Ore(Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall) {
     this.vanillaMaterial = vanillaMaterial;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;
@@ -34,9 +35,10 @@ public class Ore {
     this.biomes = biomes;
     this.placeOn = placeOn;
     this.iterations = iterations;
+    this.tall = tall;
   }
 
-  public Ore(FurnitureMechanic nexoFurnitures, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations) {
+  public Ore(FurnitureMechanic nexoFurnitures, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall) {
     this.nexoFurnitures = nexoFurnitures;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;
@@ -46,9 +48,10 @@ public class Ore {
     this.biomes = biomes;
     this.placeOn = placeOn;
     this.iterations = iterations;
+    this.tall = tall;
   }
 
-  public Ore(CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations) {
+  public Ore(CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall) {
     this.nexoBlocks = nexoBlocks;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;
@@ -58,5 +61,6 @@ public class Ore {
     this.biomes = biomes;
     this.placeOn = placeOn;
     this.iterations = iterations;
+    this.tall = tall;
   }
 }

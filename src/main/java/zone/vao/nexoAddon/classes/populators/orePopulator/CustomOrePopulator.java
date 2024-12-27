@@ -1,5 +1,6 @@
 package zone.vao.nexoAddon.classes.populators.orePopulator;
 
+import com.nexomc.nexo.api.NexoBlocks;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BlockPopulator;
@@ -77,7 +78,12 @@ public class CustomOrePopulator extends BlockPopulator {
 
   private void placeBlock(PlacementPosition position, Ore ore, WorldInfo worldInfo, LimitedRegion limitedRegion, boolean isAbove) {
     if (ore.getNexoBlocks() != null && ore.getNexoBlocks().getBlockData() != null) {
-      limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getNexoBlocks().getBlockData());
+      if(ore.isTall()) {
+        limitedRegion.setBlockData(position.x(), position.y()+1, position.z(), ore.getNexoBlocks().getBlockData());
+        limitedRegion.setBlockData(position.x(), position.y(), position.z(), Material.TRIPWIRE.createBlockData());
+      }else{
+        limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getNexoBlocks().getBlockData());
+      }
     } else if(ore.getNexoFurnitures() != null) {
       scheduleBlockPlacement(position, ore, worldInfo);
     } else{
@@ -90,7 +96,7 @@ public class CustomOrePopulator extends BlockPopulator {
 //    World world = Bukkit.getWorld(worldInfo.getUID());
 //    Chunk chunk = world.getChunkAt(position.x() >> 4, position.z() >> 4);
 //    ChunkLoadListener.queuePlacementsForPos(new ChunkPosition(chunk.getX(), chunk.getZ(), worldInfo.getUID()), position, ore);
-        Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
+    Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
       World world = Bukkit.getWorld(worldInfo.getUID());
       if (world != null) {
         Chunk chunk = world.getChunkAt(position.x() >> 4, position.z() >> 4);
