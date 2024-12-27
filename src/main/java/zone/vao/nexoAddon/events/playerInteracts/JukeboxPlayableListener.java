@@ -23,7 +23,7 @@ import zone.vao.nexoAddon.utils.VersionUtil;
 public class JukeboxPlayableListener {
 
   public static void onJukeboxPlayable(final PlayerInteractEvent event) {
-    if (!VersionUtil.isVersionLessThan("1.21")) return;
+    if (!VersionUtil.isVersionLessThan("1.21.1")) return;
 
     Player player = event.getPlayer();
     if (!isValidInteraction(event)) return;
