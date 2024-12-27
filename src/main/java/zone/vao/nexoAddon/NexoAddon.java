@@ -83,7 +83,7 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void checkComponentSupport() {
-    componentSupport = VersionUtil.isVersionLessThan("1.21.2");
+    componentSupport = VersionUtil.isVersionLessThan("1.21.3");
   }
 
   private void initializeCommandManager() {
