@@ -24,6 +24,7 @@ public class BreakDoubleHit {
 
     if (lastHit == null || !lastHit.getFurniture().equals(furnitureId)
         || (lastHit.getTimestamp() + TIMEFRAME) < System.currentTimeMillis()) {
+      event.getMechanic().getHitbox().refreshHitboxes(event.getBaseEntity(), event.getMechanic());
       lastHits.put(playerId, new FurnitureTimestamp(furnitureId));
       event.setCancelled(true);
     } else {
