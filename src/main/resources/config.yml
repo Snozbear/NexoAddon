@@ -1,3 +1,4 @@
 boss_bar: true
 prevent_furniture_break_with_tools: true
 prevent_furniture_break_with_sword: true
+double_hit_destroy_mechanic: true
