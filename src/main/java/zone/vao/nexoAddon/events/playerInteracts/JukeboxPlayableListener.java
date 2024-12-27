@@ -5,7 +5,6 @@ import com.nexomc.nexo.items.ItemBuilder;
 import io.th0rgal.protectionlib.ProtectionLib;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Jukebox;
@@ -85,7 +84,7 @@ public class JukeboxPlayableListener {
     event.setCancelled(true);
 
     ItemStack item = player.getInventory().getItemInMainHand().clone();
-    item.setAmount(1);
+
     ItemStack is = new ItemStack(Material.MUSIC_DISC_CAT);
     ItemMeta meta = is.getItemMeta();
     meta.setDisplayName(itemId);
@@ -96,7 +95,10 @@ public class JukeboxPlayableListener {
       public void run() {
         jukebox.setRecord(is);
         jukebox.update();
-        event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§r"));
+        if(item.getItemMeta() != null && item.getItemMeta().getLore() != null)
+          event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("Now Playing: "+item.getItemMeta().getLore().getFirst()));
+        else
+          event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§r"));
       }
     }.runTaskLater(NexoAddon.getInstance(), 1L);
 
