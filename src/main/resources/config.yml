@@ -1,4 +1,5 @@
-boss_bar: true
+boss_bar: true                             # Boss bar when looking at furniture
 prevent_furniture_break_with_tools: true
 prevent_furniture_break_with_sword: true
-double_hit_destroy_mechanic: true
+double_hit_destroy_mechanic: true          # Destroy furniture with double hit
+count_shears_as_silktouch: false           # For STRINGBLOCKs

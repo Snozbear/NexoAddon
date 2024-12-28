@@ -54,4 +54,25 @@ public class ItemConfigUtil {
     }
   }
 
+  public static void loadItemsWithSilktouchLoot() {
+    NexoAddon.getInstance().getIdsWithSilktouch().clear();
+
+    for (File itemFile : getItemFiles()) {
+      YamlConfiguration file = YamlConfiguration.loadConfiguration(itemFile);
+
+      for (String itemId : file.getKeys(false)) {
+        if (!file.isConfigurationSection(itemId)) continue;
+
+        ConfigurationSection itemSection = file.getConfigurationSection(itemId);
+        if (itemSection == null) continue;
+
+        ConfigurationSection dropSection = itemSection.getConfigurationSection("Mechanics.custom_block.drop");
+        if (dropSection != null && dropSection.getBoolean("silktouch", false)) {
+          NexoAddon.getInstance().getIdsWithSilktouch().add(itemId);
+        }
+      }
+    }
+  }
+
+
 }
