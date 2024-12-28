@@ -3,7 +3,6 @@ package zone.vao.nexoAddon.classes.populators.orePopulator;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;

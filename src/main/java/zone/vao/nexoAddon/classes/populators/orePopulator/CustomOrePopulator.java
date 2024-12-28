@@ -1,6 +1,5 @@
 package zone.vao.nexoAddon.classes.populators.orePopulator;
 
-import com.nexomc.nexo.api.NexoBlocks;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BlockPopulator;
