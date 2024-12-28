@@ -3,6 +3,7 @@ package zone.vao.nexoAddon.classes.populators.orePopulator;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
@@ -24,8 +25,10 @@ public class Ore {
   public List<Biome> biomes;
   int iterations;
   boolean tall;
+  int veinSize = 1;
+  double clusterChance = 1.0;
 
-  public Ore(Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall) {
+  public Ore(Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
     this.vanillaMaterial = vanillaMaterial;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;
@@ -36,9 +39,11 @@ public class Ore {
     this.placeOn = placeOn;
     this.iterations = iterations;
     this.tall = tall;
+    this.veinSize = veinSize;
+    this.clusterChance = clusterChance;
   }
 
-  public Ore(FurnitureMechanic nexoFurnitures, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall) {
+  public Ore(FurnitureMechanic nexoFurnitures, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
     this.nexoFurnitures = nexoFurnitures;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;
@@ -49,9 +54,11 @@ public class Ore {
     this.placeOn = placeOn;
     this.iterations = iterations;
     this.tall = tall;
+    this.veinSize = veinSize;
+    this.clusterChance = clusterChance;
   }
 
-  public Ore(CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall) {
+  public Ore(CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
     this.nexoBlocks = nexoBlocks;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;
@@ -62,5 +69,7 @@ public class Ore {
     this.placeOn = placeOn;
     this.iterations = iterations;
     this.tall = tall;
+    this.veinSize = veinSize;
+    this.clusterChance = clusterChance;
   }
 }

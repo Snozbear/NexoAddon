@@ -102,6 +102,8 @@ public class PopulatorsConfigUtil {
     int maxY = Math.max(section.getInt("maxY", 0), minY);
     double chance = section.getDouble("chance", 0.1);
     int iterations = Math.abs(section.getInt("iterations", 50));
+    int veinSize = section.getInt("vein_size", 0);
+    double clusterChance = section.getDouble("cluster_chance", 0.0);
 
     List<World> worlds = parseWorlds(section.getStringList("worlds"));
     List<Biome> biomes = parseBiomes(section.getStringList("biomes"));
@@ -116,11 +118,11 @@ public class PopulatorsConfigUtil {
       CustomBlockMechanic block = NexoBlocks.customBlockMechanic(key);
       FurnitureMechanic furniture = NexoFurniture.furnitureMechanic(key);
       if (block != null)
-        return new Ore(block, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, ((NexoBlocks.stringMechanic(block.getItemID()) != null) && (NexoBlocks.stringMechanic(block.getItemID()).isTall())));
+        return new Ore(block, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, ((NexoBlocks.stringMechanic(block.getItemID()) != null) && (NexoBlocks.stringMechanic(block.getItemID()).isTall())), veinSize, clusterChance);
       else if (furniture != null)
-        return new Ore(furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, false);
+        return new Ore(furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, false, veinSize, clusterChance);
       else
-        return new Ore(material, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, false);
+        return new Ore(material, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, false, veinSize, clusterChance);
     } catch (IllegalArgumentException e) {
       logError("Invalid custom block ID: " + key);
       return null;

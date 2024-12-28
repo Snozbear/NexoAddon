@@ -18,5 +18,6 @@ public class NexoItemsLoadedListener implements Listener {
 
       ItemConfigUtil.loadComponents();
     }
+    ItemConfigUtil.loadItemsWithSilktouchLoot();
   }
 }

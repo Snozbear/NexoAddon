@@ -7,3 +7,5 @@
 #  chance: 0.2            # Chance of custom block spawn in chunk
 #  replace:               # You can also use `place_on: [ STONE ]` to place custom blocks on provided blocks
 #    - STONE              # Replace STONE
+#  vein_size: 5           # Optional: Number of blocks in a vein (defaults to 0)
+#  cluster_chance: 0.8    # Optional: Chance for cluster placement (defaults to 0.0)
