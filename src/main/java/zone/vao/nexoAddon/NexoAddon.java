@@ -47,7 +47,6 @@ public final class NexoAddon extends JavaPlugin {
   public final TreePopulator treePopulator = new TreePopulator();
   public Map<String, List<BlockPopulator>> worldPopulators = new HashMap<>();
   public Map<String, String> jukeboxLocations = new HashMap<>();
-  public List<String> idsWithSilktouch = new ArrayList<>();
 
   @Override
   public void onEnable() {
@@ -148,7 +147,6 @@ public final class NexoAddon extends JavaPlugin {
   private void reloadNexoFiles() {
     nexoFiles.clear();
     nexoFiles.addAll(ItemConfigUtil.getItemFiles());
-    ItemConfigUtil.loadItemsWithSilktouchLoot();
   }
 
   private void loadComponentsIfSupported() {
