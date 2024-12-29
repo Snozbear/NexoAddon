@@ -1,5 +1,6 @@
 package zone.vao.nexoAddon.events;
 
+import com.nexomc.nexo.api.NexoFurniture;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -14,6 +15,6 @@ public class BlockBreakListener implements Listener {
 
     JukeboxSupport.onBlockBreak(event);
     ShearsBreak.onBlockBreak(event);
-    event.setCancelled(NexoAddon.getInstance().getGlobalConfig().getBoolean("double_hit_destroy_mechanic", true));
+    event.setCancelled(NexoAddon.getInstance().getGlobalConfig().getBoolean("double_hit_destroy_mechanic", true) && NexoFurniture.isFurniture(event.getBlock().getLocation()));
   }
 }
