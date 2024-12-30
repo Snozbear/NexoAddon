@@ -24,8 +24,8 @@ public class Ore {
   public List<Biome> biomes;
   int iterations;
   boolean tall;
-  int veinSize = 1;
-  double clusterChance = 1.0;
+  int veinSize;
+  double clusterChance;
 
   public Ore(Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
     this.vanillaMaterial = vanillaMaterial;
