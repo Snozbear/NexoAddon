@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.populators.CustomChunkGenerator;
@@ -55,11 +56,18 @@ public final class NexoAddon extends JavaPlugin {
     saveDefaultConfig();
     globalConfig = getConfig();
 
-    checkComponentSupport();
-    initializeCommandManager();
-    initializePopulators();
-    registerEvents();
-    initializeMetrics();
+    new BukkitRunnable() {
+
+      @Override
+      public void run() {
+        checkComponentSupport();
+        initializeCommandManager();
+        initializePopulators();
+        registerEvents();
+        initializeMetrics();
+      }
+    }.runTaskAsynchronously(this);
+
   }
 
   @Override
@@ -74,12 +82,18 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   public void reload() {
-    reloadConfig();
-    globalConfig = getConfig();
-    clearPopulators();
-    initializePopulators();
-    reloadNexoFiles();
-    loadComponentsIfSupported();
+    new BukkitRunnable() {
+
+      @Override
+      public void run() {
+        reloadConfig();
+        globalConfig = getConfig();
+        clearPopulators();
+        initializePopulators();
+        reloadNexoFiles();
+        loadComponentsIfSupported();
+      }
+    }.runTaskAsynchronously(this);
   }
 
   private void checkComponentSupport() {

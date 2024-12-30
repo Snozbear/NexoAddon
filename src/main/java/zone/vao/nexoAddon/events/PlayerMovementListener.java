@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.utils.BossBarUtil;
 import zone.vao.nexoAddon.utils.RayTraceUtil;
@@ -21,27 +22,32 @@ public class PlayerMovementListener implements Listener {
 
     if(!NexoAddon.getInstance().getGlobalConfig().getBoolean("boss_bar", true)) return;
     Player player = event.getPlayer();
-    FurnitureMechanic fm = RayTraceUtil.ray(player);
+    new BukkitRunnable() {
 
-    if(fm == null){
-      BossBarUtil bossBar = NexoAddon.getInstance().getBossBars().get(player.getUniqueId());
-      if(bossBar!=null) {
-        bossBar.removeBar();
-        NexoAddon.getInstance().getBossBars().remove(player.getUniqueId());
+      @Override
+      public void run() {
+        FurnitureMechanic fm = RayTraceUtil.ray(player);
+        if(fm == null){
+          BossBarUtil bossBar = NexoAddon.getInstance().getBossBars().get(player.getUniqueId());
+          if(bossBar!=null) {
+            bossBar.removeBar();
+            NexoAddon.getInstance().getBossBars().remove(player.getUniqueId());
+          }
+          return;
+        }
+        ItemBuilder itemBuilder = NexoItems.itemFromId(fm.getItemID());
+        String name = fm.getItemID();
+        if(itemBuilder != null && itemBuilder.getItemName() != null)
+          name = ((TextComponent) itemBuilder.getItemName()).content();
+
+        BossBarUtil bossBar = NexoAddon.getInstance().getBossBars().get(player.getUniqueId());
+        if(bossBar == null) {
+          bossBar = new BossBarUtil(name, BarColor.WHITE, BarStyle.SOLID);
+          NexoAddon.getInstance().getBossBars().put(player.getUniqueId(), bossBar);
+          bossBar.sendToPlayer(player);
+        }
+        bossBar.setMessage(name);
       }
-      return;
-    }
-    ItemBuilder itemBuilder = NexoItems.itemFromId(fm.getItemID());
-    String name = fm.getItemID();
-    if(itemBuilder != null && itemBuilder.getItemName() != null)
-      name = ((TextComponent) itemBuilder.getItemName()).content();
-
-    BossBarUtil bossBar = NexoAddon.getInstance().getBossBars().get(player.getUniqueId());
-    if(bossBar == null) {
-      bossBar = new BossBarUtil(name, BarColor.WHITE, BarStyle.SOLID);
-      NexoAddon.getInstance().getBossBars().put(player.getUniqueId(), bossBar);
-      bossBar.sendToPlayer(player);
-    }
-    bossBar.setMessage(name);
+    }.runTaskAsynchronously(NexoAddon.getInstance());
   }
 }
