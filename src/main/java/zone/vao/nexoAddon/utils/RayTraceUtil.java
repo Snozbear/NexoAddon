@@ -4,7 +4,9 @@ import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
+import zone.vao.nexoAddon.NexoAddon;
 
 
 public class RayTraceUtil {
@@ -20,7 +22,6 @@ public class RayTraceUtil {
         0.5,
         NexoFurniture::isFurniture
     );
-
     if (result == null || result.getHitEntity() == null) return null;
 
     return NexoFurniture.furnitureMechanic(result.getHitEntity());

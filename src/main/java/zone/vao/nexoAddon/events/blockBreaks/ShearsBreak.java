@@ -1,18 +1,11 @@
 package zone.vao.nexoAddon.events.blockBreaks;
 
-import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
-import com.nexomc.nexo.utils.drops.Drop;
-import com.nexomc.nexo.utils.drops.Loot;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.BlockBreakEvent;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.handlers.TallStringBlocksHandler;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShearsBreak {
 
