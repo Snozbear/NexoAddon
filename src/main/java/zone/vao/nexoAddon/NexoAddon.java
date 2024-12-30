@@ -92,6 +92,7 @@ public final class NexoAddon extends JavaPlugin {
         initializePopulators();
         reloadNexoFiles();
         loadComponentsIfSupported();
+        bossBars.values().forEach(BossBarUtil::removeBar);
       }
     }.runTaskAsynchronously(this);
   }
