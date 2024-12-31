@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 public class Ore {
 
+  public String id;
   public int maxLevel;
   public int minLevel;
   public CustomBlockMechanic nexoBlocks;
@@ -27,7 +28,8 @@ public class Ore {
   int veinSize;
   double clusterChance;
 
-  public Ore(Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+  public Ore(String id, Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+    this.id = id;
     this.vanillaMaterial = vanillaMaterial;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;
@@ -42,7 +44,8 @@ public class Ore {
     this.clusterChance = clusterChance;
   }
 
-  public Ore(FurnitureMechanic nexoFurnitures, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+  public Ore(String id, FurnitureMechanic nexoFurnitures, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+    this.id = id;
     this.nexoFurnitures = nexoFurnitures;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;
@@ -57,7 +60,8 @@ public class Ore {
     this.clusterChance = clusterChance;
   }
 
-  public Ore(CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+  public Ore(String id, CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+    this.id = id;
     this.nexoBlocks = nexoBlocks;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;

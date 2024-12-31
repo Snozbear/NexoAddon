@@ -125,7 +125,7 @@ public final class NexoAddon extends JavaPlugin {
         }
         addPopulatorToWorld(world, customOrePopulator);
         worldPopulators.get(world.getName()).add(customOrePopulator);
-        logPopulatorAdded("BlockPopulator", world);
+        logPopulatorAdded("BlockPopulator", ore.getId(), world);
       }
     });
   }
@@ -142,7 +142,7 @@ public final class NexoAddon extends JavaPlugin {
         }
         addPopulatorToWorld(world, customTreePopulator);
         worldPopulators.get(world.getName()).add(customTreePopulator);
-        logPopulatorAdded("TreePopulator", world);
+        logPopulatorAdded("TreePopulator", tree.getId(), world);
       }
     });
   }
@@ -197,8 +197,8 @@ public final class NexoAddon extends JavaPlugin {
     }
   }
 
-  private void logPopulatorAdded(String type, World world) {
-    Bukkit.getLogger().info(type + " added to world: " + world.getName());
+  private void logPopulatorAdded(String type, String name, World world) {
+    Bukkit.getLogger().info(type + " of "+name+" added to world: " + world.getName());
   }
 
   private void registerEvent(Listener listener) {
