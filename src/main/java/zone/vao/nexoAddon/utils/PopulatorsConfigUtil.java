@@ -3,6 +3,7 @@ package zone.vao.nexoAddon.utils;
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
+import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -117,12 +118,20 @@ public class PopulatorsConfigUtil {
     try {
       CustomBlockMechanic block = NexoBlocks.customBlockMechanic(key);
       FurnitureMechanic furniture = NexoFurniture.furnitureMechanic(key);
-      if (block != null)
-        return new Ore(key, block, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, ((NexoBlocks.stringMechanic(block.getItemID()) != null) && (NexoBlocks.stringMechanic(block.getItemID()).isTall())), veinSize, clusterChance);
-      else if (furniture != null)
+      if (block != null) {
+        boolean isTall = false;
+        StringBlockMechanic stringMechanic = NexoBlocks.stringMechanic(block.getItemID());
+        if (stringMechanic != null) {
+          isTall = stringMechanic.isTall();
+        }
+        return new Ore(key, block, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, isTall, veinSize, clusterChance);
+      }
+      else if (furniture != null) {
         return new Ore(key, furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, false, veinSize, clusterChance);
-      else
+      }
+      else {
         return new Ore(key, material, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, false, veinSize, clusterChance);
+      }
     } catch (IllegalArgumentException e) {
       logError("Invalid custom block ID: " + key);
       return null;
