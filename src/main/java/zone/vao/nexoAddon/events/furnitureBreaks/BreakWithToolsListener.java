@@ -27,7 +27,7 @@ public class BreakWithToolsListener {
   }
 
   private static boolean isTool(Material item){
-    return swords.contains(item) || pickaxes.contains(item) ||
+    return pickaxes.contains(item) ||
         axes.contains(item) || shovels.contains(item) || hoes.contains(item);
   }
 

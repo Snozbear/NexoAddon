@@ -48,6 +48,7 @@ public final class NexoAddon extends JavaPlugin {
   public final TreePopulator treePopulator = new TreePopulator();
   public Map<String, List<BlockPopulator>> worldPopulators = new HashMap<>();
   public Map<String, String> jukeboxLocations = new HashMap<>();
+  public Map<String, Integer> customBlockLights = new HashMap<>();
 
   @Override
   public void onEnable() {
@@ -67,7 +68,6 @@ public final class NexoAddon extends JavaPlugin {
         initializeMetrics();
       }
     }.runTaskAsynchronously(this);
-
   }
 
   @Override
@@ -153,6 +153,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new PlayerMovementListener());
     registerEvent(new NexoFurnitureBreakListener());
     registerEvent(new BlockBreakListener());
+    registerEvent(new NexoFurnitureInteractListener());
   }
 
   private void initializeMetrics() {

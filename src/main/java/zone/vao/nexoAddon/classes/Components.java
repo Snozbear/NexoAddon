@@ -3,14 +3,18 @@ package zone.vao.nexoAddon.classes;
 import lombok.Getter;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.classes.component.Equippable;
+import zone.vao.nexoAddon.classes.component.Fertilizer;
 import zone.vao.nexoAddon.classes.component.JukeboxPlayable;
+
+import java.util.List;
 
 @Getter
 public class Components {
 
-  public String id;
-  public Equippable equippable;
-  public JukeboxPlayable playable;
+  private String id;
+  private Equippable equippable;
+  private JukeboxPlayable playable;
+  private Fertilizer fertilizer;
 
   public Components(String id) {
     this.id = id;
@@ -24,5 +28,8 @@ public class Components {
     this.playable = new JukeboxPlayable(songKey);
   }
 
+  public void setFertilizer(int growthSpeedup, List<String> usableOn) {
+    this.fertilizer = new Fertilizer(growthSpeedup, usableOn);
+  }
 }
 

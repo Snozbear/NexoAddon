@@ -81,23 +81,4 @@ public class EquippableListener {
       }.runTaskLater(NexoAddon.getInstance(), 1);
     }
   }
-
-  private static List<Material> getAllHelmets() {
-    return List.of(
-        Material.LEATHER_HELMET,
-        Material.CHAINMAIL_HELMET,
-        Material.IRON_HELMET,
-        Material.GOLDEN_HELMET,
-        Material.DIAMOND_HELMET,
-        Material.NETHERITE_HELMET,
-        Material.TURTLE_HELMET,
-        Material.CARVED_PUMPKIN,
-        Material.PLAYER_HEAD,
-        Material.CREEPER_HEAD,
-        Material.ZOMBIE_HEAD,
-        Material.SKELETON_SKULL,
-        Material.WITHER_SKELETON_SKULL,
-        Material.DRAGON_HEAD
-    );
-  }
 }
