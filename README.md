@@ -5,6 +5,8 @@ Backward compability and new features for Nexo plugin!
 
 ---
 
+### 📕 [Documentation](https://nexoaddon.gitbook.io/nexoaddon-docs)
+
 ### 📥 Download
 - [Polymart](https://polymart.org/r/6950)
 - [Spigot](https://www.spigotmc.org/resources/nexoaddon.121241)
