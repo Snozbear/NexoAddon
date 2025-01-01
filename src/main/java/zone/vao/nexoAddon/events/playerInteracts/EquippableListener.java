@@ -61,18 +61,18 @@ public class EquippableListener {
 
   private static ItemStack getPreviouslyEquippedItem(Player player, String slot) {
     return switch (slot) {
-      case "CHESTPLATE" -> player.getInventory().getChestplate();
-      case "LEGGINGS" -> player.getInventory().getLeggings();
-      case "BOOTS" -> player.getInventory().getBoots();
+      case "CHEST" -> player.getInventory().getChestplate();
+      case "LEGS" -> player.getInventory().getLeggings();
+      case "FEET" -> player.getInventory().getBoots();
       default -> player.getInventory().getHelmet();
     };
   }
 
   private static void equipToSlot(Player player, Components componentItem, ItemStack itemToEquip) {
     switch (componentItem.getEquippable().getSlot()) {
-      case "CHESTPLATE" -> player.getInventory().setChestplate(itemToEquip);
-      case "LEGGINGS" -> player.getInventory().setLeggings(itemToEquip);
-      case "BOOTS" -> player.getInventory().setBoots(itemToEquip);
+      case "CHEST" -> player.getInventory().setChestplate(itemToEquip);
+      case "LEGS" -> player.getInventory().setLeggings(itemToEquip);
+      case "FEET" -> player.getInventory().setBoots(itemToEquip);
       default -> player.getInventory().setHelmet(itemToEquip);
     }
   }
