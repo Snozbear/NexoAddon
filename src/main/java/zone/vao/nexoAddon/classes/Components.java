@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.classes;
 
 import lombok.Getter;
+import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.classes.component.Equippable;
 import zone.vao.nexoAddon.classes.component.JukeboxPlayable;
 
@@ -15,7 +16,7 @@ public class Components {
     this.id = id;
   }
 
-  public void setEquippable(String slot) {
+  public void setEquippable(EquipmentSlot slot) {
     this.equippable = new Equippable(slot);
   }
 

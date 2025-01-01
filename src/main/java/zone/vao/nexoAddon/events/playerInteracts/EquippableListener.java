@@ -2,6 +2,7 @@ package zone.vao.nexoAddon.events.playerInteracts;
 
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -20,8 +21,11 @@ public class EquippableListener {
   public static void onEquippable(final PlayerInteractEvent event) {
     Player player = event.getPlayer();
 
-    if (!isValidInteraction(event, player)) return;
 
+    if (!isValidInteraction(event, player)) {
+      event.setCancelled(true);
+      return;
+    }
     String itemId = NexoItems.idFromItem(player.getInventory().getItemInMainHand());
     if (itemId == null || !NexoAddon.getInstance().isComponentSupport()) return;
 
@@ -34,15 +38,15 @@ public class EquippableListener {
   private static boolean isValidInteraction(PlayerInteractEvent event, Player player) {
     return event.getHand() == EquipmentSlot.HAND
         && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-        && (!NexoBlocks.isCustomBlock(event.getClickedBlock())
-        || !isWearingCustomHelmet(player));
+        && (event.getClickedBlock() != null && !NexoBlocks.isNexoNoteBlock(event.getClickedBlock()) || event.getClickedBlock() == null)
+        && isWearingorHoldCustomHelmet(player);
   }
 
-  private static boolean isWearingCustomHelmet(Player player) {
+  private static boolean isWearingorHoldCustomHelmet(Player player) {
     ItemStack helmet = player.getInventory().getHelmet();
     return helmet != null
-        && NexoItems.idFromItem(helmet) != null
-        && getAllHelmets().contains(player.getInventory().getItemInMainHand().getType());
+        && (NexoItems.idFromItem(helmet) != null
+        || NexoItems.idFromItem(player.getInventory().getItemInMainHand()) != null);
   }
 
   private static void equipItem(PlayerInteractEvent event, Player player, Components componentItem) {
@@ -59,22 +63,12 @@ public class EquippableListener {
     returnPreviousItemToInventory(player, previousItem);
   }
 
-  private static ItemStack getPreviouslyEquippedItem(Player player, String slot) {
-    return switch (slot) {
-      case "CHEST" -> player.getInventory().getChestplate();
-      case "LEGS" -> player.getInventory().getLeggings();
-      case "FEET" -> player.getInventory().getBoots();
-      default -> player.getInventory().getHelmet();
-    };
+  private static ItemStack getPreviouslyEquippedItem(Player player, EquipmentSlot slot) {
+    return player.getInventory().getItem(slot);
   }
 
   private static void equipToSlot(Player player, Components componentItem, ItemStack itemToEquip) {
-    switch (componentItem.getEquippable().getSlot()) {
-      case "CHEST" -> player.getInventory().setChestplate(itemToEquip);
-      case "LEGS" -> player.getInventory().setLeggings(itemToEquip);
-      case "FEET" -> player.getInventory().setBoots(itemToEquip);
-      default -> player.getInventory().setHelmet(itemToEquip);
-    }
+    player.getInventory().setItem(componentItem.getEquippable().getSlot(), itemToEquip);
   }
 
   private static void returnPreviousItemToInventory(Player player, ItemStack previousItem) {
