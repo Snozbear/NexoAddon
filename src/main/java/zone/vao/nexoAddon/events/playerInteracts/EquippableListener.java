@@ -2,7 +2,6 @@ package zone.vao.nexoAddon.events.playerInteracts;
 
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -14,13 +13,10 @@ import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 
-import java.util.List;
-
 public class EquippableListener {
 
   public static void onEquippable(final PlayerInteractEvent event) {
     Player player = event.getPlayer();
-
 
     if (!isValidInteraction(event, player)) {
       event.setCancelled(true);
@@ -28,7 +24,6 @@ public class EquippableListener {
     }
     String itemId = NexoItems.idFromItem(player.getInventory().getItemInMainHand());
     if (itemId == null || !NexoAddon.getInstance().isComponentSupport()) return;
-
     Components componentItem = NexoAddon.getInstance().getComponents().get(itemId);
     if (componentItem == null || componentItem.getEquippable() == null) return;
 
@@ -38,15 +33,7 @@ public class EquippableListener {
   private static boolean isValidInteraction(PlayerInteractEvent event, Player player) {
     return event.getHand() == EquipmentSlot.HAND
         && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-        && (event.getClickedBlock() != null && !NexoBlocks.isNexoNoteBlock(event.getClickedBlock()) || event.getClickedBlock() == null)
-        && isWearingorHoldCustomHelmet(player);
-  }
-
-  private static boolean isWearingorHoldCustomHelmet(Player player) {
-    ItemStack helmet = player.getInventory().getHelmet();
-    return helmet != null
-        && (NexoItems.idFromItem(helmet) != null
-        || NexoItems.idFromItem(player.getInventory().getItemInMainHand()) != null);
+        && (event.getClickedBlock() != null && !NexoBlocks.isNexoNoteBlock(event.getClickedBlock()) || event.getClickedBlock() == null);
   }
 
   private static void equipItem(PlayerInteractEvent event, Player player, Components componentItem) {

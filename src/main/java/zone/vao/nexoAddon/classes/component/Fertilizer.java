@@ -1,7 +1,6 @@
 package zone.vao.nexoAddon.classes.component;
 
 import lombok.Getter;
-import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.List;
 

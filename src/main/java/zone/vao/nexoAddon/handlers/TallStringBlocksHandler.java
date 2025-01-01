@@ -3,7 +3,6 @@ package zone.vao.nexoAddon.handlers;
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.utils.drops.Drop;
 import com.nexomc.nexo.utils.drops.Loot;
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 

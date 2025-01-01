@@ -1,7 +1,6 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.NexoPlugin;
-import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.items.ItemBuilder;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
