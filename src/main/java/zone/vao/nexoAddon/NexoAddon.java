@@ -26,7 +26,6 @@ import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
 import zone.vao.nexoAddon.utils.PopulatorsConfigUtil;
-import zone.vao.nexoAddon.utils.VersionUtil;
 
 import java.io.File;
 import java.util.*;
@@ -36,7 +35,6 @@ public final class NexoAddon extends JavaPlugin {
 
   @Getter
   public static NexoAddon instance;
-  public boolean componentSupport = false;
   public Set<File> nexoFiles = new HashSet<>();
   public Map<String, Components> components = new HashMap<>();
   public Map<UUID, BossBarUtil> bossBars = new HashMap<>();
@@ -48,6 +46,7 @@ public final class NexoAddon extends JavaPlugin {
   public final TreePopulator treePopulator = new TreePopulator();
   public Map<String, List<BlockPopulator>> worldPopulators = new HashMap<>();
   public Map<String, String> jukeboxLocations = new HashMap<>();
+  public Map<String, Integer> customBlockLights = new HashMap<>();
 
   @Override
   public void onEnable() {
@@ -55,19 +54,17 @@ public final class NexoAddon extends JavaPlugin {
     ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
+    initializeCommandManager();
 
     new BukkitRunnable() {
 
       @Override
       public void run() {
-        checkComponentSupport();
-        initializeCommandManager();
         initializePopulators();
         registerEvents();
         initializeMetrics();
       }
     }.runTaskAsynchronously(this);
-
   }
 
   @Override
@@ -97,10 +94,6 @@ public final class NexoAddon extends JavaPlugin {
     }.runTaskAsynchronously(this);
   }
 
-  private void checkComponentSupport() {
-    componentSupport = VersionUtil.isVersionLessThan("1.21.3");
-  }
-
   private void initializeCommandManager() {
     PaperCommandManager manager = new PaperCommandManager(this);
     manager.registerCommand(new NexoAddonCommand());
@@ -125,7 +118,7 @@ public final class NexoAddon extends JavaPlugin {
         }
         addPopulatorToWorld(world, customOrePopulator);
         worldPopulators.get(world.getName()).add(customOrePopulator);
-        logPopulatorAdded("BlockPopulator", world);
+        logPopulatorAdded("BlockPopulator", ore.getId(), world);
       }
     });
   }
@@ -142,7 +135,7 @@ public final class NexoAddon extends JavaPlugin {
         }
         addPopulatorToWorld(world, customTreePopulator);
         worldPopulators.get(world.getName()).add(customTreePopulator);
-        logPopulatorAdded("TreePopulator", world);
+        logPopulatorAdded("TreePopulator", tree.getId(), world);
       }
     });
   }
@@ -153,6 +146,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new PlayerMovementListener());
     registerEvent(new NexoFurnitureBreakListener());
     registerEvent(new BlockBreakListener());
+    registerEvent(new NexoFurnitureInteractListener());
   }
 
   private void initializeMetrics() {
@@ -165,9 +159,7 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void loadComponentsIfSupported() {
-    if (componentSupport) {
-      ItemConfigUtil.loadComponents();
-    }
+    ItemConfigUtil.loadComponents();
   }
 
   private void clearPopulators() {
@@ -197,8 +189,8 @@ public final class NexoAddon extends JavaPlugin {
     }
   }
 
-  private void logPopulatorAdded(String type, World world) {
-    Bukkit.getLogger().info(type + " added to world: " + world.getName());
+  private void logPopulatorAdded(String type, String name, World world) {
+    Bukkit.getLogger().info(type + " of "+name+" added to world: " + world.getName());
   }
 
   private void registerEvent(Listener listener) {

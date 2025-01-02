@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.utils.InventoryUtil;
+import zone.vao.nexoAddon.utils.VersionUtil;
 
 import java.util.List;
 
@@ -20,61 +21,49 @@ public class EquippableListener {
   public static void onEquippable(final PlayerInteractEvent event) {
     Player player = event.getPlayer();
 
-    if (!isValidInteraction(event, player)) return;
+    if (!VersionUtil.isVersionLessThan("1.21.3") ||
+        (event.getHand() != EquipmentSlot.HAND && event.getHand() != EquipmentSlot.OFF_HAND)) return;
 
-    String itemId = NexoItems.idFromItem(player.getInventory().getItemInMainHand());
-    if (itemId == null || !NexoAddon.getInstance().isComponentSupport()) return;
+    if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+      if (isInteractingWithNexoBlockWhileHoldingHelmet(event, player)) {
+        event.setCancelled(true);
+        return;
+      }
 
-    Components componentItem = NexoAddon.getInstance().getComponents().get(itemId);
-    if (componentItem == null || componentItem.getEquippable() == null) return;
+      String itemId = NexoItems.idFromItem(player.getInventory().getItemInMainHand());
+      if (itemId == null) return;
 
-    equipItem(event, player, componentItem);
+      if (!isValidInteraction(event)) return;
+
+      Components componentItem = NexoAddon.getInstance().getComponents().get(itemId);
+      if (componentItem == null || componentItem.getEquippable() == null) return;
+
+      equipItem(player, componentItem);
+    }
   }
 
-  private static boolean isValidInteraction(PlayerInteractEvent event, Player player) {
-    return event.getHand() == EquipmentSlot.HAND
-        && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-        && (!NexoBlocks.isCustomBlock(event.getClickedBlock())
-        || !isWearingCustomHelmet(player));
-  }
-
-  private static boolean isWearingCustomHelmet(Player player) {
-    ItemStack helmet = player.getInventory().getHelmet();
-    return helmet != null
-        && NexoItems.idFromItem(helmet) != null
+  private static boolean isInteractingWithNexoBlockWhileHoldingHelmet(PlayerInteractEvent event, Player player) {
+    return event.getClickedBlock() != null
+        && NexoBlocks.isNexoNoteBlock(event.getClickedBlock())
+        && NexoItems.idFromItem(player.getInventory().getHelmet()) != null
         && getAllHelmets().contains(player.getInventory().getItemInMainHand().getType());
   }
 
-  private static void equipItem(PlayerInteractEvent event, Player player, Components componentItem) {
-    event.setCancelled(true);
+  private static boolean isValidInteraction(PlayerInteractEvent event) {
+    return event.getClickedBlock() == null || !NexoBlocks.isNexoNoteBlock(event.getClickedBlock());
+  }
 
+  private static void equipItem(Player player, Components componentItem) {
     ItemStack itemToEquip = player.getInventory().getItemInMainHand().clone();
     itemToEquip.setAmount(1);
+
     InventoryUtil.removePartialStack(player, player.getInventory().getItemInMainHand(), 1);
 
-    ItemStack previousItem = getPreviouslyEquippedItem(player, componentItem.getEquippable().getSlot());
+    ItemStack previousItem = player.getInventory().getItem(componentItem.getEquippable().getSlot());
 
-    equipToSlot(player, componentItem, itemToEquip);
+    player.getInventory().setItem(componentItem.getEquippable().getSlot(), itemToEquip);
 
     returnPreviousItemToInventory(player, previousItem);
-  }
-
-  private static ItemStack getPreviouslyEquippedItem(Player player, String slot) {
-    return switch (slot) {
-      case "CHESTPLATE" -> player.getInventory().getChestplate();
-      case "LEGGINGS" -> player.getInventory().getLeggings();
-      case "BOOTS" -> player.getInventory().getBoots();
-      default -> player.getInventory().getHelmet();
-    };
-  }
-
-  private static void equipToSlot(Player player, Components componentItem, ItemStack itemToEquip) {
-    switch (componentItem.getEquippable().getSlot()) {
-      case "CHESTPLATE" -> player.getInventory().setChestplate(itemToEquip);
-      case "LEGGINGS" -> player.getInventory().setLeggings(itemToEquip);
-      case "BOOTS" -> player.getInventory().setBoots(itemToEquip);
-      default -> player.getInventory().setHelmet(itemToEquip);
-    }
   }
 
   private static void returnPreviousItemToInventory(Player player, ItemStack previousItem) {
@@ -84,7 +73,7 @@ public class EquippableListener {
         public void run() {
           player.getInventory().addItem(previousItem);
         }
-      }.runTaskLater(NexoAddon.getInstance(), 1);
+      }.runTaskLater(NexoAddon.getInstance(), 2);
     }
   }
 

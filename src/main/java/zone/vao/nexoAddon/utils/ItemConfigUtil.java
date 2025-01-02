@@ -4,12 +4,14 @@ import com.nexomc.nexo.NexoPlugin;
 import com.nexomc.nexo.items.ItemBuilder;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 public class ItemConfigUtil {
@@ -41,13 +43,23 @@ public class ItemConfigUtil {
           Components component = NexoAddon.getInstance().getComponents().get(itemId);
 
           if(itemSection.contains("Components.equippable")) {
-            String equippableSlot = itemSection.getString("Components.equippable.slot", "HEAD");
-            component.setEquippable(equippableSlot);
+            try {
+              EquipmentSlot equippableSlot = EquipmentSlot.valueOf(itemSection.getString("Components.equippable.slot", "HEAD").toUpperCase());
+              component.setEquippable(equippableSlot);
+            } catch (Exception ignored) {
+              continue;
+            }
           }
 
           if(itemSection.contains("Components.jukebox_playable") && itemSection.contains("Components.jukebox_playable.song_key")) {
             String songKey = itemSection.getString("Components.jukebox_playable.song_key");
             component.setPlayable(songKey);
+          }
+
+          if(itemSection.contains("Components.fertilizer.growth_speedup") && itemSection.contains("Components.fertilizer.usable_on")) {
+            int growthSpeedup = itemSection.getInt("Components.fertilizer.growth_speedup", 1000);
+            List<String> usableOn = itemSection.getStringList("Components.fertilizer.usable_on");
+            component.setFertilizer(growthSpeedup, usableOn);
           }
         }
       }
