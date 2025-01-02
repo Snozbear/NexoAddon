@@ -4,6 +4,7 @@ import com.nexomc.nexo.NexoPlugin;
 import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.api.events.furniture.NexoFurnitureInteractEvent;
+import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.ItemDisplay;
@@ -32,6 +33,7 @@ public class Fertilize {
         || fertilizer == null
         || !fertilizer.getUsableOn().contains(furnitureId)
         || !event.getBaseEntity().getPersistentDataContainer().has(EVOLUTION_KEY, PersistentDataType.INTEGER)
+        || !(ProtectionLib.canInteract(player, event.getBaseEntity().getLocation()) && ProtectionLib.canUse(player, event.getBaseEntity().getLocation()))
     ) return;
     fertilizeFurniture(event.getBaseEntity(), player, fertilizer);
   }
