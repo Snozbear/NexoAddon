@@ -46,13 +46,15 @@ public class HologramUtil {
       }
     });
 
-    holograms.put(player.getUniqueId(), hologram);
+    if(player != null)
+      holograms.put(player.getUniqueId(), hologram);
 
     new BukkitRunnable() {
       @Override
       public void run() {
         hologram.remove();
-        holograms.remove(player.getUniqueId());
+        if(player != null)
+          holograms.remove(player.getUniqueId());
       }
     }.runTaskLater(NexoAddon.getInstance(), 60);
   }
