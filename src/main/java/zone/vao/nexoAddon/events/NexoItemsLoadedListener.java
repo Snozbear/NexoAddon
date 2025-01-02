@@ -19,10 +19,7 @@ public class NexoItemsLoadedListener implements Listener {
         NexoAddon.getInstance().getNexoFiles().clear();
         NexoAddon.getInstance().getNexoFiles().addAll(ItemConfigUtil.getItemFiles());
 
-        if(NexoAddon.getInstance().isComponentSupport()){
-
-          ItemConfigUtil.loadComponents();
-        }
+        ItemConfigUtil.loadComponents();
       }
     }.runTaskAsynchronously(NexoAddon.getInstance());
   }

@@ -76,7 +76,7 @@ public class JukeboxPlayableListener {
 
   private static void handleInsertRecord(PlayerInteractEvent event, Player player, Jukebox jukebox) {
     String itemId = NexoItems.idFromItem(player.getInventory().getItemInMainHand());
-    if (itemId == null || !NexoAddon.getInstance().isComponentSupport()) return;
+    if (itemId == null || !VersionUtil.isVersionLessThan("1.21.1")) return;
 
     Components component = NexoAddon.getInstance().getComponents().get(itemId);
     if (component == null || component.getPlayable() == null) return;

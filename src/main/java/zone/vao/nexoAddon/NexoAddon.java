@@ -26,7 +26,6 @@ import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
 import zone.vao.nexoAddon.utils.PopulatorsConfigUtil;
-import zone.vao.nexoAddon.utils.VersionUtil;
 
 import java.io.File;
 import java.util.*;
@@ -36,7 +35,6 @@ public final class NexoAddon extends JavaPlugin {
 
   @Getter
   public static NexoAddon instance;
-  public boolean componentSupport = false;
   public Set<File> nexoFiles = new HashSet<>();
   public Map<String, Components> components = new HashMap<>();
   public Map<UUID, BossBarUtil> bossBars = new HashMap<>();
@@ -61,7 +59,6 @@ public final class NexoAddon extends JavaPlugin {
 
       @Override
       public void run() {
-        checkComponentSupport();
         initializeCommandManager();
         initializePopulators();
         registerEvents();
@@ -95,10 +92,6 @@ public final class NexoAddon extends JavaPlugin {
         bossBars.values().forEach(BossBarUtil::removeBar);
       }
     }.runTaskAsynchronously(this);
-  }
-
-  private void checkComponentSupport() {
-    componentSupport = VersionUtil.isVersionLessThan("1.21.3");
   }
 
   private void initializeCommandManager() {
@@ -166,9 +159,7 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void loadComponentsIfSupported() {
-    if (componentSupport) {
-      ItemConfigUtil.loadComponents();
-    }
+    ItemConfigUtil.loadComponents();
   }
 
   private void clearPopulators() {
