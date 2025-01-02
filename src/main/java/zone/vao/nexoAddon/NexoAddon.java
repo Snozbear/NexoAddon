@@ -54,12 +54,12 @@ public final class NexoAddon extends JavaPlugin {
     ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
+    initializeCommandManager();
 
     new BukkitRunnable() {
 
       @Override
       public void run() {
-        initializeCommandManager();
         initializePopulators();
         registerEvents();
         initializeMetrics();

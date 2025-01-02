@@ -13,6 +13,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.component.Fertilizer;
+import zone.vao.nexoAddon.utils.HologramUtil;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 
 public class Fertilize {
@@ -36,6 +37,10 @@ public class Fertilize {
         || !(ProtectionLib.canInteract(player, event.getBaseEntity().getLocation()) && ProtectionLib.canUse(player, event.getBaseEntity().getLocation()))
     ) return;
     fertilizeFurniture(event.getBaseEntity(), player, fertilizer);
+
+    double progress = (double) event.getBaseEntity().getPersistentDataContainer().get(EVOLUTION_KEY, PersistentDataType.INTEGER)
+        / NexoFurniture.furnitureMechanic(event.getBaseEntity()).getEvolution().getDelay();;
+    HologramUtil.displayProgressBar(event.getBaseEntity(), Math.max(0.0, Math.min(1.0, progress)), player);
   }
 
   private static void fertilizeFurniture(ItemDisplay itemDisplay, Player player, Fertilizer fertilizer) {
