@@ -5,6 +5,7 @@ import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.api.events.furniture.NexoFurnitureInteractEvent;
 import io.th0rgal.protectionlib.ProtectionLib;
+import lombok.Getter;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.ItemDisplay;
@@ -13,12 +14,12 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.component.Fertilizer;
-import zone.vao.nexoAddon.utils.HologramUtil;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 
 public class Fertilize {
 
-  private static final NamespacedKey EVOLUTION_KEY = new NamespacedKey(NexoPlugin.instance(), "evolution");
+  @Getter
+  static final NamespacedKey EVOLUTION_KEY = new NamespacedKey(NexoPlugin.instance(), "evolution");
 
   public static void onFertilize(NexoFurnitureInteractEvent event){
 
@@ -37,10 +38,6 @@ public class Fertilize {
         || !(ProtectionLib.canInteract(player, event.getBaseEntity().getLocation()) && ProtectionLib.canUse(player, event.getBaseEntity().getLocation()))
     ) return;
     fertilizeFurniture(event.getBaseEntity(), player, fertilizer);
-
-    double progress = (double) event.getBaseEntity().getPersistentDataContainer().get(EVOLUTION_KEY, PersistentDataType.INTEGER)
-        / NexoFurniture.furnitureMechanic(event.getBaseEntity()).getEvolution().getDelay();;
-    HologramUtil.displayProgressBar(event.getBaseEntity(), Math.max(0.0, Math.min(1.0, progress)), player);
   }
 
   private static void fertilizeFurniture(ItemDisplay itemDisplay, Player player, Fertilizer fertilizer) {
