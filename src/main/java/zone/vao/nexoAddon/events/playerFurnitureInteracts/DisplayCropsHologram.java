@@ -17,7 +17,7 @@ public class DisplayCropsHologram {
     if(furniture == null || furniture.getEvolution() == null) return;
 
     double progress = (double) event.getBaseEntity().getPersistentDataContainer().get(EVOLUTION_KEY, PersistentDataType.INTEGER)
-        / NexoFurniture.furnitureMechanic(event.getBaseEntity()).getEvolution().getDelay();;
+        / NexoFurniture.furnitureMechanic(event.getBaseEntity()).getEvolution().getDelay();
     HologramUtil.displayProgressBar(event.getBaseEntity(), Math.max(0.0, Math.min(1.0, progress)), event.getPlayer());
   }
 }
