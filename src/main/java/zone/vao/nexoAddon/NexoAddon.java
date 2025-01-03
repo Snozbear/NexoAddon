@@ -110,6 +110,7 @@ public final class NexoAddon extends JavaPlugin {
     orePopulator.clearOres();
     ores.forEach(orePopulator::addOre);
     orePopulator.getOres().forEach(ore -> {
+      if(ore.getNexoFurniture() != null) return;
       for (World world : ore.getWorlds()) {
 
         CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
@@ -147,6 +148,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new NexoFurnitureBreakListener());
     registerEvent(new BlockBreakListener());
     registerEvent(new NexoFurnitureInteractListener());
+    registerEvent(new ChunkLoadListener());
   }
 
   private void initializeMetrics() {
