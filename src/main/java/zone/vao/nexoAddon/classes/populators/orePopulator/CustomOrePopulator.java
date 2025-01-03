@@ -1,12 +1,14 @@
 package zone.vao.nexoAddon.classes.populators.orePopulator;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
-import zone.vao.nexoAddon.NexoAddon;
 
 import java.util.Random;
 
