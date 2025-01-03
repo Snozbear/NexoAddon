@@ -1,5 +1,6 @@
 package zone.vao.nexoAddon.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -73,10 +74,16 @@ public class HologramUtil {
     int emptyLength = length - filledLength;
 
     StringBuilder bar = new StringBuilder();
-    bar.append(ChatColor.GREEN);
-    bar.append("█".repeat(filledLength));
-    bar.append(ChatColor.RED);
-    bar.append("█".repeat(emptyLength));
+    if(filledLength >= 10 && emptyLength <= 0){
+      bar.append(ChatColor.DARK_GREEN);
+      bar.append("█".repeat(filledLength));
+    }
+    else {
+      bar.append(ChatColor.GREEN);
+      bar.append("█".repeat(filledLength));
+      bar.append(ChatColor.RED);
+      bar.append("█".repeat(emptyLength));
+    }
 
     return bar.toString();
   }

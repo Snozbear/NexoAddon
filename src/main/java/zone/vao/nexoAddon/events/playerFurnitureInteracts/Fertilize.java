@@ -10,9 +10,12 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.component.Fertilizer;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 
@@ -37,20 +40,31 @@ public class Fertilize {
         || !event.getBaseEntity().getPersistentDataContainer().has(EVOLUTION_KEY, PersistentDataType.INTEGER)
         || !(ProtectionLib.canInteract(player, event.getBaseEntity().getLocation()) && ProtectionLib.canUse(player, event.getBaseEntity().getLocation()))
     ) return;
-    fertilizeFurniture(event.getBaseEntity(), player, fertilizer);
+    fertilizeFurniture(event.getBaseEntity(), player, NexoAddon.getInstance().getComponents().get(itemId));
   }
 
-  private static void fertilizeFurniture(ItemDisplay itemDisplay, Player player, Fertilizer fertilizer) {
+  private static void fertilizeFurniture(ItemDisplay itemDisplay, Player player, Components component) {
 
     PersistentDataContainer container = itemDisplay.getPersistentDataContainer();
 
     int evolutionTime = container.get(EVOLUTION_KEY, PersistentDataType.INTEGER);
 
-    evolutionTime += fertilizer.getGrowthSpeedup();
+    evolutionTime += component.getFertilizer().getGrowthSpeedup();
 
     container.set(EVOLUTION_KEY, PersistentDataType.INTEGER, evolutionTime);
 
-    InventoryUtil.removePartialStack(player, player.getInventory().getItemInMainHand(), 1);
+    if(NexoItems.itemFromId(component.getId()).getDurability() == null
+        || NexoItems.itemFromId(component.getId()).getDurability() <= 1
+        || ((Damageable) player.getInventory().getItemInMainHand().getItemMeta()).hasDamage()
+            && ((Damageable) player.getInventory().getItemInMainHand().getItemMeta()).getDamage() >= NexoItems.itemFromId(component.getId()).getDurability()
+    ) {
+      InventoryUtil.removePartialStack(player, player.getInventory().getItemInMainHand(), 1);
+    }else{
+      Damageable itemMeta = (Damageable) player.getInventory().getItemInMainHand().getItemMeta();
+      itemMeta.setDamage(itemMeta.getDamage()+1);
+      player.getInventory().getItemInMainHand().setItemMeta(itemMeta);
+    }
+
     player.spawnParticle(Particle.VILLAGER_HAPPY, itemDisplay.getLocation(), 10, 0.5, 0.5, 0.5);
     NexoFurniture.updateFurniture(itemDisplay);
   }
