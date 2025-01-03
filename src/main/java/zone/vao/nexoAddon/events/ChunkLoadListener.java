@@ -1,5 +1,6 @@
 package zone.vao.nexoAddon.events;
 
+import com.nexomc.nexo.api.NexoFurniture;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -9,7 +10,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
 
+import java.util.List;
 import java.util.Random;
 
 public class ChunkLoadListener implements Listener {
@@ -19,11 +22,16 @@ public class ChunkLoadListener implements Listener {
     World world = event.getWorld();
     Chunk chunk = event.getChunk();
 
-    NexoAddon.getInstance().getOrePopulator().getOres().forEach(ore -> {
+    List<Ore> furniturePopulators =  NexoAddon.getInstance().getOrePopulator().getOres().stream().filter(ore -> ore.getNexoFurniture()!=null).toList();
+
+    if(furniturePopulators.isEmpty()) return;
+
+    furniturePopulators.forEach(ore -> {
       if (ore.getNexoFurniture() == null || !ore.getWorlds().contains(world) || !event.isNewChunk()) return;
 
       Bukkit.getScheduler().runTaskAsynchronously(NexoAddon.getInstance(), () -> {
         Random random = new Random();
+        if (random.nextDouble() > ore.getChance()) return;
         final int attempts = ore.getIterations();
         final int maxRetries = attempts * 20;
         int successfulPlacements = 0;
@@ -39,17 +47,21 @@ public class ChunkLoadListener implements Listener {
 
           if (!ore.getBiomes().contains(loc.getBlock().getBiome())) continue;
 
-          boolean canReplace = ore.getReplace() != null && ore.getReplace().contains(targetBlock);
-          boolean canPlaceOn = ore.getPlaceOn() != null && ore.getPlaceOn().contains(belowBlock) && targetBlock.isAir();
+          boolean canReplace = ore.getReplace() != null
+              && ore.getReplace().contains(targetBlock);
+          boolean canPlaceOn = ore.getPlaceOn() != null
+              && ore.getPlaceOn().contains(belowBlock)
+              && targetBlock.isAir();
 
           if (canReplace || canPlaceOn) {
             successfulPlacements++;
 
             Location finalLoc = loc.clone();
-            Bukkit.getScheduler().runTask(NexoAddon.getInstance(), () -> {
-              finalLoc.getBlock().setType(Material.AIR);
+            Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
+              if(canReplace)
+                finalLoc.getBlock().setType(Material.AIR);
               ore.getNexoFurniture().place(finalLoc);
-            });
+            }, successfulPlacements* 5L);
           }
         }
       });
