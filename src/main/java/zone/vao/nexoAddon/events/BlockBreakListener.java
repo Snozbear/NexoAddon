@@ -15,6 +15,9 @@ public class BlockBreakListener implements Listener {
 
     JukeboxSupport.onBlockBreak(event);
     ShearsBreak.onBlockBreak(event);
-    event.setCancelled(NexoAddon.getInstance().getGlobalConfig().getBoolean("double_hit_destroy_mechanic", true) && NexoFurniture.isFurniture(event.getBlock().getLocation()));
+    event.setCancelled(
+        NexoAddon.getInstance().getGlobalConfig().getBoolean("double_hit_destroy_mechanic", true)
+            && NexoFurniture.isFurniture(event.getBlock().getLocation())
+    );
   }
 }

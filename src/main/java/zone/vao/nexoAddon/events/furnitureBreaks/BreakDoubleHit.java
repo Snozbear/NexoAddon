@@ -15,7 +15,8 @@ public class BreakDoubleHit {
 
   public static void onDoubleHitMechanic(NexoFurnitureBreakEvent event) {
 
-    if(!NexoAddon.getInstance().getGlobalConfig().getBoolean("double_hit_destroy_mechanic", true)) return;
+    if(!NexoAddon.getInstance().getGlobalConfig().getBoolean("double_hit_destroy_mechanic", true)
+    || event.getMechanic().hasEvolution()) return;
 
     event.getMechanic().getHitbox().refreshHitboxes(event.getBaseEntity(), event.getMechanic());
 

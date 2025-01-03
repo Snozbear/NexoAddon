@@ -16,7 +16,7 @@ public class Ore {
   public int maxLevel;
   public int minLevel;
   public CustomBlockMechanic nexoBlocks;
-  public FurnitureMechanic nexoFurnitures;
+  public FurnitureMechanic nexoFurniture;
   public Material vanillaMaterial;
   public double chance;
   public List<Material> replace;
@@ -44,9 +44,9 @@ public class Ore {
     this.clusterChance = clusterChance;
   }
 
-  public Ore(String id, FurnitureMechanic nexoFurnitures, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+  public Ore(String id, FurnitureMechanic nexoFurniture, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
     this.id = id;
-    this.nexoFurnitures = nexoFurnitures;
+    this.nexoFurniture = nexoFurniture;
     this.minLevel = minLevel;
     this.maxLevel = maxLevel;
     this.chance = chance;

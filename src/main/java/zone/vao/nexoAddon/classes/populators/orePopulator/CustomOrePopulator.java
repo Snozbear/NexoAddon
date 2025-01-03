@@ -1,12 +1,14 @@
 package zone.vao.nexoAddon.classes.populators.orePopulator;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
-import zone.vao.nexoAddon.NexoAddon;
 
 import java.util.Random;
 
@@ -21,6 +23,7 @@ public class CustomOrePopulator extends BlockPopulator {
   @Override
   public void populate(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull LimitedRegion limitedRegion) {
     for (Ore ore : orePopulator.getOres()) {
+      if(ore.getNexoFurniture() != null) continue;
       generateOre(worldInfo, random, chunkX, chunkZ, limitedRegion, ore);
     }
   }
@@ -133,29 +136,9 @@ public class CustomOrePopulator extends BlockPopulator {
       }else{
         limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getNexoBlocks().getBlockData());
       }
-    } else if(ore.getNexoFurnitures() != null) {
-      scheduleBlockPlacement(position, ore, worldInfo);
     } else{
       limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getVanillaMaterial().createBlockData());
     }
-  }
-
-
-  private void scheduleBlockPlacement(PlacementPosition position, Ore ore, WorldInfo worldInfo) {
-//    World world = Bukkit.getWorld(worldInfo.getUID());
-//    Chunk chunk = world.getChunkAt(position.x() >> 4, position.z() >> 4);
-//    ChunkLoadListener.queuePlacementsForPos(new ChunkPosition(chunk.getX(), chunk.getZ(), worldInfo.getUID()), position, ore);
-    Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
-      World world = Bukkit.getWorld(worldInfo.getUID());
-      if (world != null) {
-        Chunk chunk = world.getChunkAt(position.x() >> 4, position.z() >> 4);
-        if (!chunk.isLoaded()) {
-          chunk.load();
-        }
-        Location loc = new Location(world, position.x(), position.y(), position.z());
-        ore.getNexoFurnitures().place(loc);
-      }
-    }, 1L);
   }
 
   public record PlacementPosition(int x, int y, int z, Material blockType, Biome biome, LimitedRegion limitedRegion) {
