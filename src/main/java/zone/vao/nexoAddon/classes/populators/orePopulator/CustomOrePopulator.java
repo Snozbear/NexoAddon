@@ -45,10 +45,13 @@ public class CustomOrePopulator extends BlockPopulator {
         successfulPlacements += generateVein(worldInfo, random, limitedRegion, position, ore);
       } else {
         if (canReplaceBlock(position, ore)) {
-          placeBlock(position, ore, worldInfo, limitedRegion, false);
+          placeBlock(position, ore, worldInfo, limitedRegion);
           successfulPlacements++;
         } else if (canPlaceOnBlock(position, ore, limitedRegion)) {
-          placeBlock(position.above(), ore, worldInfo, limitedRegion, true);
+          placeBlock(position.above(), ore, worldInfo, limitedRegion);
+          successfulPlacements++;
+        } else if (canPlaceBelowBlock(position, ore)) {
+          placeBlock(position.below(), ore, worldInfo, limitedRegion);
           successfulPlacements++;
         }
       }
@@ -65,10 +68,13 @@ public class CustomOrePopulator extends BlockPopulator {
       if (nextPosition == null) break;
 
       if (canReplaceBlock(nextPosition, ore)) {
-        placeBlock(nextPosition, ore, worldInfo, limitedRegion, false);
+        placeBlock(nextPosition, ore, worldInfo, limitedRegion);
         placedBlocks++;
       } else if (canPlaceOnBlock(nextPosition, ore, limitedRegion)) {
-        placeBlock(nextPosition.above(), ore, worldInfo, limitedRegion, true);
+        placeBlock(nextPosition.above(), ore, worldInfo, limitedRegion);
+        placedBlocks++;
+      } else if( canPlaceBelowBlock(nextPosition, ore) ){
+        placeBlock(nextPosition.below(), ore, worldInfo, limitedRegion);
         placedBlocks++;
       } else {
         break;
@@ -126,7 +132,13 @@ public class CustomOrePopulator extends BlockPopulator {
         && aboveBlockType.isAir();
   }
 
-  private void placeBlock(PlacementPosition position, Ore ore, WorldInfo worldInfo, LimitedRegion limitedRegion, boolean isAbove) {
+  private boolean canPlaceBelowBlock(PlacementPosition position, Ore ore) {
+    return ore.getPlaceBelow() != null
+        && ore.getPlaceBelow().contains(position.blockType())
+        && ore.getBiomes().contains(position.biome());
+  }
+
+  private void placeBlock(PlacementPosition position, Ore ore, WorldInfo worldInfo, LimitedRegion limitedRegion) {
     if (ore.getNexoBlocks() != null && ore.getNexoBlocks().getBlockData() != null) {
       if(ore.isTall()) {
         limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getNexoBlocks().getBlockData());
@@ -145,6 +157,10 @@ public class CustomOrePopulator extends BlockPopulator {
 
     PlacementPosition above() {
       return new PlacementPosition(x, y + 1, z, limitedRegion.getType(x, y + 1, z), biome, limitedRegion);
+    }
+
+    PlacementPosition below() {
+      return new PlacementPosition(x, y - 1, z, limitedRegion.getType(x, y - 1, z), biome, limitedRegion);
     }
 
     boolean isAirAbove() {
