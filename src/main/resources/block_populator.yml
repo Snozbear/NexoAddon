@@ -8,5 +8,7 @@
 #   replace:               # List of block types that the custom block can replace. Leave empty if not replacing any blocks.
 #     - STONE              # Example: Replaces STONE blocks during generation.
 #   place_on: [ STONE ]    # Optional: List of block types that the custom block can be placed on. Overrides `replace` if provided.
+#   place_below: [ STONE ] # Optional: List of block types that the custom block can be placed below. Overrides `replace` if provided.
+#   air_only: false        # Optional: Replace Air only (for place_on and place_below).
 #   vein_size: 5           # Optional: Maximum number of blocks in a vein. Set to 0 for single block placement. Default: 0.
 #   cluster_chance: 0.8    # Optional: Probability of cluster (vein) formation within the chunk. Defaults to 0.0 for no clustering.
