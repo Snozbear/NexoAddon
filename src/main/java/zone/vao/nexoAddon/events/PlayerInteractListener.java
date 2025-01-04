@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import zone.vao.nexoAddon.events.playerInteracts.EquippableListener;
+import zone.vao.nexoAddon.events.playerInteracts.FertilizeVanillaCrops;
 import zone.vao.nexoAddon.events.playerInteracts.JukeboxPlayableListener;
 
 
@@ -15,5 +16,6 @@ public class PlayerInteractListener implements Listener {
 
     EquippableListener.onEquippable(event);
     JukeboxPlayableListener.onJukeboxPlayable(event);
+    FertilizeVanillaCrops.fertilizeVanillaCrops(event);
   }
 }

@@ -114,6 +114,8 @@ public class PopulatorsConfigUtil {
 
     List<Material> replaceMaterials = parseMaterials(section.getStringList("replace"));
     List<Material> placeOnMaterials = parseMaterials(section.getStringList("place_on"));
+    List<Material> placeBelowMaterials = parseMaterials(section.getStringList("place_below"));
+    boolean airOnly = section.getBoolean("air_only", false);
 
     try {
       CustomBlockMechanic block = NexoBlocks.customBlockMechanic(key);
@@ -124,13 +126,13 @@ public class PopulatorsConfigUtil {
         if (stringMechanic != null) {
           isTall = stringMechanic.isTall();
         }
-        return new Ore(key, block, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, isTall, veinSize, clusterChance);
+        return new Ore(key, block, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, biomes, iterations, isTall, veinSize, clusterChance, airOnly);
       }
       else if (furniture != null) {
-        return new Ore(key, furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, false, veinSize, clusterChance);
+        return new Ore(key, furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, biomes, iterations, false, veinSize, clusterChance, airOnly);
       }
       else {
-        return new Ore(key, material, minY, maxY, chance, replaceMaterials, placeOnMaterials, worlds, biomes, iterations, false, veinSize, clusterChance);
+        return new Ore(key, material, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, biomes, iterations, false, veinSize, clusterChance, airOnly);
       }
     } catch (IllegalArgumentException e) {
       logError("Invalid custom block ID: " + key);

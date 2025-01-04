@@ -1,4 +1,4 @@
-boss_bar: true                             # Boss bar when looking at furniture
+boss_bar: false                             # Boss bar when looking at furniture
 prevent_furniture_break_with_tools: true
 prevent_furniture_break_with_sword: true
 double_hit_destroy_mechanic: true          # Destroy furniture with double hit

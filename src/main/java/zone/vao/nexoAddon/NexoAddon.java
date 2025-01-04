@@ -152,7 +152,11 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void initializeMetrics() {
-    new Metrics(this, 24168);
+
+    Metrics metrics = new Metrics(this, 24168);
+    metrics.addCustomChart(new Metrics.SimplePie("marketplace", () -> {
+      return "%%__POLYMART__%%".equals("1") ? "polymart" : "spigot";
+    }));
   }
 
   private void reloadNexoFiles() {

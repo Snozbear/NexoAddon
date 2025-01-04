@@ -21,14 +21,16 @@ public class Ore {
   public double chance;
   public List<Material> replace;
   public List<Material> placeOn;
+  public List<Material> placeBelow;
   public List<World> worlds;
   public List<Biome> biomes;
+  public boolean onlyAir;
   int iterations;
   boolean tall;
   int veinSize;
   double clusterChance;
 
-  public Ore(String id, Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+  public Ore(String id, Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<Material> placeBelow, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance, boolean onlyAir) {
     this.id = id;
     this.vanillaMaterial = vanillaMaterial;
     this.minLevel = minLevel;
@@ -38,13 +40,15 @@ public class Ore {
     this.worlds = worlds;
     this.biomes = biomes;
     this.placeOn = placeOn;
+    this.placeBelow = placeBelow;
     this.iterations = iterations;
     this.tall = tall;
     this.veinSize = veinSize;
     this.clusterChance = clusterChance;
+    this.onlyAir = onlyAir;
   }
 
-  public Ore(String id, FurnitureMechanic nexoFurniture, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+  public Ore(String id, FurnitureMechanic nexoFurniture, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<Material> placeBelow, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance, boolean onlyAir) {
     this.id = id;
     this.nexoFurniture = nexoFurniture;
     this.minLevel = minLevel;
@@ -54,13 +58,15 @@ public class Ore {
     this.worlds = worlds;
     this.biomes = biomes;
     this.placeOn = placeOn;
+    this.placeBelow = placeBelow;
     this.iterations = iterations;
     this.tall = tall;
     this.veinSize = veinSize;
     this.clusterChance = clusterChance;
+    this.onlyAir = onlyAir;
   }
 
-  public Ore(String id, CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance) {
+  public Ore(String id, CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<Material> placeBelow, List<World> worlds, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance, boolean onlyAir) {
     this.id = id;
     this.nexoBlocks = nexoBlocks;
     this.minLevel = minLevel;
@@ -70,9 +76,11 @@ public class Ore {
     this.worlds = worlds;
     this.biomes = biomes;
     this.placeOn = placeOn;
+    this.placeBelow = placeBelow;
     this.iterations = iterations;
     this.tall = tall;
     this.veinSize = veinSize;
     this.clusterChance = clusterChance;
+    this.onlyAir = onlyAir;
   }
 }
