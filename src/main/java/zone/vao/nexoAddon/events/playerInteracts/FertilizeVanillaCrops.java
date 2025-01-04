@@ -33,10 +33,24 @@ public class FertilizeVanillaCrops {
               || NexoAddon.getInstance().getComponents().get(itemId).getFertilizer().getUsableOn().contains(event.getClickedBlock().getType().toString().toUpperCase()))
         || !(ProtectionLib.canInteract(player, event.getClickedBlock().getLocation()) && ProtectionLib.canUse(player, event.getClickedBlock().getLocation()))
     ) return;
-    boolean appliedBoneMeal = event.getClickedBlock().applyBoneMeal(event.getBlockFace());
-    if(!appliedBoneMeal) return;
-    event.setCancelled(true);
+
+    NexoAddon.getInstance().getComponents().get(itemId).getFertilizer().getGrowthSpeedup();
+    boolean appliedAtLeastOnce = false;
+    Block clickedBlock = event.getClickedBlock();
     Components component = NexoAddon.getInstance().getComponents().get(itemId);
+    int growthSpeedup = component.getFertilizer().getGrowthSpeedup() < 1 ? 0 : component.getFertilizer().getGrowthSpeedup();
+
+    for (int i = 0; i < growthSpeedup; i++) {
+      boolean appliedBoneMeal = clickedBlock.applyBoneMeal(event.getBlockFace());
+      if (appliedBoneMeal) {
+        appliedAtLeastOnce = true;
+      }
+    }
+
+    if (!appliedAtLeastOnce) return;
+
+    event.setCancelled(true);
+
     if(NexoItems.itemFromId(component.getId()).getDurability() == null
         || NexoItems.itemFromId(component.getId()).getDurability() <= 1
         || ((Damageable) player.getInventory().getItemInMainHand().getItemMeta()).hasDamage()
