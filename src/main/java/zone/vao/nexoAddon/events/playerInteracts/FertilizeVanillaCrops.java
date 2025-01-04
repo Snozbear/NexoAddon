@@ -26,7 +26,6 @@ public class FertilizeVanillaCrops {
 
     String itemId = NexoItems.idFromItem(event.getItem());
     Player player = event.getPlayer();
-    Bukkit.broadcastMessage(event.getClickedBlock().getType().toString().toUpperCase()+" "+NexoAddon.getInstance().getComponents().get(itemId).getFertilizer().getUsableOn().toString());
     if(itemId == null
         || NexoAddon.getInstance().getComponents() == null
         || NexoAddon.getInstance().getComponents().get(itemId) == null
