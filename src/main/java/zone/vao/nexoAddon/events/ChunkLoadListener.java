@@ -39,6 +39,7 @@ public class ChunkLoadListener implements Listener {
           Location loc = new Location(world, x, y, z);
           Material targetBlock = loc.getBlock().getType();
           Material belowBlock = loc.clone().add(0, -1, 0).getBlock().getType();
+          Material abovelock = loc.clone().add(0, 1, 0).getBlock().getType();
 
           if (!ore.getBiomes().contains(loc.getBlock().getBiome())) continue;
 
@@ -47,8 +48,11 @@ public class ChunkLoadListener implements Listener {
           boolean canPlaceOn = ore.getPlaceOn() != null
               && ore.getPlaceOn().contains(belowBlock)
               && targetBlock.isAir();
+          boolean canPlaceBelow = ore.getPlaceBelow() != null
+              && ore.getPlaceBelow().contains(abovelock)
+              && (!ore.isOnlyAir() || targetBlock.isAir());
 
-          if (canReplace || canPlaceOn) {
+          if (canReplace || canPlaceOn || canPlaceBelow) {
             successfulPlacements++;
 
             Location finalLoc = loc.clone();
