@@ -63,7 +63,7 @@ public class CustomOrePopulator extends BlockPopulator {
     int placedBlocks = 0;
 
     for (int i = 0; i < veinSize; i++) {
-      PlacementPosition nextPosition = getAdjacentPlacementPosition(start, random, limitedRegion, ore, placedBlocks > 0 && ore.getPlaceBelow() != null && !ore.getPlaceBelow().isEmpty());
+      PlacementPosition nextPosition = getAdjacentPlacementPosition(start, random, limitedRegion, ore, placedBlocks > 0 && !ore.getPlaceBelow().isEmpty());
 
       if (nextPosition == null) break;
 
@@ -73,7 +73,7 @@ public class CustomOrePopulator extends BlockPopulator {
       } else if (canPlaceOnBlock(nextPosition, ore, limitedRegion)) {
         placeBlock(nextPosition.above(), ore, worldInfo, limitedRegion);
         placedBlocks++;
-      } else if( canPlaceBelowBlock(nextPosition, ore, limitedRegion) || placedBlocks > 0 && ore.getPlaceBelow() != null && !ore.getPlaceBelow().isEmpty()) {
+      } else if( canPlaceBelowBlock(nextPosition, ore, limitedRegion) || placedBlocks > 0 && !ore.getPlaceBelow().isEmpty()) {
         placeBlock(nextPosition.below(), ore, worldInfo, limitedRegion);
         placedBlocks++;
       } else {
@@ -132,7 +132,7 @@ public class CustomOrePopulator extends BlockPopulator {
     return ore.getPlaceOn() != null
         && ore.getPlaceOn().contains(position.blockType())
         && ore.getBiomes().contains(position.biome())
-        && (!ore.isOnlyAir() || (ore.isOnlyAir() && aboveBlockType.isAir()));
+        && (!ore.isOnlyAir() || aboveBlockType.isAir());
   }
 
   private boolean canPlaceBelowBlock(PlacementPosition position, Ore ore, LimitedRegion limitedRegion) {
@@ -140,7 +140,8 @@ public class CustomOrePopulator extends BlockPopulator {
     return (!ore.getPlaceBelow().isEmpty())
         && ore.getPlaceBelow().contains(position.blockType())
         && ore.getBiomes().contains(position.biome())
-        && (!ore.isOnlyAir() || (ore.isOnlyAir() && belowBlockType.isAir()));
+        && (!ore.getPlaceBelow().contains(belowBlockType))
+        && (!ore.isOnlyAir() || belowBlockType.isAir());
   }
 
 
