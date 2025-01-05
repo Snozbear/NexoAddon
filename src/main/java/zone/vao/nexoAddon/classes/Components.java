@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class Components {
 
-  private String id;
+  private final String id;
   private Equippable equippable;
   private JukeboxPlayable playable;
   private Fertilizer fertilizer;

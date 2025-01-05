@@ -7,14 +7,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
+import zone.vao.nexoAddon.classes.Mechanics;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ItemConfigUtil {
+
+  private static Set<File> itemFiles = new HashSet<>();
 
   public static HashMap<File, LinkedHashMap<String, ItemBuilder>> getItemConfigs(){
 
@@ -22,14 +22,15 @@ public class ItemConfigUtil {
   }
 
   public static Set<File> getItemFiles(){
-
-    return NexoPlugin.instance().configsManager().parseItemConfig().keySet();
+    itemFiles.clear();
+    itemFiles = NexoPlugin.instance().configsManager().parseItemConfig().keySet();
+    return itemFiles;
   }
 
   public static void loadComponents() {
     NexoAddon.getInstance().getComponents().clear();
 
-    for (File itemFile : getItemFiles()) {
+    for (File itemFile : itemFiles) {
       YamlConfiguration file = YamlConfiguration.loadConfiguration(itemFile);
 
       for (String itemId : file.getKeys(false)) {
@@ -60,6 +61,31 @@ public class ItemConfigUtil {
             int growthSpeedup = itemSection.getInt("Components.fertilizer.growth_speedup", 1000);
             List<String> usableOn = itemSection.getStringList("Components.fertilizer.usable_on");
             component.setFertilizer(growthSpeedup, usableOn);
+          }
+        }
+      }
+    }
+  }
+
+  public static void loadMechanics() {
+    NexoAddon.getInstance().getMechanics().clear();
+
+    for (File itemFile : itemFiles) {
+      YamlConfiguration file = YamlConfiguration.loadConfiguration(itemFile);
+
+      for (String itemId : file.getKeys(false)) {
+        if (!file.isConfigurationSection(itemId)) continue;
+
+        ConfigurationSection itemSection = file.getConfigurationSection(itemId);
+        if (itemSection != null && itemSection.contains("Mechanics")) {
+
+          if(!NexoAddon.getInstance().getMechanics().containsKey(itemId))
+            NexoAddon.getInstance().getMechanics().put(itemId, new Mechanics(itemId));
+          Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(itemId);
+
+          if(itemSection.contains("Mechanics.repair.ratio")){
+
+            mechanic.setRepair(itemSection.getDouble("Mechanics.repair.ratio"));
           }
         }
       }
