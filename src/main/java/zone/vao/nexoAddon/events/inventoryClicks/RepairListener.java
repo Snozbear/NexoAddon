@@ -11,71 +11,95 @@ import zone.vao.nexoAddon.classes.Mechanics;
 
 public class RepairListener {
 
-  public static void onInventoryClick(InventoryClickEvent event){
-    if (!(event.getWhoClicked() instanceof Player player) || !event.isLeftClick()) return;
+  public static void onInventoryClick(InventoryClickEvent event) {
+    if (!isValidClick(event)) return;
 
-    if (event.getCursor() == null || event.getCurrentItem() == null) return;
-
+    Player player = (Player) event.getWhoClicked();
     ItemStack cursorItem = event.getCursor().clone();
     ItemStack currentItem = event.getCurrentItem().clone();
-    String itemId = NexoItems.idFromItem(cursorItem);
-    if (itemId == null
-        || !(currentItem.getItemMeta() instanceof Damageable clickedItemMeta)
-        || !clickedItemMeta.hasDamage()
-        || !NexoAddon.getInstance().getMechanics().containsKey(itemId)
-        || NexoAddon.getInstance().getMechanics().get(itemId).getRepair() == null
-        || (
-        NexoItems.idFromItem(currentItem) != null
-            && NexoAddon.getInstance().getMechanics().containsKey(NexoItems.idFromItem(currentItem))
-            && NexoAddon.getInstance().getMechanics().get(NexoItems.idFromItem(currentItem)).getRepair() != null
-    )
-    ) return;
+
+    String repairItemId = NexoItems.idFromItem(cursorItem);
+    if (!canRepair(repairItemId, currentItem)) return;
 
     event.setCancelled(true);
 
-    Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(itemId);
-    double ratio = mechanic.getRepair().getRatio();
+    repairItem(player, cursorItem, currentItem, repairItemId);
+    updatePlayerInventory(player, currentItem, cursorItem, event);
+  }
 
+  private static boolean isValidClick(InventoryClickEvent event) {
+    return event.getWhoClicked() instanceof Player &&
+        event.isLeftClick() &&
+        event.getCursor() != null &&
+        event.getCurrentItem() != null;
+  }
+
+  private static boolean canRepair(String repairItemId, ItemStack currentItem) {
+    if (repairItemId == null) return false;
+
+    if (!(currentItem.getItemMeta() instanceof Damageable itemMeta) || !itemMeta.hasDamage()) return false;
+
+    Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(repairItemId);
+    if (mechanics == null || mechanics.getRepair() == null) return false;
+
+    String currentItemId = NexoItems.idFromItem(currentItem);
+    if (currentItemId != null) {
+      Mechanics currentMechanics = NexoAddon.getInstance().getMechanics().get(currentItemId);
+      if (currentMechanics != null && currentMechanics.getRepair() != null) return false;
+    }
+
+    return true;
+  }
+
+  private static void repairItem(Player player, ItemStack cursorItem, ItemStack currentItem, String repairItemId) {
+    Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(repairItemId);
+    double repairRatio = mechanic.getRepair().getRatio();
     int maxDurability = NexoItems.itemFromId(mechanic.getId()).getDurability() != null
         ? NexoItems.itemFromId(mechanic.getId()).getDurability()
         : 0;
 
-    int repairAmount = (int) (clickedItemMeta.getDamage() * ratio);
-    int newDamage = Math.max(0, clickedItemMeta.getDamage() - repairAmount);
-    clickedItemMeta.setDamage(newDamage);
-    currentItem.setItemMeta(clickedItemMeta);
+    Damageable currentMeta = (Damageable) currentItem.getItemMeta();
+    int repairAmount = (int) (currentMeta.getDamage() * repairRatio);
+    currentMeta.setDamage(Math.max(0, currentMeta.getDamage() - repairAmount));
+    currentItem.setItemMeta(currentMeta);
 
-    if (maxDurability != 0) {
-      Damageable holdingMeta = (Damageable) cursorItem.getItemMeta();
-      int currentDamage = holdingMeta.getDamage();
-      int newHoldingDamage = currentDamage + 1;
-
-      if (newHoldingDamage >= maxDurability) {
-        cursorItem.setAmount(cursorItem.getAmount() - 1);
-        if (cursorItem.getAmount() <= 0) {
-          cursorItem = null;
-        } else {
-          holdingMeta.setDamage(0);
-          cursorItem.setItemMeta(holdingMeta);
-        }
-      } else {
-        holdingMeta.setDamage(newHoldingDamage);
-        cursorItem.setItemMeta(holdingMeta);
-      }
-    } else{
-      if(cursorItem.getAmount() > 1) {
-        cursorItem.setAmount(cursorItem.getAmount() - 1);
-      }else{
-        cursorItem = null;
-      }
+    if (maxDurability > 0) {
+      updateCursorItemWithDurability(cursorItem, maxDurability);
+    } else {
+      reduceCursorItemAmount(cursorItem);
     }
+  }
 
+  private static void updateCursorItemWithDurability(ItemStack cursorItem, int maxDurability) {
+    Damageable cursorMeta = (Damageable) cursorItem.getItemMeta();
+    int currentDamage = cursorMeta.getDamage();
+    int newDamage = currentDamage + 1;
+
+    if (newDamage >= maxDurability) {
+      cursorItem.setAmount(cursorItem.getAmount() - 1);
+      if (cursorItem.getAmount() <= 0) {
+        cursorItem.setType(Material.AIR);
+      } else {
+        cursorMeta.setDamage(0);
+        cursorItem.setItemMeta(cursorMeta);
+      }
+    } else {
+      cursorMeta.setDamage(newDamage);
+      cursorItem.setItemMeta(cursorMeta);
+    }
+  }
+
+  private static void reduceCursorItemAmount(ItemStack cursorItem) {
+    if (cursorItem.getAmount() > 1) {
+      cursorItem.setAmount(cursorItem.getAmount() - 1);
+    } else {
+      cursorItem.setType(Material.AIR);
+    }
+  }
+
+  private static void updatePlayerInventory(Player player, ItemStack currentItem, ItemStack cursorItem, InventoryClickEvent event) {
     event.getClickedInventory().setItem(event.getSlot(), currentItem);
-
-    player.getInventory().addItem(cursorItem == null ? new ItemStack(Material.AIR) : cursorItem);
-    event.getCursor().setType(Material.AIR);
-    player.setItemOnCursor(null);
-
+    player.setItemOnCursor(cursorItem == null ? new ItemStack(Material.AIR) : cursorItem);
     player.updateInventory();
   }
 }
