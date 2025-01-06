@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import zone.vao.nexoAddon.classes.Components;
+import zone.vao.nexoAddon.classes.Mechanics;
 import zone.vao.nexoAddon.classes.populators.CustomChunkGenerator;
 import zone.vao.nexoAddon.classes.populators.orePopulator.CustomOrePopulator;
 import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
@@ -37,6 +38,7 @@ public final class NexoAddon extends JavaPlugin {
   public static NexoAddon instance;
   public Set<File> nexoFiles = new HashSet<>();
   public Map<String, Components> components = new HashMap<>();
+  public Map<String, Mechanics> mechanics = new HashMap<>();
   public Map<UUID, BossBarUtil> bossBars = new HashMap<>();
   public FileConfiguration globalConfig;
   public PopulatorsConfigUtil populatorsConfig;
@@ -149,6 +151,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new BlockBreakListener());
     registerEvent(new NexoFurnitureInteractListener());
     registerEvent(new ChunkLoadListener());
+    registerEvent(new InventoryClickListener());
   }
 
   private void initializeMetrics() {
@@ -166,6 +169,7 @@ public final class NexoAddon extends JavaPlugin {
 
   private void loadComponentsIfSupported() {
     ItemConfigUtil.loadComponents();
+    ItemConfigUtil.loadMechanics();
   }
 
   private void clearPopulators() {
