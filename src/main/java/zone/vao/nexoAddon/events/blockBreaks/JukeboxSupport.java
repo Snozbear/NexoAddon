@@ -2,6 +2,7 @@ package zone.vao.nexoAddon.events.blockBreaks;
 
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.items.ItemBuilder;
+import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Jukebox;
@@ -15,7 +16,7 @@ public class JukeboxSupport {
     if(event.getBlock().getType() == Material.JUKEBOX){
 
       String soundKey = NexoAddon.getInstance().jukeboxLocations.get(event.getBlock().getLocation().toString());
-      if(soundKey == null) return;
+      if(soundKey == null || !ProtectionLib.canBreak(event.getPlayer(), event.getBlock().getLocation())) return;
 
       Jukebox jukebox = (Jukebox) event.getBlock().getState();
 
