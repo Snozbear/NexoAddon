@@ -87,6 +87,11 @@ public class ItemConfigUtil {
 
             mechanic.setRepair(itemSection.getDouble("Mechanics.repair.ratio"));
           }
+
+          if(itemSection.contains("Mechanics.bigmining.radius") && itemSection.contains("Mechanics.bigmining.depth")){
+
+            mechanic.setBigMining(itemSection.getInt("Mechanics.bigmining.radius", 1), itemSection.getInt("Mechanics.bigmining.depth", 1));
+          }
         }
       }
     }
