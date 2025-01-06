@@ -61,6 +61,10 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
+            <id>aikar</id>
+            <url>https://repo.aikar.co/content/groups/aikar/</url>
+        </repository>
+        <repository>
             <id>nexo-snapshots</id>
             <name>Nexo Repository</name>
             <url>https://repo.nexomc.com/snapshots</url>
