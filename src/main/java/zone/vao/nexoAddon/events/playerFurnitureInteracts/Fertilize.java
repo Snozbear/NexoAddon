@@ -37,6 +37,7 @@ public class Fertilize {
         || fertilizer == null
         || !fertilizer.getUsableOn().contains(furnitureId)
         || !event.getBaseEntity().getPersistentDataContainer().has(EVOLUTION_KEY, PersistentDataType.INTEGER)
+        || (event.getBaseEntity().getPersistentDataContainer().get(EVOLUTION_KEY, PersistentDataType.INTEGER) >= NexoFurniture.furnitureMechanic(event.getBaseEntity()).getEvolution().getDelay())
         || !(ProtectionLib.canInteract(player, event.getBaseEntity().getLocation()) && ProtectionLib.canUse(player, event.getBaseEntity().getLocation()))
     ) return;
     fertilizeFurniture(event.getBaseEntity(), player, NexoAddon.getInstance().getComponents().get(itemId));
