@@ -15,8 +15,8 @@ public class Mechanics {
     this.id = id;
   }
 
-  public void setRepair(double ration) {
-    this.repair = new Repair(ration);
+  public void setRepair(double ration, int fixedAmount) {
+    this.repair = new Repair(ration, fixedAmount);
   }
 
   public void setBigMining(int radius, int depth) {

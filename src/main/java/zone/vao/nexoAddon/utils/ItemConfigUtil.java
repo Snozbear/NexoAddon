@@ -83,9 +83,9 @@ public class ItemConfigUtil {
             NexoAddon.getInstance().getMechanics().put(itemId, new Mechanics(itemId));
           Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(itemId);
 
-          if(itemSection.contains("Mechanics.repair.ratio")){
+          if(itemSection.contains("Mechanics.repair.ratio") || itemSection.contains("Mechanics.repair.fixed_amount")){
 
-            mechanic.setRepair(itemSection.getDouble("Mechanics.repair.ratio"));
+            mechanic.setRepair(itemSection.getDouble("Mechanics.repair.ratio"), itemSection.getInt("Mechanics.repair.fixed_amount"));
           }
 
           if(itemSection.contains("Mechanics.bigmining.radius") && itemSection.contains("Mechanics.bigmining.depth")){
