@@ -13,6 +13,8 @@ public class PlayerCommandPreprocessListener implements Listener {
     Player player = event.getPlayer();
     String command = event.getMessage().toLowerCase();
 
+    if((!player.hasPermission("nexo.command.reload")) && !player.isOp()) return;
+
     if (command.equals("/nexo rl recipes")
         || command.equals("/nexo reload recipes")
         || command.equals("/n rl recipes")
