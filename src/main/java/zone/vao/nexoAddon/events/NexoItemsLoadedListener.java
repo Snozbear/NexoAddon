@@ -7,14 +7,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.handlers.RecipeManager;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
+import zone.vao.nexoAddon.utils.RecipesUtil;
 
 public class NexoItemsLoadedListener implements Listener {
 
-  private final RecipeManager recipeManager;
-
-  public NexoItemsLoadedListener(RecipeManager recipeManager) {
-    this.recipeManager = recipeManager;
-  }
 
   @EventHandler
   public void on(NexoItemsLoadedEvent event) {
@@ -29,7 +25,7 @@ public class NexoItemsLoadedListener implements Listener {
         ItemConfigUtil.loadComponents();
         ItemConfigUtil.loadMechanics();
 
-        recipeManager.loadRecipes();
+        RecipesUtil.loadRecipes();
 
       }
     }.runTaskAsynchronously(NexoAddon.getInstance());

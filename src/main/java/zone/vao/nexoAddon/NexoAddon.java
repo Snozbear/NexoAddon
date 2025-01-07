@@ -23,11 +23,11 @@ import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTreePopulator;
 import zone.vao.nexoAddon.classes.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.*;
-import zone.vao.nexoAddon.handlers.RecipeManager;
 import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
 import zone.vao.nexoAddon.utils.PopulatorsConfigUtil;
+import zone.vao.nexoAddon.utils.RecipesUtil;
 
 import java.io.File;
 import java.util.*;
@@ -51,19 +51,14 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, String> jukeboxLocations = new HashMap<>();
   public Map<String, Integer> customBlockLights = new HashMap<>();
 
-  public RecipeManager recipeManager;
-
     @Override
   public void onEnable() {
-    File recipeFolder = new File(getDataFolder(), "recipes");
-    if (!recipeFolder.exists()) recipeFolder.mkdirs();
     
     instance = this;
     ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
     initializeCommandManager();
-    recipeManager = new RecipeManager();
 
     new BukkitRunnable() {
 
@@ -72,6 +67,7 @@ public final class NexoAddon extends JavaPlugin {
         initializePopulators();
         registerEvents();
         initializeMetrics();
+        RecipesUtil.loadRecipes();
       }
     }.runTaskAsynchronously(this);
   }
@@ -80,6 +76,7 @@ public final class NexoAddon extends JavaPlugin {
   public void onDisable() {
     bossBars.values().forEach(BossBarUtil::removeBar);
     clearPopulators();
+    RecipesUtil.clearRegisteredRecipes();
   }
 
   @Override
@@ -99,7 +96,7 @@ public final class NexoAddon extends JavaPlugin {
         reloadNexoFiles();
         loadComponentsIfSupported();
         bossBars.values().forEach(BossBarUtil::removeBar);
-        recipeManager.loadRecipes();
+        RecipesUtil.loadRecipes();
       }
     }.runTaskAsynchronously(this);
   }
@@ -152,7 +149,7 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void registerEvents() {
-    registerEvent(new NexoItemsLoadedListener(recipeManager));
+    registerEvent(new NexoItemsLoadedListener());
     registerEvent(new PlayerInteractListener());
     registerEvent(new PlayerMovementListener());
     registerEvent(new NexoFurnitureBreakListener());
@@ -160,7 +157,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new NexoFurnitureInteractListener());
     registerEvent(new ChunkLoadListener());
     registerEvent(new InventoryClickListener());
-    registerEvent(new PrepareRecipesEvent(recipeManager));
+    registerEvent(new PrepareRecipesListener());
   }
 
   private void initializeMetrics() {
