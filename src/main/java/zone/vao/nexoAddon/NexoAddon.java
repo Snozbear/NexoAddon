@@ -23,6 +23,7 @@ import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTreePopulator;
 import zone.vao.nexoAddon.classes.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.*;
+import zone.vao.nexoAddon.handlers.RecipeManager;
 import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
@@ -50,13 +51,19 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, String> jukeboxLocations = new HashMap<>();
   public Map<String, Integer> customBlockLights = new HashMap<>();
 
-  @Override
+  public RecipeManager recipeManager;
+
+    @Override
   public void onEnable() {
+    File recipeFolder = new File(getDataFolder(), "recipes");
+    if (!recipeFolder.exists()) recipeFolder.mkdirs();
+    
     instance = this;
     ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
     initializeCommandManager();
+    recipeManager = new RecipeManager();
 
     new BukkitRunnable() {
 
@@ -92,6 +99,7 @@ public final class NexoAddon extends JavaPlugin {
         reloadNexoFiles();
         loadComponentsIfSupported();
         bossBars.values().forEach(BossBarUtil::removeBar);
+        recipeManager.loadRecipes();
       }
     }.runTaskAsynchronously(this);
   }
@@ -144,7 +152,7 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void registerEvents() {
-    registerEvent(new NexoItemsLoadedListener());
+    registerEvent(new NexoItemsLoadedListener(recipeManager));
     registerEvent(new PlayerInteractListener());
     registerEvent(new PlayerMovementListener());
     registerEvent(new NexoFurnitureBreakListener());
@@ -152,6 +160,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new NexoFurnitureInteractListener());
     registerEvent(new ChunkLoadListener());
     registerEvent(new InventoryClickListener());
+    registerEvent(new PrepareRecipesEvent(recipeManager));
   }
 
   private void initializeMetrics() {
