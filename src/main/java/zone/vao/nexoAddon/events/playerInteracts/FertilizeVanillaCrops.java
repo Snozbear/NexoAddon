@@ -1,9 +1,7 @@
 package zone.vao.nexoAddon.events.playerInteracts;
 
 import com.nexomc.nexo.api.NexoItems;
-import com.nexomc.nexo.items.ItemBuilder;
 import io.th0rgal.protectionlib.ProtectionLib;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
