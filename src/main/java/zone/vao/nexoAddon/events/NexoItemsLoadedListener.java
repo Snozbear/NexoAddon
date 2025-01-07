@@ -5,7 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.handlers.RecipeManager;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
 import zone.vao.nexoAddon.utils.RecipesUtil;
 
