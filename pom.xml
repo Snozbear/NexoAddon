@@ -6,7 +6,7 @@
 
     <groupId>zone.vao</groupId>
     <artifactId>NexoAddon</artifactId>
-    <version>1.4.2</version>
+    <version>1.5.0</version>
     <packaging>jar</packaging>
 
     <name>NexoAddon</name>
@@ -74,21 +74,25 @@
             <name>Oraxen Repository</name>
             <url>https://repo.oraxen.com/releases</url>
         </repository>
+        <repository>
+            <id>dmulloy2-repo</id>
+            <name>ProtocolLib</name>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <version>1.21.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.nexomc</groupId>
             <artifactId>nexo</artifactId>
-            <version>0.7.0-dev.8</version>
+            <version>0.9.0-dev.9</version>
             <scope>provided</scope>
-            <classifier>dev</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -123,6 +127,11 @@
             <version>1.8.0</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>5.3.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
