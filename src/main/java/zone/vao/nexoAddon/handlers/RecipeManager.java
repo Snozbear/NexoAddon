@@ -6,9 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.inventory.PrepareSmithingEvent;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.ItemMeta;
 import zone.vao.nexoAddon.NexoAddon;
 
 import java.io.File;
