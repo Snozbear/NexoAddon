@@ -43,7 +43,11 @@ public class BlockHardnessHandler {
         if (player.getGameMode() == GameMode.CREATIVE) return;
 
         BlockPosition position = packet.getBlockPositionModifier().read(0);
-        EnumWrappers.PlayerDigType digType = packet.getEnumModifier(EnumWrappers.PlayerDigType.class, 2).read(0);
+        EnumWrappers.PlayerDigType digType = null;
+        try {
+          digType = packet.getEnumModifier(EnumWrappers.PlayerDigType.class, 2).read(0);
+        }catch(Exception ignored){}
+        if(digType == null) return;
         Location location = new Location(player.getWorld(), position.getX(), position.getY(), position.getZ());
 
         if (digType == EnumWrappers.PlayerDigType.START_DESTROY_BLOCK) {
