@@ -1,14 +1,15 @@
 package zone.vao.nexoAddon.events;
 
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareSmithingEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.SmithingInventory;
 import org.bukkit.inventory.SmithingTransformRecipe;
+import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Bukkit;
 import zone.vao.nexoAddon.handlers.RecipeManager;
 
 public class PrepareRecipesListener implements Listener {
@@ -16,6 +17,7 @@ public class PrepareRecipesListener implements Listener {
   @EventHandler
   public void handlePrepareSmithing(PrepareSmithingEvent event) {
     SmithingInventory inventory = event.getInventory();
+
     ItemStack templateItem = inventory.getItem(0);
     ItemStack baseItem = inventory.getItem(1);
     ItemStack additionItem = inventory.getItem(2);
@@ -37,31 +39,35 @@ public class PrepareRecipesListener implements Listener {
         boolean copyEnchants = RecipeManager.getRecipeConfig().getBoolean(recipeId + ".copy_enchantments", true);
 
         ItemStack result = recipe.getResult();
-        ItemMeta baseMeta = baseItem.getItemMeta();
-        ItemMeta resultMeta = result.getItemMeta();
-
-        if (baseMeta != null && resultMeta != null) {
-          resultMeta.setDisplayName(baseMeta.hasDisplayName() ? baseMeta.getDisplayName() : resultMeta.getDisplayName());
-          if (!resultMeta.hasLore()) {
-            resultMeta.setLore(baseMeta.hasLore() ? baseMeta.getLore() : resultMeta.getLore());
-          }
-
-          if (copyEnchants) {
-            baseMeta.getEnchants().forEach((enchant, level) -> resultMeta.addEnchant(enchant, level, true));
-          }
-
-          if (copyTrim && baseMeta instanceof org.bukkit.inventory.meta.ArmorMeta baseArmorMeta) {
-            if (baseArmorMeta.hasTrim()) {
-              ((org.bukkit.inventory.meta.ArmorMeta) resultMeta).setTrim(baseArmorMeta.getTrim());
-            }
-          }
-
-          result.setItemMeta(resultMeta);
-        }
+        applyMetaTransformations(baseItem, result, copyEnchants, copyTrim);
 
         event.setResult(result);
         break;
       }
     }
+  }
+
+  private void applyMetaTransformations(ItemStack baseItem, ItemStack result, boolean copyEnchants, boolean copyTrim) {
+    ItemMeta baseMeta = baseItem.getItemMeta();
+    ItemMeta resultMeta = result.getItemMeta();
+
+    if (baseMeta == null || resultMeta == null) return;
+
+    resultMeta.setDisplayName(baseMeta.hasDisplayName() ? baseMeta.getDisplayName() : resultMeta.getDisplayName());
+    if (!resultMeta.hasLore() && baseMeta.hasLore()) {
+      resultMeta.setLore(baseMeta.getLore());
+    }
+
+    if (copyEnchants) {
+      baseMeta.getEnchants().forEach((enchant, level) -> resultMeta.addEnchant(enchant, level, true));
+    }
+
+    if (copyTrim && baseMeta instanceof ArmorMeta baseArmorMeta) {
+      if (baseArmorMeta.hasTrim()) {
+        ((ArmorMeta) resultMeta).setTrim(baseArmorMeta.getTrim());
+      }
+    }
+
+    result.setItemMeta(resultMeta);
   }
 }
