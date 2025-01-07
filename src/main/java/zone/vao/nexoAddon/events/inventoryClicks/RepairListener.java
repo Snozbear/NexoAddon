@@ -55,7 +55,7 @@ public class RepairListener {
     Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(repairItemId);
     double repairRatio = mechanic.getRepair().getRatio();
     int fixedAmount = mechanic.getRepair().getFixedAmount();
-    int maxDurability = NexoItems.itemFromId(mechanic.getId()).getDurability() != null ? NexoItems.itemFromId(mechanic.getId()).getDurability() : 0;
+    int maxDurability = NexoItems.itemFromId(repairItemId).getDurability() != null ? NexoItems.itemFromId(repairItemId).getDurability() : NexoItems.itemFromId(repairItemId).build().getType().getMaxDurability();
     if(repairRatio > 0) {
 
       Damageable currentMeta = (Damageable) currentItem.getItemMeta();

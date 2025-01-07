@@ -8,10 +8,7 @@ import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.nexomc.nexo.api.NexoItems;
 import io.th0rgal.protectionlib.ProtectionLib;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -22,6 +19,7 @@ import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.mechanic.BedrockBreak;
 import zone.vao.nexoAddon.utils.EventUtil;
+import zone.vao.nexoAddon.utils.VersionUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,13 +60,16 @@ public class BlockHardnessHandler {
     ItemStack tool = player.getInventory().getItemInMainHand();
     String toolId = NexoItems.idFromItem(tool);
 
-    if (toolId == null) return;
+    if (toolId == null
+        || NexoAddon.getInstance().getMechanics().isEmpty()
+        || NexoAddon.getInstance().getMechanics().get(toolId) == null
+    ) return;
 
     BedrockBreak bedrockBreak = NexoAddon.getInstance().getMechanics().get(toolId).getBedrockBreak();
     if (bedrockBreak == null) return;
 
     Block block = location.getBlock();
-    if (block.getType() != Material.BEDROCK) return;
+    if (block.getType() != Material.BEDROCK || bedrockBreak.isDisableOnFirstLayer() && block.getY() <= block.getWorld().getMinHeight()) return;
 
     int hardness = bedrockBreak.getHardness();
     double probability = bedrockBreak.getProbability();
@@ -98,6 +99,12 @@ public class BlockHardnessHandler {
 
               if(tool.getItemMeta() instanceof Damageable damageable){
                 damageable.setDamage(damageable.getDamage()+bedrockBreak.getDurabilityCost());
+                int maxDurability = NexoItems.itemFromId(toolId).getDurability() != null ? NexoItems.itemFromId(toolId).getDurability() : NexoItems.itemFromId(toolId).build().getType().getMaxDurability();
+                if(damageable.getDamage() >= maxDurability) {
+                  player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                  block.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
+                  return;
+                }
                 player.getInventory().getItemInMainHand().setItemMeta(damageable);
               }
             });
