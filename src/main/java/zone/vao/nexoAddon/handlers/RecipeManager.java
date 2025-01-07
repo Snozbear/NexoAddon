@@ -3,7 +3,6 @@ package zone.vao.nexoAddon.handlers;
 import com.nexomc.nexo.api.NexoItems;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -41,20 +40,20 @@ public class RecipeManager {
 
         NamespacedKey key = new NamespacedKey(NexoAddon.getInstance(), recipeId);
 
-        if (Bukkit.getRecipe(key) == null) {
+        if (NexoAddon.getInstance().getServer().getRecipe(key) == null) {
             SmithingTransformRecipe recipe = new SmithingTransformRecipe(key, resultTemplate, template, base, addition);
-            Bukkit.addRecipe(recipe);
+            NexoAddon.getInstance().getServer().addRecipe(recipe);
             registeredRecipes.add(key);
             recipeConfigMap.put(key, recipeId);
-            Bukkit.getLogger().info("Registered smithing transform recipe: " + recipeId);
+            NexoAddon.getInstance().getLogger().info("Registered smithing transform recipe: " + recipeId);
         } else {
-            Bukkit.getLogger().info("Recipe " + recipeId + " already exists, skipping.");
+            NexoAddon.getInstance().getLogger().info("Recipe " + recipeId + " already exists, skipping.");
         }
     }
 
     private static ItemStack parseItem(FileConfiguration config, String path) {
         String nexoItemId = config.getString(path + ".nexo_item");
-        if (nexoItemId != null) return Objects.requireNonNull(NexoItems.itemFromId(nexoItemId)).build();
+        if (nexoItemId != null) return Objects.requireNonNull(NexoItems.itemFromId(nexoItemId)).build().clone();
 
         String materialName = config.getString(path + ".minecraft_item");
         assert materialName != null;
@@ -65,7 +64,7 @@ public class RecipeManager {
     private static RecipeChoice parseRecipeChoice(FileConfiguration config, String path) {
         String nexoItemId = config.getString(path + ".nexo_item");
         if (nexoItemId != null && NexoItems.itemFromId(nexoItemId) != null)
-            return new RecipeChoice.ExactChoice(NexoItems.itemFromId(nexoItemId).build());
+            return new RecipeChoice.ExactChoice(NexoItems.itemFromId(nexoItemId).build().clone());
 
         String materialName = config.getString(path + ".minecraft_item");
         assert materialName != null;

@@ -32,7 +32,7 @@ public class RecipesUtil {
 
         Files.copy(resourceStream, RecipeManager.getRecipeFile().toPath());
       } catch (IOException e) {
-        Bukkit.getLogger().severe("Failed to generate smithing.yml: " + e.getMessage());
+        NexoAddon.getInstance().getLogger().severe("Failed to generate smithing.yml: " + e.getMessage());
       }
     }
 
@@ -45,7 +45,7 @@ public class RecipesUtil {
     Bukkit.getScheduler().runTask(NexoAddon.getInstance(), () -> {
 
       if (RecipeManager.getRecipeConfig() == null) {
-        Bukkit.getLogger().severe("Recipes file not found");
+        NexoAddon.getInstance().getLogger().severe("Recipes file not found");
         return;
       }
 
@@ -53,7 +53,7 @@ public class RecipesUtil {
         try {
           RecipeManager.addSmithingTransformRecipe(recipeId, RecipeManager.getRecipeConfig());
         } catch (IllegalArgumentException e) {
-          Bukkit.getLogger().warning("Failed to load recipe " + recipeId + ": " + e.getMessage());
+          NexoAddon.getInstance().getLogger().warning("Failed to load recipe " + recipeId + ": " + e.getMessage());
         }
       });
     });
@@ -61,8 +61,8 @@ public class RecipesUtil {
 
   public static void clearRegisteredRecipes() {
     RecipeManager.getRegisteredRecipes().forEach(key -> {
-      Bukkit.removeRecipe(key);
-      Bukkit.getLogger().info("Removed recipe: " + key);
+      NexoAddon.getInstance().getServer().removeRecipe(key);
+      NexoAddon.getInstance().getLogger().info("Removed recipe: " + key);
     });
     RecipeManager.getRegisteredRecipes().clear();
     RecipeManager.getRecipeConfigMap().clear();
