@@ -17,10 +17,8 @@ import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
 import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTree;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PopulatorsConfigUtil {
@@ -193,10 +191,45 @@ public class PopulatorsConfigUtil {
   }
 
   private List<Biome> parseBiomes(List<String> biomeNames) {
-    if (biomeNames.isEmpty()) return Arrays.asList(Biome.values());
+    List<Biome> availableBiomes = getAllBiomes();
+
+    if (biomeNames.isEmpty()) return availableBiomes;
+
     return biomeNames.stream()
-        .map(b -> Biome.valueOf(b.trim().toUpperCase()))
+        .map(b -> {
+          String biomeName = b.trim().toUpperCase();
+          try {
+            return getBiomeByName(biomeName);
+          } catch (IllegalArgumentException e) {
+            System.out.println("Invalid biome name: " + biomeName + ". Skipping...");
+            return null;
+          }
+        })
+        .filter(biome -> biome != null && availableBiomes.contains(biome))
         .collect(Collectors.toList());
+  }
+
+  private Biome getBiomeByName(String name) {
+    try {
+      Method byNameMethod = Biome.class.getDeclaredMethod("valueOf", String.class);
+      Biome biome = (Biome) byNameMethod.invoke(null, name);
+      if (biome != null) return biome;
+    } catch (NoSuchMethodException e) {
+      return Biome.valueOf(name);
+    } catch (Exception e) {
+      System.out.println("Failed to get biome by name: " + e.getMessage());
+    }
+    throw new IllegalArgumentException("Biome not found: " + name);
+  }
+
+  private List<Biome> getAllBiomes() {
+    try {
+      Method valuesMethod = Biome.class.getDeclaredMethod("values");
+      return Arrays.asList((Biome[]) valuesMethod.invoke(null));
+    } catch (Exception e) {
+      System.out.println("Failed to fetch biomes dynamically: " + e.getMessage());
+      return new ArrayList<>();
+    }
   }
 
   private List<Material> parseMaterials(List<String> materialNames) {

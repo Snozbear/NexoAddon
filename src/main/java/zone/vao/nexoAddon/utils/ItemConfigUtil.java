@@ -92,6 +92,10 @@ public class ItemConfigUtil {
 
             mechanic.setBigMining(itemSection.getInt("Mechanics.bigmining.radius", 1), itemSection.getInt("Mechanics.bigmining.depth", 1));
           }
+
+          if(itemSection.contains("Mechanics.bedrockbreak.hardness") && itemSection.contains("Mechanics.bedrockbreak.probability")){
+            mechanic.setBedrockBreak(itemSection.getInt("Mechanics.bedrockbreak.hardness"), itemSection.getDouble("Mechanics.bedrockbreak.probability"), itemSection.getInt("Mechanics.bedrockbreak.durability_cost", 1), itemSection.getBoolean("Mechanics.bedrockbreak.disable_on_first_layer", true));
+          }
         }
       }
     }
