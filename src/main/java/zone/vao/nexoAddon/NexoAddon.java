@@ -158,6 +158,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new ChunkLoadListener());
     registerEvent(new InventoryClickListener());
     registerEvent(new PrepareRecipesListener());
+    registerEvent(new PlayerCommandPreprocessListener());
   }
 
   private void initializeMetrics() {
