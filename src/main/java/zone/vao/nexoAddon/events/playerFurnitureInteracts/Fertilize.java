@@ -17,6 +17,7 @@ import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.component.Fertilizer;
 import zone.vao.nexoAddon.utils.InventoryUtil;
+import zone.vao.nexoAddon.utils.ParticleUtil;
 
 public class Fertilize {
 
@@ -65,7 +66,7 @@ public class Fertilize {
       player.getInventory().getItemInMainHand().setItemMeta(itemMeta);
     }
 
-    player.spawnParticle(Particle.VILLAGER_HAPPY, itemDisplay.getLocation(), 10, 0.5, 0.5, 0.5);
+    player.spawnParticle(ParticleUtil.getHappyVillagerParticle(), itemDisplay.getLocation(), 10, 0.5, 0.5, 0.5);
     NexoFurniture.updateFurniture(itemDisplay);
   }
 }
