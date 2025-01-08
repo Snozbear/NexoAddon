@@ -11,7 +11,6 @@ public class NexoPostPackGenerateListener implements Listener {
   @EventHandler
   public void onPostPackGen(NexoPostPackGenerateEvent event) {
 
-    System.out.println("NexoPostPackGenerateEvent: " + event.getEventName());
     RecipeManager.clearRegisteredRecipes();
     RecipesUtil.loadRecipes();
   }

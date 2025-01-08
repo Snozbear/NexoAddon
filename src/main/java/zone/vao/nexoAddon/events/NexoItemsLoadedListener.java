@@ -14,7 +14,6 @@ public class NexoItemsLoadedListener implements Listener {
 
   @EventHandler
   public void on(NexoItemsLoadedEvent event) {
-    System.out.println("NexoItemsLoadedEvent: " + event.getEventName());
     new BukkitRunnable() {
 
       @Override
