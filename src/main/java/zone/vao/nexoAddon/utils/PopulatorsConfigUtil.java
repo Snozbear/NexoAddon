@@ -105,6 +105,7 @@ public class PopulatorsConfigUtil {
     int veinSize = section.getInt("vein_size", 0);
     double clusterChance = section.getDouble("cluster_chance", 0.0);
 
+    List<String> worldNames = section.getStringList("worlds");
     List<World> worlds = parseWorlds(section.getStringList("worlds"));
     List<Biome> biomes = parseBiomes(section.getStringList("biomes"));
     if(biomes.isEmpty())
@@ -125,13 +126,13 @@ public class PopulatorsConfigUtil {
         if (stringMechanic != null) {
           isTall = stringMechanic.isTall();
         }
-        return new Ore(key, block, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, biomes, iterations, isTall, veinSize, clusterChance, airOnly);
+        return new Ore(key, block, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, worldNames, biomes, iterations, isTall, veinSize, clusterChance, airOnly);
       }
       else if (furniture != null) {
-        return new Ore(key, furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, biomes, iterations, false, veinSize, clusterChance, airOnly);
+        return new Ore(key, furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, worldNames, biomes, iterations, false, veinSize, clusterChance, airOnly);
       }
       else {
-        return new Ore(key, material, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, biomes, iterations, false, veinSize, clusterChance, airOnly);
+        return new Ore(key, material, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, worldNames, biomes, iterations, false, veinSize, clusterChance, airOnly);
       }
     } catch (IllegalArgumentException e) {
       logError("Invalid custom block ID: " + key);
@@ -187,8 +188,9 @@ public class PopulatorsConfigUtil {
   private List<World> parseWorlds(List<String> worldNames) {
     return worldNames.stream()
         .map(name -> {
-          World world = Bukkit.getWorld(name);
+          World world = NexoAddon.getInstance().getServer().getWorld(name);
           if (world == null) {
+            NexoAddon.getInstance().getLogger().info("Loading world:" + name);
             world = loadWorld(name);
           }
           return world;
@@ -198,15 +200,15 @@ public class PopulatorsConfigUtil {
   }
 
   private World loadWorld(String worldName) {
-    File worldFolder = new File(Bukkit.getWorldContainer(), worldName);
+    File worldFolder = new File(NexoAddon.getInstance().getServer().getWorldContainer(), worldName);
     if (!worldFolder.exists() || !worldFolder.isDirectory()) {
       NexoAddon.getInstance().getLogger().warning("World folder for " + worldName + " does not exist.");
       return null;
     }
 
-    NexoAddon.getInstance().getLogger().info("Loading world:" + worldName);
+    NexoAddon.getInstance().getLogger().info("Loaded world:" + worldName);
     WorldCreator creator = new WorldCreator(worldName);
-    return Bukkit.createWorld(creator);
+    return NexoAddon.getInstance().getServer().createWorld(creator);
   }
 
   private List<Biome> parseBiomes(List<String> biomeNames) {
