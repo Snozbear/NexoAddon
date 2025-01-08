@@ -8,6 +8,7 @@ import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -185,9 +186,27 @@ public class PopulatorsConfigUtil {
 
   private List<World> parseWorlds(List<String> worldNames) {
     return worldNames.stream()
-        .map(Bukkit::getWorld)
+        .map(name -> {
+          World world = Bukkit.getWorld(name);
+          if (world == null) {
+            world = loadWorld(name);
+          }
+          return world;
+        })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
+  }
+
+  private World loadWorld(String worldName) {
+    File worldFolder = new File(Bukkit.getWorldContainer(), worldName);
+    if (!worldFolder.exists() || !worldFolder.isDirectory()) {
+      NexoAddon.getInstance().getLogger().warning("World folder for " + worldName + " does not exist.");
+      return null;
+    }
+
+    NexoAddon.getInstance().getLogger().info("Loading world:" + worldName);
+    WorldCreator creator = new WorldCreator(worldName);
+    return Bukkit.createWorld(creator);
   }
 
   private List<Biome> parseBiomes(List<String> biomeNames) {
