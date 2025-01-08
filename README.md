@@ -11,6 +11,8 @@ Backward compability and new features for Nexo plugin!
 - [Polymart](https://polymart.org/r/6950)
 - [Spigot](https://www.spigotmc.org/resources/nexoaddon.121241)
 
+### 📞 Contact
+- [Discord](https://discord.com/invite/aSRYxqSjVJ)
 ---
 ### ✍ Description
 Description here (I appreciate the contribution)
