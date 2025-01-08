@@ -175,6 +175,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new InventoryClickListener());
     registerEvent(new PrepareRecipesListener());
     registerEvent(new PlayerCommandPreprocessListener());
+    registerEvent(new WorldLoadListener());
   }
 
   private void initializeMetrics() {
@@ -222,7 +223,7 @@ public final class NexoAddon extends JavaPlugin {
     }
   }
 
-  private void logPopulatorAdded(String type, String name, World world) {
+  public void logPopulatorAdded(String type, String name, World world) {
     Bukkit.getLogger().info(type + " of "+name+" added to world: " + world.getName());
   }
 
