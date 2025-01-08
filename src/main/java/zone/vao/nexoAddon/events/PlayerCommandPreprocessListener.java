@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import zone.vao.nexoAddon.handlers.RecipeManager;
 import zone.vao.nexoAddon.utils.RecipesUtil;
 
 public class PlayerCommandPreprocessListener implements Listener {
@@ -23,7 +24,12 @@ public class PlayerCommandPreprocessListener implements Listener {
         || command.equals("/n reload all")
         || command.equals("/nexo rl all")
         || command.equals("/nexo reload all")
+        || command.equals("/n rl")
+        || command.equals("/n reload")
+        || command.equals("/nexo rl")
+        || command.equals("/nexo reload")
     ) {
+      RecipeManager.clearRegisteredRecipes();
       RecipesUtil.loadRecipes();
     }
   }

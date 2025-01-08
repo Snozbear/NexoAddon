@@ -19,8 +19,6 @@ public class RecipeManager {
     @Getter
     private static final List<NamespacedKey> registeredRecipes = new ArrayList<>();
     @Getter
-    private static final Map<NamespacedKey, String> recipeConfigMap = new HashMap<>();
-    @Getter
     @Setter
     private static File recipeFile;
     @Getter
@@ -44,7 +42,6 @@ public class RecipeManager {
             SmithingTransformRecipe recipe = new SmithingTransformRecipe(key, resultTemplate, template, base, addition);
             NexoAddon.getInstance().getServer().addRecipe(recipe);
             registeredRecipes.add(key);
-            recipeConfigMap.put(key, recipeId);
             NexoAddon.getInstance().getLogger().info("Registered smithing transform recipe: " + recipeId);
         } else {
             NexoAddon.getInstance().getLogger().info("Recipe " + recipeId + " already exists, skipping.");
@@ -57,7 +54,10 @@ public class RecipeManager {
             return Objects.requireNonNull(NexoItems.itemFromId(nexoItemId)).build().clone();
 
         String materialName = config.getString(path + ".minecraft_item");
-        assert materialName != null;
+        if(materialName == null) {
+            NexoAddon.getInstance().getLogger().warning("Wrong item in " + path);
+            return null;
+        }
         Material material = Material.matchMaterial(materialName);
         return material != null ? new ItemStack(material).clone() : null;
     }
@@ -71,5 +71,15 @@ public class RecipeManager {
         assert materialName != null;
         Material material = Material.matchMaterial(materialName);
         return material != null ? new RecipeChoice.ExactChoice(new ItemStack(material).clone()) : null;
+    }
+
+    public static void clearRegisteredRecipes() {
+        if(registeredRecipes.isEmpty()) return;
+
+        for (NamespacedKey key : registeredRecipes) {
+            NexoAddon.getInstance().getServer().removeRecipe(key);
+            NexoAddon.getInstance().getLogger().info("Removed recipe: " + key.getKey());
+        }
+        registeredRecipes.clear();
     }
 }

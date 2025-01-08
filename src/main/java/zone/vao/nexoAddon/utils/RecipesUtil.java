@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.utils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.handlers.RecipeManager;
@@ -40,10 +41,8 @@ public class RecipesUtil {
   }
 
   public static void loadRecipes() {
-    clearRegisteredRecipes();
     loadRecipeFile();
-    Bukkit.getScheduler().runTask(NexoAddon.getInstance(), () -> {
-
+    Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
       if (RecipeManager.getRecipeConfig() == null) {
         NexoAddon.getInstance().getLogger().severe("Recipes file not found");
         return;
@@ -56,15 +55,6 @@ public class RecipesUtil {
           NexoAddon.getInstance().getLogger().warning("Failed to load recipe " + recipeId + ": " + e.getMessage());
         }
       });
-    });
-  }
-
-  public static void clearRegisteredRecipes() {
-    RecipeManager.getRegisteredRecipes().forEach(key -> {
-      NexoAddon.getInstance().getServer().removeRecipe(key);
-      NexoAddon.getInstance().getLogger().info("Removed recipe: " + key);
-    });
-    RecipeManager.getRegisteredRecipes().clear();
-    RecipeManager.getRecipeConfigMap().clear();
+    }, 10L);
   }
 }

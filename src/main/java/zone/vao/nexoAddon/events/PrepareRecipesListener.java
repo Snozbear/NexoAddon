@@ -24,7 +24,7 @@ public class PrepareRecipesListener implements Listener {
 
     if (templateItem == null || baseItem == null || additionItem == null) return;
 
-    for (NamespacedKey key : RecipeManager.getRecipeConfigMap().keySet()) {
+    for (NamespacedKey key : RecipeManager.getRegisteredRecipes()) {
       SmithingTransformRecipe recipe = (SmithingTransformRecipe) NexoAddon.getInstance().getServer().getRecipe(key);
       if (recipe == null) continue;
 
@@ -32,9 +32,8 @@ public class PrepareRecipesListener implements Listener {
           recipe.getBase().test(baseItem) &&
           recipe.getAddition().test(additionItem)) {
 
-      String recipeId = RecipeManager.getRecipeConfigMap().get(key);
-      boolean copyTrim = RecipeManager.getRecipeConfig().getBoolean(recipeId + ".copy_trim", false);
-      boolean copyEnchants = RecipeManager.getRecipeConfig().getBoolean(recipeId + ".copy_enchantments", true);
+      boolean copyTrim = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_trim", false);
+      boolean copyEnchants = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_enchantments", true);
 
       ItemStack result = recipe.getResult();
       applyMetaTransformations(baseItem, result, copyEnchants, copyTrim);

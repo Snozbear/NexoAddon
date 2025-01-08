@@ -26,6 +26,7 @@ import zone.vao.nexoAddon.classes.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.*;
 import zone.vao.nexoAddon.handlers.BlockHardnessHandler;
+import zone.vao.nexoAddon.handlers.RecipeManager;
 import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
@@ -82,7 +83,6 @@ public final class NexoAddon extends JavaPlugin {
         initializePopulators();
         registerEvents();
         initializeMetrics();
-        RecipesUtil.loadRecipes();
       }
     }.runTaskAsynchronously(this);
       getLogger().info("NexoAddon enabled!");
@@ -92,7 +92,7 @@ public final class NexoAddon extends JavaPlugin {
   public void onDisable() {
     bossBars.values().forEach(BossBarUtil::removeBar);
     clearPopulators();
-    RecipesUtil.clearRegisteredRecipes();
+    RecipeManager.clearRegisteredRecipes();
     if(protocolLibLoaded){
       protocolManager.removePacketListeners(this);
     }
@@ -115,6 +115,7 @@ public final class NexoAddon extends JavaPlugin {
         reloadNexoFiles();
         loadComponentsIfSupported();
         bossBars.values().forEach(BossBarUtil::removeBar);
+        RecipeManager.clearRegisteredRecipes();
         RecipesUtil.loadRecipes();
       }
     }.runTaskAsynchronously(this);
@@ -179,6 +180,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new PrepareRecipesListener());
     registerEvent(new PlayerCommandPreprocessListener());
     registerEvent(new WorldLoadListener());
+    registerEvent(new NexoPostPackGenerateListener());
   }
 
   private void initializeMetrics() {
