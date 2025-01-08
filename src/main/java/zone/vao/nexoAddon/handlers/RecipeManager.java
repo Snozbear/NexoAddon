@@ -53,12 +53,13 @@ public class RecipeManager {
 
     private static ItemStack parseItem(FileConfiguration config, String path) {
         String nexoItemId = config.getString(path + ".nexo_item");
-        if (nexoItemId != null) return Objects.requireNonNull(NexoItems.itemFromId(nexoItemId)).build().clone();
+        if (nexoItemId != null && NexoItems.itemFromId(nexoItemId) != null)
+            return Objects.requireNonNull(NexoItems.itemFromId(nexoItemId)).build().clone();
 
         String materialName = config.getString(path + ".minecraft_item");
         assert materialName != null;
         Material material = Material.matchMaterial(materialName);
-        return material != null ? new ItemStack(material) : null;
+        return material != null ? new ItemStack(material).clone() : null;
     }
 
     private static RecipeChoice parseRecipeChoice(FileConfiguration config, String path) {
@@ -69,6 +70,6 @@ public class RecipeManager {
         String materialName = config.getString(path + ".minecraft_item");
         assert materialName != null;
         Material material = Material.matchMaterial(materialName);
-        return material != null ? new RecipeChoice.MaterialChoice(material) : null;
+        return material != null ? new RecipeChoice.ExactChoice(new ItemStack(material).clone()) : null;
     }
 }
