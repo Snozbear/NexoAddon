@@ -83,6 +83,7 @@ public final class NexoAddon extends JavaPlugin {
         RecipesUtil.loadRecipes();
       }
     }.runTaskAsynchronously(this);
+      getLogger().info("NexoAddon enabled!");
   }
 
   @Override
