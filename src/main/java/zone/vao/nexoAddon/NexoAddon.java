@@ -76,15 +76,9 @@ public final class NexoAddon extends JavaPlugin {
         getLogger().warning("ProtocolLib not found. Some features remain disabled!");
       }
 
-    new BukkitRunnable() {
-
-      @Override
-      public void run() {
-        initializePopulators();
-        registerEvents();
-        initializeMetrics();
-      }
-    }.runTaskAsynchronously(this);
+      initializePopulators();
+      registerEvents();
+      initializeMetrics();
       getLogger().info("NexoAddon enabled!");
   }
 
@@ -180,7 +174,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new PrepareRecipesListener());
     registerEvent(new PlayerCommandPreprocessListener());
     registerEvent(new WorldLoadListener());
-    registerEvent(new NexoPostPackGenerateListener());
+    registerEvent(new NexoPackUploadListener());
   }
 
   private void initializeMetrics() {
