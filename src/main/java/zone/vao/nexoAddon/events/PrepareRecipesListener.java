@@ -30,9 +30,9 @@ public class PrepareRecipesListener implements Listener {
       SmithingTransformRecipe recipe = (SmithingTransformRecipe) Bukkit.getRecipe(key);
       if (recipe == null) continue;
 
-//      if (recipe.getTemplate().test(templateItem) &&
-//          recipe.getBase().test(baseItem) &&
-//          recipe.getAddition().test(additionItem)) {
+      if (recipe.getTemplate().test(templateItem) &&
+          recipe.getBase().test(baseItem) &&
+          recipe.getAddition().test(additionItem)) {
 
       String recipeId = RecipeManager.getRecipeConfigMap().get(key);
       boolean copyTrim = RecipeManager.getRecipeConfig().getBoolean(recipeId + ".copy_trim", false);
@@ -42,7 +42,7 @@ public class PrepareRecipesListener implements Listener {
       applyMetaTransformations(baseItem, result, copyEnchants, copyTrim);
 
       event.setResult(result);
-//      }
+      }
     }
   }
 
