@@ -71,6 +71,8 @@ public final class NexoAddon extends JavaPlugin {
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.blockHardnessHandler = new BlockHardnessHandler();
         this.blockHardnessHandler.registerListener();
+      }else{
+        getLogger().warning("ProtocolLib not found. Some features remain disabled!");
       }
 
     new BukkitRunnable() {
