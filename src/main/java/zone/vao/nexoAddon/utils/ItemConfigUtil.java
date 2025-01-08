@@ -16,11 +16,6 @@ public class ItemConfigUtil {
 
   private static Set<File> itemFiles = new HashSet<>();
 
-  public static HashMap<File, LinkedHashMap<String, ItemBuilder>> getItemConfigs(){
-
-    return NexoPlugin.instance().configsManager().parseItemConfig();
-  }
-
   public static Set<File> getItemFiles(){
     itemFiles.clear();
     itemFiles = NexoPlugin.instance().configsManager().parseItemConfig().keySet();

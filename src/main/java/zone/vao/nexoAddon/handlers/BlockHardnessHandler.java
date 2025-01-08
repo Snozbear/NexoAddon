@@ -31,7 +31,6 @@ public class BlockHardnessHandler {
 
   public void registerListener() {
     if (!NexoAddon.getInstance().isProtocolLibLoaded()) {
-      NexoAddon.getInstance().getLogger().warning("ProtocolLib not found. BedrockBreak Mechanic will remain disabled.");
       return;
     }
     NexoAddon.getInstance().getProtocolManager().addPacketListener(new PacketAdapter(NexoAddon.getInstance(), PacketType.Play.Client.BLOCK_DIG) {
