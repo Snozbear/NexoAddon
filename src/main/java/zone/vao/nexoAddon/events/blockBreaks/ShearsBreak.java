@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.events.blockBreaks;
 
 import com.nexomc.nexo.api.NexoItems;
+import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
 import zone.vao.nexoAddon.NexoAddon;
@@ -14,6 +15,7 @@ public class ShearsBreak {
     if(!TallStringBlocksHandler.isStringBlock(event.getBlock())
         || !event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.SHEARS)
         || !NexoAddon.getInstance().getGlobalConfig().getStringList("count_shears_as_silktouch").contains(TallStringBlocksHandler.getStringBlockId(event.getBlock()))
+        || !ProtectionLib.canBreak(event.getPlayer(), event.getBlock().getLocation())
     ) {
       return;
     }

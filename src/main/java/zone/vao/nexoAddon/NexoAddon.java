@@ -1,6 +1,8 @@
 package zone.vao.nexoAddon;
 
 import co.aikar.commands.PaperCommandManager;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -23,10 +25,12 @@ import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTreePopulator;
 import zone.vao.nexoAddon.classes.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.*;
+import zone.vao.nexoAddon.handlers.BlockHardnessHandler;
 import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
 import zone.vao.nexoAddon.utils.ItemConfigUtil;
 import zone.vao.nexoAddon.utils.PopulatorsConfigUtil;
+import zone.vao.nexoAddon.utils.RecipesUtil;
 
 import java.io.File;
 import java.util.*;
@@ -49,14 +53,25 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, List<BlockPopulator>> worldPopulators = new HashMap<>();
   public Map<String, String> jukeboxLocations = new HashMap<>();
   public Map<String, Integer> customBlockLights = new HashMap<>();
+  private BlockHardnessHandler blockHardnessHandler;
+  private ProtocolManager protocolManager;
+  private boolean protocolLibLoaded = false;
 
-  @Override
+    @Override
   public void onEnable() {
+    
     instance = this;
     ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
     initializeCommandManager();
+      if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null &&
+          Bukkit.getPluginManager().getPlugin("ProtocolLib").isEnabled()) {
+        protocolLibLoaded = true;
+        this.protocolManager = ProtocolLibrary.getProtocolManager();
+        this.blockHardnessHandler = new BlockHardnessHandler();
+        this.blockHardnessHandler.registerListener();
+      }
 
     new BukkitRunnable() {
 
@@ -65,14 +80,20 @@ public final class NexoAddon extends JavaPlugin {
         initializePopulators();
         registerEvents();
         initializeMetrics();
+        RecipesUtil.loadRecipes();
       }
     }.runTaskAsynchronously(this);
+      getLogger().info("NexoAddon enabled!");
   }
 
   @Override
   public void onDisable() {
     bossBars.values().forEach(BossBarUtil::removeBar);
     clearPopulators();
+    RecipesUtil.clearRegisteredRecipes();
+    if(protocolLibLoaded){
+      protocolManager.removePacketListeners(this);
+    }
   }
 
   @Override
@@ -92,6 +113,7 @@ public final class NexoAddon extends JavaPlugin {
         reloadNexoFiles();
         loadComponentsIfSupported();
         bossBars.values().forEach(BossBarUtil::removeBar);
+        RecipesUtil.loadRecipes();
       }
     }.runTaskAsynchronously(this);
   }
@@ -152,6 +174,9 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new NexoFurnitureInteractListener());
     registerEvent(new ChunkLoadListener());
     registerEvent(new InventoryClickListener());
+    registerEvent(new PrepareRecipesListener());
+    registerEvent(new PlayerCommandPreprocessListener());
+    registerEvent(new WorldLoadListener());
   }
 
   private void initializeMetrics() {
@@ -199,7 +224,7 @@ public final class NexoAddon extends JavaPlugin {
     }
   }
 
-  private void logPopulatorAdded(String type, String name, World world) {
+  public void logPopulatorAdded(String type, String name, World world) {
     Bukkit.getLogger().info(type + " of "+name+" added to world: " + world.getName());
   }
 

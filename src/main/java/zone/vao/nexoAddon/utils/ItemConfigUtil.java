@@ -83,14 +83,18 @@ public class ItemConfigUtil {
             NexoAddon.getInstance().getMechanics().put(itemId, new Mechanics(itemId));
           Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(itemId);
 
-          if(itemSection.contains("Mechanics.repair.ratio")){
+          if(itemSection.contains("Mechanics.repair.ratio") || itemSection.contains("Mechanics.repair.fixed_amount")){
 
-            mechanic.setRepair(itemSection.getDouble("Mechanics.repair.ratio"));
+            mechanic.setRepair(itemSection.getDouble("Mechanics.repair.ratio"), itemSection.getInt("Mechanics.repair.fixed_amount"));
           }
 
           if(itemSection.contains("Mechanics.bigmining.radius") && itemSection.contains("Mechanics.bigmining.depth")){
 
             mechanic.setBigMining(itemSection.getInt("Mechanics.bigmining.radius", 1), itemSection.getInt("Mechanics.bigmining.depth", 1));
+          }
+
+          if(itemSection.contains("Mechanics.bedrockbreak.hardness") && itemSection.contains("Mechanics.bedrockbreak.probability")){
+            mechanic.setBedrockBreak(itemSection.getInt("Mechanics.bedrockbreak.hardness"), itemSection.getDouble("Mechanics.bedrockbreak.probability"), itemSection.getInt("Mechanics.bedrockbreak.durability_cost", 1), itemSection.getBoolean("Mechanics.bedrockbreak.disable_on_first_layer", true));
           }
         }
       }

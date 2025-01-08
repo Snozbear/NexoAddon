@@ -8,6 +8,7 @@ import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,10 +18,8 @@ import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
 import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTree;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PopulatorsConfigUtil {
@@ -106,6 +105,7 @@ public class PopulatorsConfigUtil {
     int veinSize = section.getInt("vein_size", 0);
     double clusterChance = section.getDouble("cluster_chance", 0.0);
 
+    List<String> worldNames = section.getStringList("worlds");
     List<World> worlds = parseWorlds(section.getStringList("worlds"));
     List<Biome> biomes = parseBiomes(section.getStringList("biomes"));
     if(biomes.isEmpty())
@@ -126,13 +126,13 @@ public class PopulatorsConfigUtil {
         if (stringMechanic != null) {
           isTall = stringMechanic.isTall();
         }
-        return new Ore(key, block, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, biomes, iterations, isTall, veinSize, clusterChance, airOnly);
+        return new Ore(key, block, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, worldNames, biomes, iterations, isTall, veinSize, clusterChance, airOnly);
       }
       else if (furniture != null) {
-        return new Ore(key, furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, biomes, iterations, false, veinSize, clusterChance, airOnly);
+        return new Ore(key, furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, worldNames, biomes, iterations, false, veinSize, clusterChance, airOnly);
       }
       else {
-        return new Ore(key, material, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, biomes, iterations, false, veinSize, clusterChance, airOnly);
+        return new Ore(key, material, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, worldNames, biomes, iterations, false, veinSize, clusterChance, airOnly);
       }
     } catch (IllegalArgumentException e) {
       logError("Invalid custom block ID: " + key);
@@ -187,16 +187,70 @@ public class PopulatorsConfigUtil {
 
   private List<World> parseWorlds(List<String> worldNames) {
     return worldNames.stream()
-        .map(Bukkit::getWorld)
+        .map(name -> {
+          World world = NexoAddon.getInstance().getServer().getWorld(name);
+          if (world == null) {
+            NexoAddon.getInstance().getLogger().info("Loading world:" + name);
+            world = loadWorld(name);
+          }
+          return world;
+        })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
+  private World loadWorld(String worldName) {
+    File worldFolder = new File(NexoAddon.getInstance().getServer().getWorldContainer(), worldName);
+    if (!worldFolder.exists() || !worldFolder.isDirectory()) {
+      NexoAddon.getInstance().getLogger().warning("World folder for " + worldName + " does not exist.");
+      return null;
+    }
+
+    NexoAddon.getInstance().getLogger().info("Loaded world:" + worldName);
+    WorldCreator creator = new WorldCreator(worldName);
+    return NexoAddon.getInstance().getServer().createWorld(creator);
+  }
+
   private List<Biome> parseBiomes(List<String> biomeNames) {
-    if (biomeNames.isEmpty()) return Arrays.asList(Biome.values());
+    List<Biome> availableBiomes = getAllBiomes();
+
+    if (biomeNames.isEmpty()) return availableBiomes;
+
     return biomeNames.stream()
-        .map(b -> Biome.valueOf(b.trim().toUpperCase()))
+        .map(b -> {
+          String biomeName = b.trim().toUpperCase();
+          try {
+            return getBiomeByName(biomeName);
+          } catch (IllegalArgumentException e) {
+            System.out.println("Invalid biome name: " + biomeName + ". Skipping...");
+            return null;
+          }
+        })
+        .filter(biome -> biome != null && availableBiomes.contains(biome))
         .collect(Collectors.toList());
+  }
+
+  private Biome getBiomeByName(String name) {
+    try {
+      Method byNameMethod = Biome.class.getDeclaredMethod("valueOf", String.class);
+      Biome biome = (Biome) byNameMethod.invoke(null, name);
+      if (biome != null) return biome;
+    } catch (NoSuchMethodException e) {
+      return Biome.valueOf(name);
+    } catch (Exception e) {
+      System.out.println("Failed to get biome by name: " + e.getMessage());
+    }
+    throw new IllegalArgumentException("Biome not found: " + name);
+  }
+
+  private List<Biome> getAllBiomes() {
+    try {
+      Method valuesMethod = Biome.class.getDeclaredMethod("values");
+      return Arrays.asList((Biome[]) valuesMethod.invoke(null));
+    } catch (Exception e) {
+      System.out.println("Failed to fetch biomes dynamically: " + e.getMessage());
+      return new ArrayList<>();
+    }
   }
 
   private List<Material> parseMaterials(List<String> materialNames) {

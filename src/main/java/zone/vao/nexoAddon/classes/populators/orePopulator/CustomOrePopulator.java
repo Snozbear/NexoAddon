@@ -38,8 +38,7 @@ public class CustomOrePopulator extends BlockPopulator {
 
     while (successfulPlacements < attempts && totalAttempts < maxRetries) {
       totalAttempts++;
-      PlacementPosition position = getRandomPlacementPosition(chunkX, chunkZ, limitedRegion, ore, random);
-      if (position == null) continue;
+      PlacementPosition position = getRandomPlacementPosition(chunkX, chunkZ, limitedRegion, ore, random, worldInfo);
 
       if (random.nextDouble() <= ore.getClusterChance() && ore.getVeinSize() > 0 && ore.getClusterChance() > 0.0) {
         successfulPlacements += generateVein(worldInfo, random, limitedRegion, position, ore);
@@ -68,12 +67,18 @@ public class CustomOrePopulator extends BlockPopulator {
       if (nextPosition == null) break;
 
       if (canReplaceBlock(nextPosition, ore)) {
+        if(!limitedRegion.isInRegion(new Location(Bukkit.getWorld(worldInfo.getUID()), nextPosition.x(), nextPosition.y(), nextPosition.z())))
+          continue;
         placeBlock(nextPosition, ore, worldInfo, limitedRegion);
         placedBlocks++;
       } else if (canPlaceOnBlock(nextPosition, ore, limitedRegion)) {
+        if(!limitedRegion.isInRegion(new Location(Bukkit.getWorld(worldInfo.getUID()), nextPosition.x(), nextPosition.y()+1, nextPosition.z())))
+          continue;
         placeBlock(nextPosition.above(), ore, worldInfo, limitedRegion);
         placedBlocks++;
       } else if( canPlaceBelowBlock(nextPosition, ore, limitedRegion) || placedBlocks > 0 && !ore.getPlaceBelow().isEmpty()) {
+        if(!limitedRegion.isInRegion(new Location(Bukkit.getWorld(worldInfo.getUID()), nextPosition.x(), nextPosition.y()-1, nextPosition.z())))
+          continue;
         placeBlock(nextPosition.below(), ore, worldInfo, limitedRegion);
         placedBlocks++;
       } else {
@@ -84,10 +89,6 @@ public class CustomOrePopulator extends BlockPopulator {
     }
 
     return placedBlocks;
-  }
-
-  private PlacementPosition getAdjacentPlacementPosition(PlacementPosition start, Random random, LimitedRegion limitedRegion, Ore ore) {
-    return getAdjacentPlacementPosition(start, random, limitedRegion, ore, false);
   }
 
   private PlacementPosition getAdjacentPlacementPosition(PlacementPosition start, Random random, LimitedRegion limitedRegion, Ore ore, boolean below) {
@@ -104,11 +105,11 @@ public class CustomOrePopulator extends BlockPopulator {
     Material blockType = limitedRegion.getType(x, y, z);
     Biome biome = limitedRegion.getBiome(x, y, z);
 
-    return new PlacementPosition(x, y, z, blockType, biome, limitedRegion);
+    return new PlacementPosition(start.worldInfo, x, y, z, blockType, biome, limitedRegion);
   }
 
 
-  private PlacementPosition getRandomPlacementPosition(int chunkX, int chunkZ, LimitedRegion limitedRegion, Ore ore, Random random) {
+  private PlacementPosition getRandomPlacementPosition(int chunkX, int chunkZ, LimitedRegion limitedRegion, Ore ore, Random random, WorldInfo worldInfo) {
     int x = (chunkX << 4) + random.nextInt(16);
     int z = (chunkZ << 4) + random.nextInt(16);
     int y = ore.getMinLevel() + random.nextInt(ore.getMaxLevel() - ore.getMinLevel() + 1);
@@ -118,7 +119,7 @@ public class CustomOrePopulator extends BlockPopulator {
     Material blockType = limitedRegion.getType(x, y, z);
     Biome biome = limitedRegion.getBiome(x, y, z);
 
-    return new PlacementPosition(x, y, z, blockType, biome, limitedRegion);
+    return new PlacementPosition(worldInfo,  x, y, z, blockType, biome, limitedRegion);
   }
 
   private boolean canReplaceBlock(PlacementPosition position, Ore ore) {
@@ -128,6 +129,7 @@ public class CustomOrePopulator extends BlockPopulator {
   }
 
   private boolean canPlaceOnBlock(PlacementPosition position, Ore ore, LimitedRegion limitedRegion) {
+    if(!limitedRegion.isInRegion(position.x(), position.y() + 1, position.z())) return false;
     Material aboveBlockType = limitedRegion.getType(position.x(), position.y() + 1, position.z());
     return ore.getPlaceOn() != null
         && ore.getPlaceOn().contains(position.blockType())
@@ -136,6 +138,7 @@ public class CustomOrePopulator extends BlockPopulator {
   }
 
   private boolean canPlaceBelowBlock(PlacementPosition position, Ore ore, LimitedRegion limitedRegion) {
+    if(!limitedRegion.isInRegion(position.x(), position.y() - 1, position.z())) return false;
     Material belowBlockType = limitedRegion.getType(position.x(), position.y() - 1, position.z());
     return (!ore.getPlaceBelow().isEmpty())
         && ore.getPlaceBelow().contains(position.blockType())
@@ -161,18 +164,22 @@ public class CustomOrePopulator extends BlockPopulator {
     }
   }
 
-  public record PlacementPosition(int x, int y, int z, Material blockType, Biome biome, LimitedRegion limitedRegion) {
+  public record PlacementPosition(WorldInfo worldInfo, int x, int y, int z, Material blockType, Biome biome, LimitedRegion limitedRegion) {
 
     PlacementPosition above() {
-      return new PlacementPosition(x, y + 1, z, limitedRegion.getType(x, y + 1, z), biome, limitedRegion);
+      return new PlacementPosition(worldInfo, x, y + 1, z, limitedRegion.getType( x, y + 1, z), biome, limitedRegion);
     }
 
     PlacementPosition below() {
-      return new PlacementPosition(x, y - 1, z, limitedRegion.getType(x, y - 1, z), biome, limitedRegion);
+      return new PlacementPosition(worldInfo,x, y - 1, z, limitedRegion.getType(x, y - 1, z), biome, limitedRegion);
     }
 
     boolean isAirAbove() {
       return limitedRegion.getType(x, y + 1, z).isAir();
+    }
+
+    Location getLocation() {
+      return new Location(Bukkit.getWorld(worldInfo.getUID()), x, y, z);
     }
   }
 }

@@ -1,11 +1,10 @@
 package zone.vao.nexoAddon.events.playerInteracts;
 
 import com.nexomc.nexo.api.NexoItems;
-import com.nexomc.nexo.items.ItemBuilder;
 import io.th0rgal.protectionlib.ProtectionLib;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.Damageable;
@@ -35,10 +34,11 @@ public class FertilizeVanillaCrops {
   }
 
   private static boolean isValidEvent(PlayerInteractEvent event) {
-    return event.getHand() == EquipmentSlot.HAND &&
-        event.getClickedBlock() != null &&
-        event.getItem() != null &&
-        NexoItems.idFromItem(event.getItem()) != null;
+    return event.getHand() == EquipmentSlot.HAND
+        && (event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+        && event.getClickedBlock() != null
+        && event.getItem() != null
+        && NexoItems.idFromItem(event.getItem()) != null;
   }
 
   private static boolean canApplyFertilizer(Player player, Block block, Components component) {

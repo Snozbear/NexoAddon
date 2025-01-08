@@ -54,19 +54,31 @@ public class RepairListener {
   private static void repairItem(Player player, ItemStack cursorItem, ItemStack currentItem, String repairItemId) {
     Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(repairItemId);
     double repairRatio = mechanic.getRepair().getRatio();
-    int maxDurability = NexoItems.itemFromId(mechanic.getId()).getDurability() != null
-        ? NexoItems.itemFromId(mechanic.getId()).getDurability()
-        : 0;
+    int fixedAmount = mechanic.getRepair().getFixedAmount();
+    int maxDurability = NexoItems.itemFromId(repairItemId).getDurability() != null ? NexoItems.itemFromId(repairItemId).getDurability() : NexoItems.itemFromId(repairItemId).build().getType().getMaxDurability();
+    if(repairRatio > 0) {
 
-    Damageable currentMeta = (Damageable) currentItem.getItemMeta();
-    int repairAmount = (int) (currentMeta.getDamage() * repairRatio);
-    currentMeta.setDamage(Math.max(0, currentMeta.getDamage() - repairAmount));
-    currentItem.setItemMeta(currentMeta);
+      Damageable currentMeta = (Damageable) currentItem.getItemMeta();
+      int repairAmount = (int) (currentMeta.getDamage() * repairRatio);
+      currentMeta.setDamage(Math.max(0, currentMeta.getDamage() - repairAmount));
+      currentItem.setItemMeta(currentMeta);
 
-    if (maxDurability > 0) {
-      updateCursorItemWithDurability(cursorItem, maxDurability);
-    } else {
-      reduceCursorItemAmount(cursorItem);
+      if (maxDurability > 0) {
+        updateCursorItemWithDurability(cursorItem, maxDurability);
+      } else {
+        reduceCursorItemAmount(cursorItem);
+      }
+    }else if(fixedAmount > 0){
+
+      Damageable currentMeta = (Damageable) currentItem.getItemMeta();
+      currentMeta.setDamage(Math.max(0, currentMeta.getDamage() - fixedAmount));
+      currentItem.setItemMeta(currentMeta);
+
+      if (maxDurability > 0) {
+        updateCursorItemWithDurability(cursorItem, maxDurability);
+      } else {
+        reduceCursorItemAmount(cursorItem);
+      }
     }
   }
 
