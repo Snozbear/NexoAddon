@@ -40,7 +40,6 @@ public class RecipeManager {
 
         NamespacedKey key = new NamespacedKey(NexoAddon.getInstance(), recipeId);
 
-
         if (NexoAddon.getInstance().getServer().getRecipe(key) == null) {
             SmithingTransformRecipe recipe = new SmithingTransformRecipe(key, resultTemplate, template, base, addition);
             NexoAddon.getInstance().getServer().addRecipe(recipe);
@@ -48,7 +47,7 @@ public class RecipeManager {
             recipeConfigMap.put(key, recipeId);
             NexoAddon.getInstance().getLogger().info("Registered smithing transform recipe: " + recipeId);
         } else {
-            NexoAddon.getInstance().getLogger().warning("Recipe " + recipeId + " already exists, skipping.");
+            NexoAddon.getInstance().getLogger().info("Recipe " + recipeId + " already exists, skipping.");
         }
     }
 
@@ -64,27 +63,12 @@ public class RecipeManager {
 
     private static RecipeChoice parseRecipeChoice(FileConfiguration config, String path) {
         String nexoItemId = config.getString(path + ".nexo_item");
-        if (nexoItemId != null) {
-            ItemStack nexoItem = NexoItems.itemFromId(nexoItemId) != null ? NexoItems.itemFromId(nexoItemId).build().clone() : null;
-            if (nexoItem != null) {
-                NexoAddon.getInstance().getLogger().info("Parsed nexo_item for path " + path + ": " + nexoItem);
-                return new RecipeChoice.ExactChoice(nexoItem);
-            } else {
-                NexoAddon.getInstance().getLogger().warning("Failed to parse nexo_item for path " + path + ": " + nexoItemId);
-            }
-        }
+        if (nexoItemId != null && NexoItems.itemFromId(nexoItemId) != null)
+            return new RecipeChoice.ExactChoice(NexoItems.itemFromId(nexoItemId).build().clone());
 
         String materialName = config.getString(path + ".minecraft_item");
         assert materialName != null;
         Material material = Material.matchMaterial(materialName);
-        if (material != null) {
-            NexoAddon.getInstance().getLogger().info("Parsed minecraft_item for path " + path + ": " + materialName);
-            return new RecipeChoice.MaterialChoice(material);
-        } else {
-            NexoAddon.getInstance().getLogger().warning("Invalid material for path " + path + ": " + materialName);
-        }
-
-        return null;
+        return material != null ? new RecipeChoice.MaterialChoice(material) : null;
     }
-
 }
