@@ -51,7 +51,7 @@ public class RecipeManager {
     private static ItemStack parseItem(FileConfiguration config, String path) {
         String nexoItemId = config.getString(path + ".nexo_item");
         if (nexoItemId != null && NexoItems.itemFromId(nexoItemId) != null)
-            return Objects.requireNonNull(NexoItems.itemFromId(nexoItemId)).build().clone();
+            return NexoItems.itemFromId(nexoItemId).build().clone();
 
         String materialName = config.getString(path + ".minecraft_item");
         if(materialName == null) {

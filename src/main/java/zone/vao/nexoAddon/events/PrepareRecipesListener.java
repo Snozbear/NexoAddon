@@ -2,6 +2,7 @@ package zone.vao.nexoAddon.events;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareSmithingEvent;
 import org.bukkit.inventory.ItemStack;
@@ -14,7 +15,7 @@ import zone.vao.nexoAddon.handlers.RecipeManager;
 
 public class PrepareRecipesListener implements Listener {
 
-  @EventHandler
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
   public void handlePrepareSmithing(PrepareSmithingEvent event) {
     SmithingInventory inventory = event.getInventory();
 
