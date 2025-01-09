@@ -98,21 +98,15 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   public void reload() {
-    new BukkitRunnable() {
-
-      @Override
-      public void run() {
-        reloadConfig();
-        globalConfig = getConfig();
-        clearPopulators();
-        initializePopulators();
-        reloadNexoFiles();
-        loadComponentsIfSupported();
-        bossBars.values().forEach(BossBarUtil::removeBar);
-        RecipeManager.clearRegisteredRecipes();
-        RecipesUtil.loadRecipes();
-      }
-    }.runTaskAsynchronously(this);
+    reloadConfig();
+    globalConfig = getConfig();
+    clearPopulators();
+    initializePopulators();
+    reloadNexoFiles();
+    loadComponentsIfSupported();
+    bossBars.values().forEach(BossBarUtil::removeBar);
+    RecipeManager.clearRegisteredRecipes();
+    RecipesUtil.loadRecipes();
   }
 
   private void initializeCommandManager() {
