@@ -54,6 +54,7 @@ public class PrepareRecipesListener implements Listener {
         applyMetaTransformations(baseItem, result, copyEnchants, copyTrim, keepDurability);
 
         event.setResult(result);
+        break;
       }
     }
   }
