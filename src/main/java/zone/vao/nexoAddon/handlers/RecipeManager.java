@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.SmithingTransformRecipe;
+import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 
 import java.io.File;
@@ -39,10 +40,15 @@ public class RecipeManager {
         NamespacedKey key = new NamespacedKey(NexoAddon.getInstance(), recipeId);
 
         if (NexoAddon.getInstance().getServer().getRecipe(key) == null) {
-            SmithingTransformRecipe recipe = new SmithingTransformRecipe(key, resultTemplate, template, base, addition);
-            NexoAddon.getInstance().getServer().addRecipe(recipe);
-            registeredRecipes.add(key);
-            NexoAddon.getInstance().getLogger().info("Registered smithing transform recipe: " + recipeId);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    SmithingTransformRecipe recipe = new SmithingTransformRecipe(key, resultTemplate, template, base, addition);
+                    NexoAddon.getInstance().getServer().addRecipe(recipe);
+                    registeredRecipes.add(key);
+                    NexoAddon.getInstance().getLogger().info("Registered smithing transform recipe: " + recipeId);
+                }
+            }.runTask(NexoAddon.getInstance());
         } else {
             NexoAddon.getInstance().getLogger().info("Recipe " + recipeId + " already exists, skipping.");
         }
