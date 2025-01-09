@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.SmithingTransformRecipe;
+import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 
 import java.io.File;
@@ -18,8 +19,6 @@ import java.util.*;
 public class RecipeManager {
     @Getter
     private static final List<NamespacedKey> registeredRecipes = new ArrayList<>();
-    @Getter
-    private static final Map<NamespacedKey, String> recipeConfigMap = new HashMap<>();
     @Getter
     @Setter
     private static File recipeFile;
@@ -41,11 +40,15 @@ public class RecipeManager {
         NamespacedKey key = new NamespacedKey(NexoAddon.getInstance(), recipeId);
 
         if (NexoAddon.getInstance().getServer().getRecipe(key) == null) {
-            SmithingTransformRecipe recipe = new SmithingTransformRecipe(key, resultTemplate, template, base, addition);
-            NexoAddon.getInstance().getServer().addRecipe(recipe);
-            registeredRecipes.add(key);
-            recipeConfigMap.put(key, recipeId);
-            NexoAddon.getInstance().getLogger().info("Registered smithing transform recipe: " + recipeId);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    SmithingTransformRecipe recipe = new SmithingTransformRecipe(key, resultTemplate, template, base, addition);
+                    NexoAddon.getInstance().getServer().addRecipe(recipe);
+                    registeredRecipes.add(key);
+                    NexoAddon.getInstance().getLogger().info("Registered smithing transform recipe: " + recipeId);
+                }
+            }.runTask(NexoAddon.getInstance());
         } else {
             NexoAddon.getInstance().getLogger().info("Recipe " + recipeId + " already exists, skipping.");
         }
@@ -53,12 +56,16 @@ public class RecipeManager {
 
     private static ItemStack parseItem(FileConfiguration config, String path) {
         String nexoItemId = config.getString(path + ".nexo_item");
-        if (nexoItemId != null) return Objects.requireNonNull(NexoItems.itemFromId(nexoItemId)).build().clone();
+        if (nexoItemId != null && NexoItems.itemFromId(nexoItemId) != null)
+            return NexoItems.itemFromId(nexoItemId).build().clone();
 
         String materialName = config.getString(path + ".minecraft_item");
-        assert materialName != null;
+        if(materialName == null) {
+            NexoAddon.getInstance().getLogger().warning("Wrong item in " + path);
+            return null;
+        }
         Material material = Material.matchMaterial(materialName);
-        return material != null ? new ItemStack(material) : null;
+        return material != null ? new ItemStack(material).clone() : null;
     }
 
     private static RecipeChoice parseRecipeChoice(FileConfiguration config, String path) {
@@ -69,6 +76,16 @@ public class RecipeManager {
         String materialName = config.getString(path + ".minecraft_item");
         assert materialName != null;
         Material material = Material.matchMaterial(materialName);
-        return material != null ? new RecipeChoice.MaterialChoice(material) : null;
+        return material != null ? new RecipeChoice.ExactChoice(new ItemStack(material).clone()) : null;
+    }
+
+    public static void clearRegisteredRecipes() {
+        if(registeredRecipes.isEmpty()) return;
+
+        for (NamespacedKey key : registeredRecipes) {
+            NexoAddon.getInstance().getServer().removeRecipe(key);
+            NexoAddon.getInstance().getLogger().info("Removed recipe: " + key.getKey());
+        }
+        registeredRecipes.clear();
     }
 }
