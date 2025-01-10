@@ -2,12 +2,14 @@ package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.NexoPlugin;
 import com.nexomc.nexo.items.ItemBuilder;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.classes.mechanic.Aura;
 
 import java.io.File;
 import java.util.*;
@@ -90,6 +92,16 @@ public class ItemConfigUtil {
 
           if(itemSection.contains("Mechanics.bedrockbreak.hardness") && itemSection.contains("Mechanics.bedrockbreak.probability")){
             mechanic.setBedrockBreak(itemSection.getInt("Mechanics.bedrockbreak.hardness"), itemSection.getDouble("Mechanics.bedrockbreak.probability"), itemSection.getInt("Mechanics.bedrockbreak.durability_cost", 1), itemSection.getBoolean("Mechanics.bedrockbreak.disable_on_first_layer", true));
+          }
+
+          if(itemSection.contains("Mechanics.aura.type") && itemSection.contains("Mechanics.aura.particle")){
+            Particle particle = Particle.valueOf(itemSection.getString("Mechanics.aura.particle", "FLAME").toUpperCase());
+            String formula = null;
+            if(itemSection.contains("Mechanics.aura.custom")){
+              formula = itemSection.getString("Mechanics.aura.custom");
+            }
+
+            mechanic.setAura(particle, itemSection.getString("Mechanics.aura.type"), formula);
           }
         }
       }

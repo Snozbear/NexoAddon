@@ -26,6 +26,7 @@ import zone.vao.nexoAddon.classes.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.*;
 import zone.vao.nexoAddon.handlers.BlockHardnessHandler;
+import zone.vao.nexoAddon.handlers.ParticleEffectManager;
 import zone.vao.nexoAddon.handlers.RecipeManager;
 import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
@@ -78,6 +79,8 @@ public final class NexoAddon extends JavaPlugin {
 
       initializePopulators();
       registerEvents();
+      ParticleEffectManager particleEffectManager = new ParticleEffectManager(this);
+      particleEffectManager.startAuraEffectTask();
       initializeMetrics();
       getLogger().info("NexoAddon enabled!");
   }
