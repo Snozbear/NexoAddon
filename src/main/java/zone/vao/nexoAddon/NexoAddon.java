@@ -112,7 +112,12 @@ public final class NexoAddon extends JavaPlugin {
     RecipeManager.clearRegisteredRecipes();
     RecipesUtil.loadRecipes();
     particleEffectManager.stopAuraEffectTask();
-    particleEffectManager.startAuraEffectTask();
+    new BukkitRunnable() {
+      @Override
+      public void run(){
+        particleEffectManager.startAuraEffectTask();
+      }
+    }.runTaskLater(this, 2L);
   }
 
   private void initializeCommandManager() {
