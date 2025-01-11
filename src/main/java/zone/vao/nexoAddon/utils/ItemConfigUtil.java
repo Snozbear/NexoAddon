@@ -20,7 +20,7 @@ public class ItemConfigUtil {
 
   public static Set<File> getItemFiles(){
     itemFiles.clear();
-    itemFiles = NexoItems.itemMap().keySet();
+    itemFiles.addAll(NexoItems.itemMap().keySet());
     return itemFiles;
   }
 
