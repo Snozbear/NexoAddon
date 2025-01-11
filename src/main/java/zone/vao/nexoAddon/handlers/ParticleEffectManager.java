@@ -10,6 +10,9 @@ import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.mechanic.Aura;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ParticleEffectManager {
 
   private final NexoAddon plugin = NexoAddon.getInstance();
@@ -20,7 +23,7 @@ public class ParticleEffectManager {
     if(task != null && !task.isCancelled()) return;
     task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
       for (Player player : Bukkit.getOnlinePlayers()) {
-        applyAuraEffect(player);
+        applyAuraEffects(player);
       }
     }, 0L, NexoAddon.getInstance().getGlobalConfig().getLong("aura_mechanic_delay", 5));
   }
@@ -41,10 +44,37 @@ public class ParticleEffectManager {
     return NexoAddon.getInstance().getMechanics().get(toolId).getAura();
   }
 
-  private void applyAuraEffect(Player player) {
-    Aura aura = getAuraFromTool(player);
-    if (aura == null) return;
+  private List<Aura> getAurasFromArmor(Player player) {
+    List<Aura> auras = new ArrayList<>();
+    for (ItemStack armorPiece : player.getInventory().getArmorContents()) {
+      if (armorPiece == null || armorPiece.getType().isAir()) continue;
 
+      String armorId = NexoItems.idFromItem(armorPiece);
+      if (armorId == null) continue;
+
+      if (NexoAddon.getInstance().getMechanics().get(armorId) == null) continue;
+
+      Aura aura = NexoAddon.getInstance().getMechanics().get(armorId).getAura();
+      if (aura != null) {
+        auras.add(aura);
+      }
+    }
+    return auras;
+  }
+
+  private void applyAuraEffects(Player player) {
+    Aura toolAura = getAuraFromTool(player);
+    if (toolAura != null) {
+      applyAuraEffect(player, toolAura);
+    }
+
+    List<Aura> armorAuras = getAurasFromArmor(player);
+    for (Aura aura : armorAuras) {
+      applyAuraEffect(player, aura);
+    }
+  }
+
+  private void applyAuraEffect(Player player, Aura aura) {
     String formula = aura.getFormula();
     Particle particle = aura.getParticle();
 
