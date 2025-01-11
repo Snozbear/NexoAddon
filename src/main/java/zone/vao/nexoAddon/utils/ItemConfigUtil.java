@@ -1,7 +1,6 @@
 package zone.vao.nexoAddon.utils;
 
-import com.nexomc.nexo.NexoPlugin;
-import com.nexomc.nexo.items.ItemBuilder;
+import com.nexomc.nexo.api.NexoItems;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,7 +8,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.Mechanics;
-import zone.vao.nexoAddon.classes.mechanic.Aura;
 
 import java.io.File;
 import java.util.*;
@@ -20,7 +18,7 @@ public class ItemConfigUtil {
 
   public static Set<File> getItemFiles(){
     itemFiles.clear();
-    itemFiles = NexoPlugin.instance().configsManager().parseItemConfig().keySet();
+    itemFiles = NexoItems.itemMap().keySet();
     return itemFiles;
   }
 
