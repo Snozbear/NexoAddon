@@ -6,24 +6,28 @@ import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.mechanic.Aura;
 
 public class ParticleEffectManager {
 
-  private final NexoAddon plugin;
+  private final NexoAddon plugin = NexoAddon.getInstance();
   private final double MATH_PI = Math.PI;
-
-  public ParticleEffectManager(NexoAddon plugin) {
-    this.plugin = plugin;
-  }
+  private BukkitTask task;
 
   public void startAuraEffectTask() {
-    Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+    if(task != null && !task.isCancelled()) return;
+    task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
       for (Player player : Bukkit.getOnlinePlayers()) {
         applyAuraEffect(player);
       }
     }, 0L, 5L);
+  }
+
+  public void stopAuraEffectTask() {
+    if(task != null && !task.isCancelled())
+      task.cancel();
   }
 
   private Aura getAuraFromTool(Player player) {
@@ -62,7 +66,8 @@ public class ParticleEffectManager {
 
     String[] components = extractFormulaComponents(formula);
     if (components.length != 3) {
-      throw new IllegalArgumentException("Custom formula must define x, y, and z components, separated by commas.");
+      stopAuraEffectTask();
+      throw new IllegalArgumentException("Custom formula must define x, y, and z components, separated by commas ["+components.length+"]. Disabling Aura Mechanic - use \"/nexoaddon reload\" to activate again.");
     }
     double x = player.getLocation().getX();
     double y = player.getLocation().getY();
@@ -75,15 +80,21 @@ public class ParticleEffectManager {
     String yFormula = components[1];
     String zFormula = components[2];
 
+    if(xFormula == null || yFormula == null || zFormula == null){
+      stopAuraEffectTask();
+      throw new IllegalArgumentException("Custom formula must define x, y, and z components, separated by commas ["+components.length+"]. Disabling Aura Mechanic - use \"/nexoaddon reload\" to activate again.");
+    }
+
     for (int i = 0; i < particlesCount; i++) {
       for (int j = 0; j < particlesCount; j++) {
-        double posX = evaluateFormula(xFormula.replace("Math_PI", Double.toString(MATH_PI)).replace("x", Double.toString(x)).replace("yaw", Float.toString(yaw)).replace("y", Double.toString(y)).replace("z", Double.toString(z)).replace("pitch", Float.toString(pitch)).replace("angle2", Double.toString(angle2)).replace("angle", Double.toString(angle)));
 
-        double posY = evaluateFormula(yFormula.replace("Math_PI", Double.toString(MATH_PI)).replace("x", Double.toString(x)).replace("yaw", Float.toString(yaw)).replace("y", Double.toString(y)).replace("z", Double.toString(z)).replace("pitch", Float.toString(pitch)).replace("angle2", Double.toString(angle2)).replace("angle", Double.toString(angle)));
+          double posX = evaluateFormula(xFormula.replace("Math_PI", Double.toString(MATH_PI)).replace("x", Double.toString(x)).replace("yaw", Float.toString(yaw)).replace("y", Double.toString(y)).replace("z", Double.toString(z)).replace("pitch", Float.toString(pitch)).replace("angle2", Double.toString(angle2)).replace("angle", Double.toString(angle)));
 
-        double posZ = evaluateFormula(zFormula.replace("Math_PI", Double.toString(MATH_PI)).replace("x", Double.toString(x)).replace("yaw", Float.toString(yaw)).replace("y", Double.toString(y)).replace("z", Double.toString(z)).replace("pitch", Float.toString(pitch)).replace("angle2", Double.toString(angle2)).replace("angle", Double.toString(angle)));
+          double posY = evaluateFormula(yFormula.replace("Math_PI", Double.toString(MATH_PI)).replace("x", Double.toString(x)).replace("yaw", Float.toString(yaw)).replace("y", Double.toString(y)).replace("z", Double.toString(z)).replace("pitch", Float.toString(pitch)).replace("angle2", Double.toString(angle2)).replace("angle", Double.toString(angle)));
 
-            player.getWorld().spawnParticle(particle, posX, posY, posZ, 1, 0, 0, 0, 0);
+          double posZ = evaluateFormula(zFormula.replace("Math_PI", Double.toString(MATH_PI)).replace("x", Double.toString(x)).replace("yaw", Float.toString(yaw)).replace("y", Double.toString(y)).replace("z", Double.toString(z)).replace("pitch", Float.toString(pitch)).replace("angle2", Double.toString(angle2)).replace("angle", Double.toString(angle)));
+
+          player.getWorld().spawnParticle(particle, posX, posY, posZ, 1, 0, 0, 0, 0);
 
         angle += Math.PI * 2 / particlesCount;
       }
@@ -156,8 +167,8 @@ public class ParticleEffectManager {
     try {
       return new ExpressionBuilder(formula).build().evaluate();
     } catch (Exception e) {
-      e.printStackTrace();
-      return 0;
+      stopAuraEffectTask();
+      throw new RuntimeException(e);
     }
   }
 

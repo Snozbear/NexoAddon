@@ -16,5 +16,8 @@ public class NexoItemsLoadedListener implements Listener {
 
     ItemConfigUtil.loadComponents();
     ItemConfigUtil.loadMechanics();
+
+    NexoAddon.getInstance().getParticleEffectManager().stopAuraEffectTask();
+    NexoAddon.getInstance().getParticleEffectManager().startAuraEffectTask();
   }
 }

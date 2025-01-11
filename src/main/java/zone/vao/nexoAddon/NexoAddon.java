@@ -58,6 +58,7 @@ public final class NexoAddon extends JavaPlugin {
   private BlockHardnessHandler blockHardnessHandler;
   private ProtocolManager protocolManager;
   private boolean protocolLibLoaded = false;
+  private ParticleEffectManager particleEffectManager;
 
     @Override
   public void onEnable() {
@@ -79,7 +80,7 @@ public final class NexoAddon extends JavaPlugin {
 
       initializePopulators();
       registerEvents();
-      ParticleEffectManager particleEffectManager = new ParticleEffectManager(this);
+      particleEffectManager = new ParticleEffectManager();
       particleEffectManager.startAuraEffectTask();
       initializeMetrics();
       getLogger().info("NexoAddon enabled!");
@@ -110,6 +111,8 @@ public final class NexoAddon extends JavaPlugin {
     bossBars.values().forEach(BossBarUtil::removeBar);
     RecipeManager.clearRegisteredRecipes();
     RecipesUtil.loadRecipes();
+    particleEffectManager.stopAuraEffectTask();
+    particleEffectManager.startAuraEffectTask();
   }
 
   private void initializeCommandManager() {
