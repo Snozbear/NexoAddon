@@ -10,15 +10,13 @@ import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.Mechanics;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ItemConfigUtil {
 
-  private static Set<File> itemFiles = new HashSet<>();
+  private static final Set<File> itemFiles = new HashSet<>();
 
-  public static Set<File> getItemFiles(){
+  public static Set<File> getItemFiles() {
     itemFiles.clear();
     itemFiles.addAll(NexoItems.itemMap().keySet());
     return itemFiles;
@@ -27,84 +25,102 @@ public class ItemConfigUtil {
   public static void loadComponents() {
     NexoAddon.getInstance().getComponents().clear();
 
-    for (File itemFile : itemFiles) {
-      YamlConfiguration file = YamlConfiguration.loadConfiguration(itemFile);
+    for (File itemFile : getItemFiles()) {
+      YamlConfiguration config = YamlConfiguration.loadConfiguration(itemFile);
 
-      for (String itemId : file.getKeys(false)) {
-        if (!file.isConfigurationSection(itemId)) continue;
+      config.getKeys(false).forEach(itemId -> {
+        ConfigurationSection itemSection = config.getConfigurationSection(itemId);
+        if (itemSection == null || !itemSection.contains("Components")) return;
 
-        ConfigurationSection itemSection = file.getConfigurationSection(itemId);
-        if (itemSection != null && itemSection.contains("Components")) {
+        Components component = NexoAddon.getInstance().getComponents()
+            .computeIfAbsent(itemId, Components::new);
 
-          if(!NexoAddon.getInstance().getComponents().containsKey(itemId))
-            NexoAddon.getInstance().getComponents().put(itemId, new Components(itemId));
-          Components component = NexoAddon.getInstance().getComponents().get(itemId);
+        loadEquippableComponent(itemSection, component);
+        loadJukeboxPlayableComponent(itemSection, component);
+        loadFertilizerComponent(itemSection, component);
+      });
+    }
+  }
 
-          if(itemSection.contains("Components.equippable")) {
-            try {
-              EquipmentSlot equippableSlot = EquipmentSlot.valueOf(itemSection.getString("Components.equippable.slot", "HEAD").toUpperCase());
-              component.setEquippable(equippableSlot);
-            } catch (Exception ignored) {
-              continue;
-            }
-          }
+  private static void loadEquippableComponent(ConfigurationSection section, Components component) {
+    if (section.contains("Components.equippable")) {
+      try {
+        EquipmentSlot slot = EquipmentSlot.valueOf(
+            section.getString("Components.equippable.slot", "HEAD").toUpperCase()
+        );
+        component.setEquippable(slot);
+      } catch (IllegalArgumentException ignored) {}
+    }
+  }
 
-          if(itemSection.contains("Components.jukebox_playable") && itemSection.contains("Components.jukebox_playable.song_key")) {
-            String songKey = itemSection.getString("Components.jukebox_playable.song_key");
-            component.setPlayable(songKey);
-          }
+  private static void loadJukeboxPlayableComponent(ConfigurationSection section, Components component) {
+    if (section.contains("Components.jukebox_playable.song_key")) {
+      String songKey = section.getString("Components.jukebox_playable.song_key");
+      component.setPlayable(songKey);
+    }
+  }
 
-          if(itemSection.contains("Components.fertilizer.growth_speedup") && itemSection.contains("Components.fertilizer.usable_on")) {
-            int growthSpeedup = itemSection.getInt("Components.fertilizer.growth_speedup", 1000);
-            List<String> usableOn = itemSection.getStringList("Components.fertilizer.usable_on");
-            component.setFertilizer(growthSpeedup, usableOn);
-          }
-        }
-      }
+  private static void loadFertilizerComponent(ConfigurationSection section, Components component) {
+    if (section.contains("Components.fertilizer.growth_speedup") && section.contains("Components.fertilizer.usable_on")) {
+      int growthSpeedup = section.getInt("Components.fertilizer.growth_speedup", 1000);
+      List<String> usableOn = section.getStringList("Components.fertilizer.usable_on");
+      component.setFertilizer(growthSpeedup, usableOn);
     }
   }
 
   public static void loadMechanics() {
     NexoAddon.getInstance().getMechanics().clear();
 
-    for (File itemFile : itemFiles) {
-      YamlConfiguration file = YamlConfiguration.loadConfiguration(itemFile);
+    for (File itemFile : getItemFiles()) {
+      YamlConfiguration config = YamlConfiguration.loadConfiguration(itemFile);
 
-      for (String itemId : file.getKeys(false)) {
-        if (!file.isConfigurationSection(itemId)) continue;
+      config.getKeys(false).forEach(itemId -> {
+        ConfigurationSection itemSection = config.getConfigurationSection(itemId);
+        if (itemSection == null || !itemSection.contains("Mechanics")) return;
 
-        ConfigurationSection itemSection = file.getConfigurationSection(itemId);
-        if (itemSection != null && itemSection.contains("Mechanics")) {
+        Mechanics mechanic = NexoAddon.getInstance().getMechanics()
+            .computeIfAbsent(itemId, Mechanics::new);
 
-          if(!NexoAddon.getInstance().getMechanics().containsKey(itemId))
-            NexoAddon.getInstance().getMechanics().put(itemId, new Mechanics(itemId));
-          Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(itemId);
+        loadRepairMechanic(itemSection, mechanic);
+        loadBigMiningMechanic(itemSection, mechanic);
+        loadBedrockBreakMechanic(itemSection, mechanic);
+        loadAuraMechanic(itemSection, mechanic);
+      });
+    }
+  }
 
-          if(itemSection.contains("Mechanics.repair.ratio") || itemSection.contains("Mechanics.repair.fixed_amount")){
+  private static void loadRepairMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.repair.ratio") || section.contains("Mechanics.repair.fixed_amount")) {
+      double ratio = section.getDouble("Mechanics.repair.ratio");
+      int fixedAmount = section.getInt("Mechanics.repair.fixed_amount");
+      mechanic.setRepair(ratio, fixedAmount);
+    }
+  }
 
-            mechanic.setRepair(itemSection.getDouble("Mechanics.repair.ratio"), itemSection.getInt("Mechanics.repair.fixed_amount"));
-          }
+  private static void loadBigMiningMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.bigmining.radius") && section.contains("Mechanics.bigmining.depth")) {
+      int radius = section.getInt("Mechanics.bigmining.radius", 1);
+      int depth = section.getInt("Mechanics.bigmining.depth", 1);
+      mechanic.setBigMining(radius, depth);
+    }
+  }
 
-          if(itemSection.contains("Mechanics.bigmining.radius") && itemSection.contains("Mechanics.bigmining.depth")){
+  private static void loadBedrockBreakMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.bedrockbreak.hardness") && section.contains("Mechanics.bedrockbreak.probability")) {
+      int hardness = section.getInt("Mechanics.bedrockbreak.hardness");
+      double probability = section.getDouble("Mechanics.bedrockbreak.probability");
+      int durabilityCost = section.getInt("Mechanics.bedrockbreak.durability_cost", 1);
+      boolean disableOnFirstLayer = section.getBoolean("Mechanics.bedrockbreak.disable_on_first_layer", true);
+      mechanic.setBedrockBreak(hardness, probability, durabilityCost, disableOnFirstLayer);
+    }
+  }
 
-            mechanic.setBigMining(itemSection.getInt("Mechanics.bigmining.radius", 1), itemSection.getInt("Mechanics.bigmining.depth", 1));
-          }
-
-          if(itemSection.contains("Mechanics.bedrockbreak.hardness") && itemSection.contains("Mechanics.bedrockbreak.probability")){
-            mechanic.setBedrockBreak(itemSection.getInt("Mechanics.bedrockbreak.hardness"), itemSection.getDouble("Mechanics.bedrockbreak.probability"), itemSection.getInt("Mechanics.bedrockbreak.durability_cost", 1), itemSection.getBoolean("Mechanics.bedrockbreak.disable_on_first_layer", true));
-          }
-
-          if(itemSection.contains("Mechanics.aura.type") && itemSection.contains("Mechanics.aura.particle")){
-            Particle particle = Particle.valueOf(itemSection.getString("Mechanics.aura.particle", "FLAME").toUpperCase());
-            String formula = null;
-            if(itemSection.contains("Mechanics.aura.custom")){
-              formula = itemSection.getString("Mechanics.aura.custom");
-            }
-
-            mechanic.setAura(particle, itemSection.getString("Mechanics.aura.type"), formula);
-          }
-        }
-      }
+  private static void loadAuraMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.aura.type") && section.contains("Mechanics.aura.particle")) {
+      Particle particle = Particle.valueOf(section.getString("Mechanics.aura.particle", "FLAME").toUpperCase());
+      String type = section.getString("Mechanics.aura.type");
+      String customFormula = section.getString("Mechanics.aura.custom", null);
+      mechanic.setAura(particle, type, customFormula);
     }
   }
 }
