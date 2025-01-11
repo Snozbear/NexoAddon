@@ -39,13 +39,6 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>it.unimi.dsi:fastutil</exclude>
-                                </excludes>
-                            </artifactSet>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -98,7 +91,7 @@
         <dependency>
             <groupId>com.nexomc</groupId>
             <artifactId>nexo</artifactId>
-            <version>0.9.0-dev.11</version>
+            <version>0.9.0-dev.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -139,11 +132,6 @@
             <artifactId>ProtocolLib</artifactId>
             <version>5.3.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>it.unimi.dsi</groupId>
-            <artifactId>fastutil</artifactId>
-            <version>8.5.15</version>
         </dependency>
         <dependency>
             <groupId>net.objecthunter</groupId>
