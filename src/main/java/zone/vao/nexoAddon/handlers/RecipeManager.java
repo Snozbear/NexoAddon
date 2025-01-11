@@ -29,9 +29,9 @@ public class RecipeManager {
 
     public static void addSmithingTransformRecipe(String recipeId, FileConfiguration config) {
         ItemStack resultTemplate = parseItem(config, recipeId + ".result");
-        RecipeChoice template = parseRecipeChoice(config, recipeId + ".template");
-        RecipeChoice base = parseRecipeChoice(config, recipeId + ".base");
-        RecipeChoice addition = parseRecipeChoice(config, recipeId + ".addition");
+        RecipeChoice.ExactChoice template = parseRecipeChoice(config, recipeId + ".template");
+        RecipeChoice.ExactChoice base = parseRecipeChoice(config, recipeId + ".base");
+        RecipeChoice.ExactChoice addition = parseRecipeChoice(config, recipeId + ".addition");
 
         if (resultTemplate == null || template == null || base == null || addition == null) {
             throw new IllegalArgumentException("Invalid recipe configuration for " + recipeId);
@@ -68,7 +68,7 @@ public class RecipeManager {
         return material != null ? new ItemStack(material).clone() : null;
     }
 
-    private static RecipeChoice parseRecipeChoice(FileConfiguration config, String path) {
+    private static RecipeChoice.ExactChoice parseRecipeChoice(FileConfiguration config, String path) {
         String nexoItemId = config.getString(path + ".nexo_item");
         if (nexoItemId != null && NexoItems.itemFromId(nexoItemId) != null)
             return new RecipeChoice.ExactChoice(NexoItems.itemFromId(nexoItemId).build().clone());
