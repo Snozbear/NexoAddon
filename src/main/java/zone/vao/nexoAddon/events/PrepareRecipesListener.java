@@ -1,64 +1,61 @@
 package zone.vao.nexoAddon.events;
 
+import com.nexomc.nexo.NexoPlugin;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareSmithingEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.SmithingInventory;
-import org.bukkit.inventory.SmithingTransformRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.handlers.RecipeManager;
+import zone.vao.nexoAddon.utils.VersionUtil;
+
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 public class PrepareRecipesListener implements Listener {
 
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-  public void handlePrepareSmithing(PrepareSmithingEvent event) {
+  private final HashMap<UUID, NamespacedKey> preCraftedRecipes = new HashMap<>();
+
+  @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+  public void onPrepare(PrepareSmithingEvent event) {
     SmithingInventory inventory = event.getInventory();
+    Player player = (Player) event.getView().getPlayer();
 
-    ItemStack templateItem = inventory.getItem(0);
-    ItemStack baseItem = inventory.getItem(1);
-    ItemStack additionItem = inventory.getItem(2);
+    ItemStack template = inventory.getItem(0);
+    ItemStack base = inventory.getItem(1);
+    ItemStack addition = inventory.getItem(2);
 
-    if (templateItem == null || baseItem == null || additionItem == null) return;
+    preCraftedRecipes.put(player.getUniqueId(), null);
 
-    for (NamespacedKey key : RecipeManager.getRegisteredRecipes()) {
-      SmithingTransformRecipe recipe = (SmithingTransformRecipe) NexoAddon.getInstance().getServer().getRecipe(key);
-      if (recipe == null) continue;
+    if (Stream.of(template, base, addition).anyMatch(Objects::isNull)) return;
 
-      ItemStack copy = null;
-      if(recipe.getBase() instanceof RecipeChoice.ExactChoice choice){
-        copy = choice.getItemStack().clone();
-        if(copy.getItemMeta() instanceof Damageable damageable){
-          if(damageable.hasDamage() && damageable.getDamage() > 0) {
-            damageable.setDamage(0);
-            copy.setItemMeta(damageable);
-          }
-        }
-      }
-      if (recipe.getTemplate().test(templateItem)
-          && (recipe.getBase().test(baseItem) || copy != null && recipe.getBase().test(copy))
-          && recipe.getAddition().test(additionItem))
-      {
-
-        boolean copyTrim = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_trim", false);
-        boolean copyEnchants = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_enchantments", true);
-        boolean keepDurability = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".keep_durability", true);
-
-        ItemStack result = recipe.getResult();
-        applyMetaTransformations(baseItem, result, copyEnchants, copyTrim, keepDurability);
-
-        event.setResult(result);
-      }
-    }
+    RecipeManager.getRegisteredRecipes().stream()
+        .sorted()
+        .map(key -> (SmithingRecipe) NexoAddon.getInstance().getServer().getRecipe(key))
+        .filter(Objects::nonNull)
+        .filter(recipe -> matchesRecipe(((SmithingTransformRecipe) recipe), template, base, addition))
+        .findFirst()
+        .ifPresent(recipe -> {
+          preCraftedRecipes.put(player.getUniqueId(), recipe.getKey());
+          ItemStack result = recipe.getResult().clone();
+          applyMetaTransformations(base, result, recipe.getKey());
+          event.setResult(result);
+        });
   }
 
-  private void applyMetaTransformations(ItemStack baseItem, ItemStack result, boolean copyEnchants, boolean copyTrim, boolean keepDurability) {
+  private void applyMetaTransformations(ItemStack baseItem, ItemStack result, NamespacedKey key) {
     ItemMeta baseMeta = baseItem.getItemMeta();
     ItemMeta resultMeta = result.getItemMeta();
 
@@ -68,6 +65,10 @@ public class PrepareRecipesListener implements Listener {
     if (!resultMeta.hasLore() && baseMeta.hasLore()) {
       resultMeta.setLore(baseMeta.getLore());
     }
+
+    boolean copyTrim = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_trim", false);
+    boolean copyEnchants = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_enchantments", true);
+    boolean keepDurability = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".keep_durability", true);
 
     if (copyEnchants) {
       baseMeta.getEnchants().forEach((enchant, level) -> resultMeta.addEnchant(enchant, level, true));
@@ -86,5 +87,93 @@ public class PrepareRecipesListener implements Listener {
     }
 
     result.setItemMeta(resultMeta);
+  }
+
+  private boolean matchesRecipe(SmithingTransformRecipe recipe, ItemStack template, ItemStack base, ItemStack addition) {
+    if (!matchesCustomItem(recipe.getTemplate(), template)) return false;
+
+    if (!matchesCustomItem(recipe.getBase(), base)) return false;
+
+    if (!matchesCustomItem(recipe.getAddition(), addition)) return false;
+
+    return true;
+  }
+
+  private boolean matchesCustomItem(RecipeChoice choice, ItemStack item) {
+    if (choice == null || item == null) return false;
+
+    if (choice.test(item)) return true;
+
+    if (choice instanceof RecipeChoice.ExactChoice exactChoice) {
+      return exactChoice.getChoices().stream().anyMatch(customItem -> {
+        if (!customItem.getType().equals(item.getType())) return false;
+
+        if (customItem.hasItemMeta() && customItem.getItemMeta().hasDisplayName()) {
+          if (!Objects.equals(customItem.getItemMeta().getDisplayName(), item.getItemMeta().getDisplayName())) {
+            return false;
+          }
+        }
+
+        return hasMatchingNBT(customItem, item);
+      });
+    }
+
+    return false;
+  }
+
+  private boolean hasMatchingNBT(ItemStack expected, ItemStack actual) {
+    ItemMeta expectedMeta = expected.getItemMeta();
+    ItemMeta actualMeta = actual.getItemMeta();
+
+    if (expectedMeta == null || actualMeta == null) return false;
+
+    var expectedData = expectedMeta.getPersistentDataContainer();
+    var actualData = actualMeta.getPersistentDataContainer();
+
+    String expectedNexoItem = expectedData.get(new NamespacedKey(NexoPlugin.instance(), "id"), PersistentDataType.STRING);
+    String actualNexoItem = actualData.get(new NamespacedKey(NexoPlugin.instance(), "id"), PersistentDataType.STRING);
+
+    return Objects.equals(expectedNexoItem, actualNexoItem);
+  }
+
+
+  @EventHandler(priority = EventPriority.HIGHEST)
+  public void onCollectResult(InventoryClickEvent event) {
+    if (!(event.getClickedInventory() instanceof SmithingInventory smithingInventory)) return;
+
+    Player player = (Player) event.getWhoClicked();
+    InventoryAction action = event.getAction();
+    if (event.getSlot() != (VersionUtil.isVersionLessThan("1.21") ? 2 : 3) || action.toString().contains("PLACE")) return;
+
+    NamespacedKey recipeKey = preCraftedRecipes.get(player.getUniqueId());
+    if (recipeKey == null) return;
+
+    preCraftedRecipes.remove(player.getUniqueId());
+
+    ItemStack result = smithingInventory.getResult();
+    if (result == null) return;
+
+    event.setCancelled(true);
+    player.playSound(player, Sound.BLOCK_SMITHING_TABLE_USE, 1.0F, 1.0F);
+
+    processIngredients(smithingInventory, player);
+
+    smithingInventory.setResult(null);
+    player.getInventory().addItem(result);
+  }
+
+  private void processIngredients(SmithingInventory inventory, Player player) {
+    consumeItem(inventory, 0, player);
+    consumeItem(inventory, 1, player);
+    consumeItem(inventory, 2, player);
+  }
+
+  private void consumeItem(SmithingInventory inventory, int slot, Player player) {
+    ItemStack item = inventory.getItem(slot);
+    if (item == null || item.getAmount() <= 1) {
+      inventory.setItem(slot, null);
+    } else {
+      item.setAmount(item.getAmount() - 1);
+    }
   }
 }

@@ -19,7 +19,6 @@ import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.mechanic.BedrockBreak;
 import zone.vao.nexoAddon.utils.EventUtil;
-import zone.vao.nexoAddon.utils.VersionUtil;
 
 import java.util.HashMap;
 import java.util.Map;

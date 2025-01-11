@@ -26,6 +26,7 @@ import zone.vao.nexoAddon.classes.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.*;
 import zone.vao.nexoAddon.handlers.BlockHardnessHandler;
+import zone.vao.nexoAddon.handlers.ParticleEffectManager;
 import zone.vao.nexoAddon.handlers.RecipeManager;
 import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.BossBarUtil;
@@ -57,6 +58,7 @@ public final class NexoAddon extends JavaPlugin {
   private BlockHardnessHandler blockHardnessHandler;
   private ProtocolManager protocolManager;
   private boolean protocolLibLoaded = false;
+  private ParticleEffectManager particleEffectManager;
 
     @Override
   public void onEnable() {
@@ -78,6 +80,8 @@ public final class NexoAddon extends JavaPlugin {
 
       initializePopulators();
       registerEvents();
+      particleEffectManager = new ParticleEffectManager();
+      particleEffectManager.startAuraEffectTask();
       initializeMetrics();
       getLogger().info("NexoAddon enabled!");
   }
@@ -107,6 +111,13 @@ public final class NexoAddon extends JavaPlugin {
     bossBars.values().forEach(BossBarUtil::removeBar);
     RecipeManager.clearRegisteredRecipes();
     RecipesUtil.loadRecipes();
+    particleEffectManager.stopAuraEffectTask();
+    new BukkitRunnable() {
+      @Override
+      public void run(){
+        particleEffectManager.startAuraEffectTask();
+      }
+    }.runTaskLater(this, 2L);
   }
 
   private void initializeCommandManager() {

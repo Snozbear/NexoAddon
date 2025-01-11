@@ -19,6 +19,6 @@ public class NexoPackUploadListener implements Listener {
         RecipeManager.clearRegisteredRecipes();
         RecipesUtil.loadRecipes();
       }
-    }.runTaskLater(NexoAddon.getInstance(), 20L*15);
+    }.runTaskLater(NexoAddon.getInstance(), 20L*20);
   }
 }
