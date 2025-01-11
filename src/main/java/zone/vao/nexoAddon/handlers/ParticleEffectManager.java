@@ -22,7 +22,7 @@ public class ParticleEffectManager {
       for (Player player : Bukkit.getOnlinePlayers()) {
         applyAuraEffect(player);
       }
-    }, 0L, 5L);
+    }, 0L, NexoAddon.getInstance().getGlobalConfig().getLong("aura_mechanic_delay", 5));
   }
 
   public void stopAuraEffectTask() {
