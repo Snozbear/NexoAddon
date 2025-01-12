@@ -16,7 +16,7 @@ import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 
 
-public class SpawnerListener {
+public class SpawnerBreakListener {
 
     private static final String SPAWNER_TYPE_KEY = "spawnerType";
 
@@ -33,21 +33,6 @@ public class SpawnerListener {
 
         double probability = mechanics.getSpawnerBreak().getProbability();
         handleBreakingSpawner(e, block, probability);
-    }
-
-    public static void onBlockPlace(BlockPlaceEvent event) {
-        if (event.getBlock().getType() != Material.SPAWNER) return;
-
-        Block block = event.getBlockPlaced();
-        ItemStack item = event.getItemInHand();
-        ItemMeta meta = item.getItemMeta();
-
-        if (meta == null) return;
-
-        EntityType entityType = getEntityTypeFromMeta(meta);
-        CreatureSpawner spawner = (CreatureSpawner) block.getState();
-        spawner.setSpawnedType(entityType);
-        spawner.update();
     }
 
     private static void handleBreakingSpawner(BlockBreakEvent event, Block block, double probability) {
@@ -79,16 +64,5 @@ public class SpawnerListener {
 
     private static EntityType getValidEntityType(EntityType type) {
         return (type == null || type == EntityType.UNKNOWN) ? EntityType.PIG : type;
-    }
-
-    private static EntityType getEntityTypeFromMeta(ItemMeta meta) {
-        NamespacedKey key = new NamespacedKey(NexoAddon.getInstance(), SPAWNER_TYPE_KEY);
-        String spawnerType = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-        try {
-            return spawnerType != null ? EntityType.valueOf(spawnerType) : EntityType.PIG;
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return EntityType.PIG;
-        }
     }
 }
