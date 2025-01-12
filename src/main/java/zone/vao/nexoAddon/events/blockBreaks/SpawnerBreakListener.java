@@ -28,7 +28,7 @@ public class SpawnerBreakListener {
         String nexoItemId = NexoItems.idFromItem(tool);
 
         Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(nexoItemId);
-        if (mechanics == null) return;
+        if (mechanics == null || mechanics.getSpawnerBreak() == null) return;
 
         double probability = mechanics.getSpawnerBreak().getProbability();
         boolean dropExperience = mechanics.getSpawnerBreak().isDropExperience();
