@@ -3,6 +3,8 @@ package zone.vao.nexoAddon;
 import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.jeff_media.updatechecker.UpdateCheckSource;
+import com.jeff_media.updatechecker.UpdateChecker;
 import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -187,9 +189,17 @@ public final class NexoAddon extends JavaPlugin {
   private void initializeMetrics() {
 
     Metrics metrics = new Metrics(this, 24168);
-    metrics.addCustomChart(new Metrics.SimplePie("marketplace", () -> {
-      return "%%__POLYMART__%%".equals("1") ? "polymart" : "spigot";
-    }));
+    metrics.addCustomChart(new Metrics.SimplePie("marketplace", () -> "%%__POLYMART__%%".equals("1") ? "polymart" : "spigot"));
+    new UpdateChecker(this, UpdateCheckSource.POLYMART, "6950")
+        .checkEveryXHours(24)
+        .setNotifyOpsOnJoin(true)
+        .setDonationLink("https://buymeacoffee.com/naimad")
+        .checkNow();
+    new UpdateChecker(this, UpdateCheckSource.SPIGET, "121241")
+        .checkEveryXHours(24)
+        .setNotifyOpsOnJoin(true)
+        .setDonationLink("https://buymeacoffee.com/naimad")
+        .checkNow();
   }
 
   private void reloadNexoFiles() {
