@@ -43,7 +43,7 @@ public class Mechanics {
     this.miningTools = new MiningTools(materials, nexoIds, type);
   }
 
-  public void setSpawnerBreak(double probability) {
-    this.spawnerBreak = new SpawnerBreak(probability);
+  public void setSpawnerBreak(double probability, boolean dropExperience) {
+    this.spawnerBreak = new SpawnerBreak(probability, dropExperience);
   }
 }

@@ -131,7 +131,8 @@ public class ItemConfigUtil {
   private static void loadSpawnerBreak(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.spawnerbreak.probability")) {
       double probability = section.getDouble("Mechanics.spawnerbreak.probability");
-      mechanic.setSpawnerBreak(probability);
+      boolean dropExperience = section.getBoolean("Mechanics.spawnerbreak.dropExperience", false);
+      mechanic.setSpawnerBreak(probability, dropExperience);
     }
   }
   

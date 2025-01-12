@@ -31,10 +31,11 @@ public class SpawnerBreakListener {
         if (mechanics == null) return;
 
         double probability = mechanics.getSpawnerBreak().getProbability();
-        handleBreakingSpawner(e, block, probability);
+        boolean dropExperience = mechanics.getSpawnerBreak().isDropExperience();
+        handleBreakingSpawner(e, block, probability, dropExperience);
     }
 
-    private static void handleBreakingSpawner(BlockBreakEvent event, Block block, double probability) {
+    private static void handleBreakingSpawner(BlockBreakEvent event, Block block, double probability, boolean dropExperience) {
         CreatureSpawner spawner = (CreatureSpawner) block.getState();
         EntityType entityType = getValidEntityType(spawner.getSpawnedType());
 
@@ -44,7 +45,9 @@ public class SpawnerBreakListener {
             block.getWorld().dropItemNaturally(block.getLocation(), spawnerItem);
         }
 
-        event.setExpToDrop(0);
+        if (!dropExperience) {
+            event.setExpToDrop(0);
+        }
     }
 
     private static ItemStack createSpawnerItem(EntityType entityType) {
