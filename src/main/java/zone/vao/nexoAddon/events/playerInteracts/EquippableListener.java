@@ -21,8 +21,7 @@ public class EquippableListener {
   public static void onEquippable(final PlayerInteractEvent event) {
     Player player = event.getPlayer();
 
-    if (!VersionUtil.isVersionLessThan("1.21.3") ||
-        (event.getHand() != EquipmentSlot.HAND && event.getHand() != EquipmentSlot.OFF_HAND)) return;
+    if (!VersionUtil.isVersionLessThan("1.21.3")) return;
 
     if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
       if (isInteractingWithNexoBlockWhileHoldingHelmet(event, player)) {
@@ -34,6 +33,8 @@ public class EquippableListener {
       if (itemId == null) return;
 
       if (!isValidInteraction(event)) return;
+
+      if((event.getHand() != EquipmentSlot.HAND && event.getHand() != EquipmentSlot.OFF_HAND)) return;
 
       Components componentItem = NexoAddon.getInstance().getComponents().get(itemId);
       if (componentItem == null || componentItem.getEquippable() == null) return;

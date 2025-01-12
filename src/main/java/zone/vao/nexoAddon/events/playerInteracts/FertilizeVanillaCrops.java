@@ -10,6 +10,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.Damageable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
+import zone.vao.nexoAddon.utils.EventUtil;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 
 public class FertilizeVanillaCrops {
@@ -30,7 +31,8 @@ public class FertilizeVanillaCrops {
     if (!appliedSuccessfully) return;
 
     event.setCancelled(true);
-    handleItemDurability(player, component);
+    if(EventUtil.callEvent(event))
+      handleItemDurability(player, component);
   }
 
   private static boolean isValidEvent(PlayerInteractEvent event) {
