@@ -24,8 +24,8 @@ public class Mechanics {
     this.repair = new Repair(ration, fixedAmount);
   }
 
-  public void setBigMining(int radius, int depth) {
-    this.bigMining = new BigMining(radius, depth);
+  public void setBigMining(int radius, int depth, boolean switchable) {
+    this.bigMining = new BigMining(radius, depth, switchable);
   }
 
   public void setBedrockBreak(int hardness, double probability, int durabilityCost, boolean disableOnFirstLayer) {

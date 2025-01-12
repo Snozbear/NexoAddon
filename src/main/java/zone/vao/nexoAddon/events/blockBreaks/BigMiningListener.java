@@ -4,11 +4,14 @@ import com.nexomc.nexo.api.NexoItems;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.mechanic.BigMining;
 import zone.vao.nexoAddon.utils.BlockUtil;
@@ -25,7 +28,7 @@ public class BigMiningListener {
     ItemStack tool = player.getInventory().getItemInMainHand();
 
     String toolId = NexoItems.idFromItem(tool);
-    if (!isBigMiningTool(toolId)) return;
+    if (!BigMining.isBigMiningTool(toolId)) return;
 
     if (activeBlockBreaks > 0) {
       activeBlockBreaks--;
@@ -41,6 +44,13 @@ public class BigMiningListener {
         .getBigMining();
     if (bigMiningMechanic == null) return;
 
+    PersistentDataContainer pdc = tool.getItemMeta().getPersistentDataContainer();
+
+    if(bigMiningMechanic.isSwitchable()
+        && pdc.has(new NamespacedKey(NexoAddon.getInstance(), "bigMiningSwitchable"), PersistentDataType.BOOLEAN)
+        && Boolean.FALSE.equals(pdc.get(new NamespacedKey(NexoAddon.getInstance(), "bigMiningSwitchable"), PersistentDataType.BOOLEAN))
+    ) return;
+
     Block primaryBlock = targetBlocks.get(0);
     Block secondaryBlock = targetBlocks.get(1);
     BlockFace breakFace = secondaryBlock.getFace(primaryBlock);
@@ -48,12 +58,6 @@ public class BigMiningListener {
 
     breakBlocksInRadius(player, event.getBlock().getLocation(), breakFace, bigMiningMechanic, directionalModifier, tool);
     activeBlockBreaks = 0;
-  }
-
-  private static boolean isBigMiningTool(String toolId) {
-    return toolId != null
-        && NexoAddon.getInstance().getMechanics().containsKey(toolId)
-        && NexoAddon.getInstance().getMechanics().get(toolId).getBigMining() != null;
   }
 
   private static int calculateModifier(Block primaryBlock, Block secondaryBlock) {

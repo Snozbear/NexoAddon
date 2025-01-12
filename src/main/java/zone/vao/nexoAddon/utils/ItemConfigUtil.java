@@ -101,7 +101,8 @@ public class ItemConfigUtil {
     if (section.contains("Mechanics.bigmining.radius") && section.contains("Mechanics.bigmining.depth")) {
       int radius = section.getInt("Mechanics.bigmining.radius", 1);
       int depth = section.getInt("Mechanics.bigmining.depth", 1);
-      mechanic.setBigMining(radius, depth);
+      boolean switchable = section.getBoolean("Mechanics.bigmining.switchable", false);
+      mechanic.setBigMining(radius, depth, switchable);
     }
   }
 
