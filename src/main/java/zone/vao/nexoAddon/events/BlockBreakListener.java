@@ -6,6 +6,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import zone.vao.nexoAddon.events.blockBreaks.BigMiningListener;
 import zone.vao.nexoAddon.events.blockBreaks.JukeboxSupport;
 import zone.vao.nexoAddon.events.blockBreaks.ShearsBreak;
+import zone.vao.nexoAddon.events.blockBreaks.SpawnerListener;
 
 public class BlockBreakListener implements Listener {
 
@@ -15,5 +16,6 @@ public class BlockBreakListener implements Listener {
     JukeboxSupport.onBlockBreak(event);
     ShearsBreak.onBlockBreak(event);
     BigMiningListener.handleBlockBreak(event);
+    SpawnerListener.onBlockBreak(event);
   }
 }

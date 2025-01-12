@@ -173,6 +173,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new PlayerMovementListener());
     registerEvent(new NexoFurnitureBreakListener());
     registerEvent(new BlockBreakListener());
+    registerEvent(new BlockPlaceListener());
     registerEvent(new NexoFurnitureInteractListener());
     registerEvent(new ChunkLoadListener());
     registerEvent(new InventoryClickListener());

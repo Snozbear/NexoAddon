@@ -33,7 +33,7 @@ public class ItemConfigUtil {
         if (itemSection == null || !itemSection.contains("Components")) return;
 
         Components component = NexoAddon.getInstance().getComponents()
-            .computeIfAbsent(itemId, Components::new);
+                .computeIfAbsent(itemId, Components::new);
 
         loadEquippableComponent(itemSection, component);
         loadJukeboxPlayableComponent(itemSection, component);
@@ -46,7 +46,7 @@ public class ItemConfigUtil {
     if (section.contains("Components.equippable")) {
       try {
         EquipmentSlot slot = EquipmentSlot.valueOf(
-            section.getString("Components.equippable.slot", "HEAD").toUpperCase()
+                section.getString("Components.equippable.slot", "HEAD").toUpperCase()
         );
         component.setEquippable(slot);
       } catch (IllegalArgumentException ignored) {}
@@ -79,12 +79,13 @@ public class ItemConfigUtil {
         if (itemSection == null || !itemSection.contains("Mechanics")) return;
 
         Mechanics mechanic = NexoAddon.getInstance().getMechanics()
-            .computeIfAbsent(itemId, Mechanics::new);
+                .computeIfAbsent(itemId, Mechanics::new);
 
         loadRepairMechanic(itemSection, mechanic);
         loadBigMiningMechanic(itemSection, mechanic);
         loadBedrockBreakMechanic(itemSection, mechanic);
         loadAuraMechanic(itemSection, mechanic);
+        loadSpawnerBreak(itemSection, mechanic);
       });
     }
   }
@@ -122,6 +123,13 @@ public class ItemConfigUtil {
       String type = section.getString("Mechanics.aura.type");
       String customFormula = section.getString("Mechanics.aura.custom", null);
       mechanic.setAura(particle, type, customFormula);
+    }
+  }
+
+  private static void loadSpawnerBreak(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.spawnerbreak.probability")) {
+      double probability = section.getDouble("Mechanics.spawnerbreak.probability");
+      mechanic.setSpawnerBreak(probability);
     }
   }
 }

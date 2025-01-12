@@ -2,10 +2,7 @@ package zone.vao.nexoAddon.classes;
 
 import lombok.Getter;
 import org.bukkit.Particle;
-import zone.vao.nexoAddon.classes.mechanic.Aura;
-import zone.vao.nexoAddon.classes.mechanic.BedrockBreak;
-import zone.vao.nexoAddon.classes.mechanic.BigMining;
-import zone.vao.nexoAddon.classes.mechanic.Repair;
+import zone.vao.nexoAddon.classes.mechanic.*;
 
 @Getter
 public class Mechanics {
@@ -15,6 +12,7 @@ public class Mechanics {
   private BigMining bigMining;
   private BedrockBreak bedrockBreak;
   private Aura aura;
+  private SpawnerBreak spawnerBreak;
 
   public Mechanics(String id) {
     this.id = id;
@@ -35,5 +33,8 @@ public class Mechanics {
   public void setAura(Particle particle, String type, String formula) {
     this.aura = new Aura(particle, type, formula);
   }
-}
 
+  public void setSpawnerBreak(double probability) {
+    this.spawnerBreak = new SpawnerBreak(probability);
+  }
+}
