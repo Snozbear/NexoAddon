@@ -124,6 +124,7 @@ public class CustomOrePopulator extends BlockPopulator {
 
   private boolean canReplaceBlock(PlacementPosition position, Ore ore) {
     return ore.getReplace() != null
+        && position != null
         && ore.getReplace().contains(position.blockType())
         && ore.getBiomes().contains(position.biome());
   }
