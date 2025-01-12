@@ -57,6 +57,14 @@
                             <exclude>org.projectlombok:lombok</exclude>
                         </excludes>
                     </artifactSet>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/**</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
                 </configuration>
             </plugin>
         </plugins>
