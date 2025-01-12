@@ -15,6 +15,8 @@ public class Mechanics {
   private BigMining bigMining;
   private BedrockBreak bedrockBreak;
   private Aura aura;
+
+  private SpawnerBreak spawnerBreak;
   private MiningTools miningTools;
 
   public Mechanics(String id) {
@@ -40,5 +42,8 @@ public class Mechanics {
   public void setMiningTools(final List<Material> materials, final List<String> nexoIds, final String type) {
     this.miningTools = new MiningTools(materials, nexoIds, type);
   }
-}
 
+  public void setSpawnerBreak(double probability, boolean dropExperience) {
+    this.spawnerBreak = new SpawnerBreak(probability, dropExperience);
+  }
+}
