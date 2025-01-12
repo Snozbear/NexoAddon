@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.events.blockBreaks;
 
 import com.nexomc.nexo.api.NexoItems;
+import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -28,7 +29,7 @@ public class SpawnerBreakListener {
         String nexoItemId = NexoItems.idFromItem(tool);
 
         Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(nexoItemId);
-        if (mechanics == null || mechanics.getSpawnerBreak() == null) return;
+        if (mechanics == null || mechanics.getSpawnerBreak() == null || !ProtectionLib.canBreak(player, block.getLocation())) return;
 
         double probability = mechanics.getSpawnerBreak().getProbability();
         boolean dropExperience = mechanics.getSpawnerBreak().isDropExperience();
