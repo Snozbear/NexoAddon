@@ -8,6 +8,8 @@ import com.nexomc.nexo.utils.drops.Loot;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 import zone.vao.nexoAddon.utils.EventUtil;
@@ -44,6 +46,10 @@ public class MiningToolsListener {
         if (!EventUtil.callEvent(blockBreakEvent)) return;
 
         NexoBlocks.remove(event.getBlock().getLocation(), null, drop);
+        if(tool.getItemMeta() instanceof Damageable damageable){
+          damageable.setDamage(damageable.getDamage() + 1);
+          tool.setItemMeta(damageable);
+        }
       }
     }
   }
