@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,7 +34,7 @@ public class ItemConfigUtil {
         if (itemSection == null || !itemSection.contains("Components")) return;
 
         Components component = NexoAddon.getInstance().getComponents()
-            .computeIfAbsent(itemId, Components::new);
+                .computeIfAbsent(itemId, Components::new);
 
         loadEquippableComponent(itemSection, component);
         loadJukeboxPlayableComponent(itemSection, component);
@@ -46,7 +47,7 @@ public class ItemConfigUtil {
     if (section.contains("Components.equippable")) {
       try {
         EquipmentSlot slot = EquipmentSlot.valueOf(
-            section.getString("Components.equippable.slot", "HEAD").toUpperCase()
+                section.getString("Components.equippable.slot", "HEAD").toUpperCase()
         );
         component.setEquippable(slot);
       } catch (IllegalArgumentException ignored) {}
@@ -79,12 +80,14 @@ public class ItemConfigUtil {
         if (itemSection == null || !itemSection.contains("Mechanics")) return;
 
         Mechanics mechanic = NexoAddon.getInstance().getMechanics()
-            .computeIfAbsent(itemId, Mechanics::new);
+                .computeIfAbsent(itemId, Mechanics::new);
 
         loadRepairMechanic(itemSection, mechanic);
         loadBigMiningMechanic(itemSection, mechanic);
         loadBedrockBreakMechanic(itemSection, mechanic);
         loadAuraMechanic(itemSection, mechanic);
+        loadSpawnerBreak(itemSection, mechanic);
+        loadMiningToolsMechanic(itemSection, mechanic);
       });
     }
   }
@@ -122,6 +125,30 @@ public class ItemConfigUtil {
       String type = section.getString("Mechanics.aura.type");
       String customFormula = section.getString("Mechanics.aura.custom", null);
       mechanic.setAura(particle, type, customFormula);
+    }
+  }
+
+  private static void loadSpawnerBreak(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.spawnerbreak.probability")) {
+      double probability = section.getDouble("Mechanics.spawnerbreak.probability");
+      boolean dropExperience = section.getBoolean("Mechanics.spawnerbreak.dropExperience", false);
+      mechanic.setSpawnerBreak(probability, dropExperience);
+    }
+  }
+  
+  private static void loadMiningToolsMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.miningtools.items")) {
+      List<String> values = section.getStringList("Mechanics.custom_block.miningtools.items");
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+
+      for (String value : values) {
+        Material material = Material.matchMaterial(value);
+        if(material != null) materials.add(material);
+        if(NexoItems.itemFromId(value) != null) nexoIds.add(value);
+      }
+
+      mechanic.setMiningTools(materials, nexoIds, section.getString("Mechanics.custom_block.miningtools.type", "CANCEL_EVENT"));
     }
   }
 }
