@@ -18,6 +18,7 @@ public class Mechanics {
 
   private SpawnerBreak spawnerBreak;
   private MiningTools miningTools;
+  private DropExperience dropExperience;
 
   public Mechanics(String id) {
     this.id = id;
@@ -45,5 +46,9 @@ public class Mechanics {
 
   public void setSpawnerBreak(double probability, boolean dropExperience) {
     this.spawnerBreak = new SpawnerBreak(probability, dropExperience);
+  }
+
+  public void setDropExperience(double experience) {
+    this.dropExperience = new DropExperience(experience);
   }
 }
