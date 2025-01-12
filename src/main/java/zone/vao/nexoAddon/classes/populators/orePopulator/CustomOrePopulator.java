@@ -40,6 +40,8 @@ public class CustomOrePopulator extends BlockPopulator {
       totalAttempts++;
       PlacementPosition position = getRandomPlacementPosition(chunkX, chunkZ, limitedRegion, ore, random, worldInfo);
 
+      if(position == null) continue;
+
       if (random.nextDouble() <= ore.getClusterChance() && ore.getVeinSize() > 0 && ore.getClusterChance() > 0.0) {
         successfulPlacements += generateVein(worldInfo, random, limitedRegion, position, ore);
       } else {
