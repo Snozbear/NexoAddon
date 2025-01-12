@@ -11,9 +11,13 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
 
+import java.util.logging.Logger;
+
 public class SpawnerPlaceListener {
 
     private static final String SPAWNER_TYPE_KEY = "spawnerType";
+    private static final Logger LOGGER = Logger.getLogger(NexoAddon.class.getName());
+
 
     public static void onBlockPlace(BlockPlaceEvent event) {
         if (event.getBlock().getType() != Material.SPAWNER) return;
@@ -36,7 +40,7 @@ public class SpawnerPlaceListener {
         try {
             return spawnerType != null ? EntityType.valueOf(spawnerType) : EntityType.PIG;
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            LOGGER.warning("Invalid spawner type found in metadata: " + spawnerType);
             return EntityType.PIG;
         }
     }
