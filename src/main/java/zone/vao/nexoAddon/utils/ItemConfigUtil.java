@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -85,6 +86,7 @@ public class ItemConfigUtil {
         loadBigMiningMechanic(itemSection, mechanic);
         loadBedrockBreakMechanic(itemSection, mechanic);
         loadAuraMechanic(itemSection, mechanic);
+        loadMiningToolsMechanic(itemSection, mechanic);
       });
     }
   }
@@ -122,6 +124,22 @@ public class ItemConfigUtil {
       String type = section.getString("Mechanics.aura.type");
       String customFormula = section.getString("Mechanics.aura.custom", null);
       mechanic.setAura(particle, type, customFormula);
+    }
+  }
+
+  private static void loadMiningToolsMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.miningtools.items")) {
+      List<String> values = section.getStringList("Mechanics.custom_block.miningtools.items");
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+
+      for (String value : values) {
+        Material material = Material.matchMaterial(value);
+        if(material != null) materials.add(material);
+        if(NexoItems.itemFromId(value) != null) nexoIds.add(value);
+      }
+
+      mechanic.setMiningTools(materials, nexoIds, section.getString("Mechanics.custom_block.miningtools.type", "CANCEL_EVENT"));
     }
   }
 }
