@@ -181,6 +181,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new PlayerCommandPreprocessListener());
     registerEvent(new WorldLoadListener());
     registerEvent(new NexoPackUploadListener());
+    registerEvent(new NexoBlockBreakListener());
   }
 
   private void initializeMetrics() {

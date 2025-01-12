@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -86,6 +87,7 @@ public class ItemConfigUtil {
         loadBedrockBreakMechanic(itemSection, mechanic);
         loadAuraMechanic(itemSection, mechanic);
         loadSpawnerBreak(itemSection, mechanic);
+        loadMiningToolsMechanic(itemSection, mechanic);
       });
     }
   }
@@ -130,6 +132,22 @@ public class ItemConfigUtil {
     if (section.contains("Mechanics.spawnerbreak.probability")) {
       double probability = section.getDouble("Mechanics.spawnerbreak.probability");
       mechanic.setSpawnerBreak(probability);
+    }
+  }
+  
+  private static void loadMiningToolsMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.miningtools.items")) {
+      List<String> values = section.getStringList("Mechanics.custom_block.miningtools.items");
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+
+      for (String value : values) {
+        Material material = Material.matchMaterial(value);
+        if(material != null) materials.add(material);
+        if(NexoItems.itemFromId(value) != null) nexoIds.add(value);
+      }
+
+      mechanic.setMiningTools(materials, nexoIds, section.getString("Mechanics.custom_block.miningtools.type", "CANCEL_EVENT"));
     }
   }
 }

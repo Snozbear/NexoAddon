@@ -1,8 +1,11 @@
 package zone.vao.nexoAddon.classes;
 
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import zone.vao.nexoAddon.classes.mechanic.*;
+
+import java.util.List;
 
 @Getter
 public class Mechanics {
@@ -12,7 +15,9 @@ public class Mechanics {
   private BigMining bigMining;
   private BedrockBreak bedrockBreak;
   private Aura aura;
+
   private SpawnerBreak spawnerBreak;
+  private MiningTools miningTools;
 
   public Mechanics(String id) {
     this.id = id;
@@ -32,6 +37,10 @@ public class Mechanics {
 
   public void setAura(Particle particle, String type, String formula) {
     this.aura = new Aura(particle, type, formula);
+  }
+
+  public void setMiningTools(final List<Material> materials, final List<String> nexoIds, final String type) {
+    this.miningTools = new MiningTools(materials, nexoIds, type);
   }
 
   public void setSpawnerBreak(double probability) {
