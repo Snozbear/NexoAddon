@@ -88,6 +88,7 @@ public class ItemConfigUtil {
         loadAuraMechanic(itemSection, mechanic);
         loadSpawnerBreak(itemSection, mechanic);
         loadMiningToolsMechanic(itemSection, mechanic);
+        loadDropExperienceMechanic(itemSection, mechanic);
       });
     }
   }
@@ -149,6 +150,13 @@ public class ItemConfigUtil {
       }
 
       mechanic.setMiningTools(materials, nexoIds, section.getString("Mechanics.custom_block.miningtools.type", "CANCEL_EVENT"));
+    }
+  }
+
+  private static void loadDropExperienceMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.drop.experience")) {
+      double experience = section.getDouble("Mechanics.custom_block.drop.experience", 0.0);
+      mechanic.setDropExperience(experience);
     }
   }
 }
