@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class SpawnerPlaceListener {
 
     private static final String SPAWNER_TYPE_KEY = "spawnerType";
-    private static final Logger LOGGER = Logger.getLogger(NexoAddon.class.getName());
+    private static final Logger LOGGER = NexoAddon.getInstance().getLogger();
 
 
     public static void onBlockPlace(BlockPlaceEvent event) {

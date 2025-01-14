@@ -177,10 +177,6 @@ public class CustomOrePopulator extends BlockPopulator {
       return new PlacementPosition(worldInfo,x, y - 1, z, limitedRegion.getType(x, y - 1, z), biome, limitedRegion);
     }
 
-    boolean isAirAbove() {
-      return limitedRegion.getType(x, y + 1, z).isAir();
-    }
-
     Location getLocation() {
       return new Location(Bukkit.getWorld(worldInfo.getUID()), x, y, z);
     }

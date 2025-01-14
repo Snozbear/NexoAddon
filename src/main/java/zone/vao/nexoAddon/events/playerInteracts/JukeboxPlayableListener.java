@@ -3,8 +3,8 @@ package zone.vao.nexoAddon.events.playerInteracts;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.items.ItemBuilder;
 import io.th0rgal.protectionlib.ProtectionLib;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Jukebox;
@@ -26,7 +26,7 @@ public class JukeboxPlayableListener {
     if (!VersionUtil.isVersionLessThan("1.21.1")) return;
 
     Player player = event.getPlayer();
-    if (!isValidInteraction(event)) return;
+    if (!isValidInteraction(event) || event.getClickedBlock() == null) return;
 
     Jukebox jukebox = (Jukebox) event.getClickedBlock().getState();
 
@@ -96,9 +96,11 @@ public class JukeboxPlayableListener {
         jukebox.setRecord(is);
         jukebox.update();
         if(item.getItemMeta() != null && item.getItemMeta().getLore() != null)
-          event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("Now Playing: "+item.getItemMeta().getLore().getFirst()));
+          Audience.audience(player)
+              .sendActionBar(MiniMessage.miniMessage().deserialize("Now Playing: "+item.getItemMeta().getLore().getFirst()));
         else
-          event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("§r"));
+          Audience.audience(player)
+              .sendActionBar(MiniMessage.miniMessage().deserialize("§r"));
       }
     }.runTaskLater(NexoAddon.getInstance(), 1L);
 

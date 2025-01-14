@@ -3,6 +3,7 @@ package zone.vao.nexoAddon.events.furnitureBreaks;
 import com.nexomc.nexo.api.events.furniture.NexoFurnitureBreakEvent;
 import lombok.Getter;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.handlers.ApiCompatibilityHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class BreakDoubleHit {
   public static void onDoubleHitMechanic(NexoFurnitureBreakEvent event) {
 
     if(!NexoAddon.getInstance().getGlobalConfig().getBoolean("double_hit_destroy_mechanic", true)
-    || event.getMechanic().hasEvolution()) return;
+    || ApiCompatibilityHandler.hasEvolution(event.getMechanic())) return;
 
     event.getMechanic().getHitbox().refreshHitboxes(event.getBaseEntity(), event.getMechanic());
 

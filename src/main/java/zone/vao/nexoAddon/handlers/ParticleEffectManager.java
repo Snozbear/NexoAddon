@@ -35,7 +35,7 @@ public class ParticleEffectManager {
 
   private Aura getAuraFromTool(Player player) {
     ItemStack heldItem = player.getInventory().getItemInMainHand();
-    if (heldItem == null || heldItem.getType().isAir()) return null;
+    if (heldItem.getType().isAir()) return null;
 
     String toolId = NexoItems.idFromItem(heldItem);
     if (toolId == null) return null;

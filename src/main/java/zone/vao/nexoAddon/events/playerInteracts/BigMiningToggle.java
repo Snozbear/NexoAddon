@@ -1,8 +1,8 @@
 package zone.vao.nexoAddon.events.playerInteracts;
 
 import com.nexomc.nexo.api.NexoItems;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -55,18 +55,15 @@ public class BigMiningToggle {
 
   private static void turnOff(final Player player, PersistentDataContainer pdc) {
     pdc.set(key, PersistentDataType.BOOLEAN, false);
-    player.spigot().sendMessage(
-        ChatMessageType.ACTION_BAR,
-        new TextComponent(NexoAddon.getInstance().getGlobalConfig().getString("messages.bigmining.off", "<red>BigMining off"))
-    );
+    Audience.audience(player)
+        .sendActionBar(MiniMessage.miniMessage().deserialize(NexoAddon.getInstance().getGlobalConfig().getString("messages.bigmining.off", "<red>BigMining off")));
   }
 
   private static void turnOn(final Player player, PersistentDataContainer pdc) {
     pdc.set(key, PersistentDataType.BOOLEAN, true);
-    player.spigot().sendMessage(
-        ChatMessageType.ACTION_BAR,
-        new TextComponent(NexoAddon.getInstance().getGlobalConfig().getString("messages.bigmining.on", "<green>BigMining on"))
-    );
+
+    Audience.audience(player)
+        .sendActionBar(MiniMessage.miniMessage().deserialize(NexoAddon.getInstance().getGlobalConfig().getString("messages.bigmining.on", "<green>BigMining on")));
   }
 
 }

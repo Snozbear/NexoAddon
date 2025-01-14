@@ -1,5 +1,7 @@
 package zone.vao.nexoAddon.utils;
 
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -9,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -29,7 +32,7 @@ public class HologramUtil {
         Location hologramLocation = entityLocation.add(0, 0.5, 0);
 
         String progressBar = getProgressBar(progress, 10);
-        String hologramText = ChatColor.GREEN + progressBar;
+        String hologramText = NamedTextColor.GREEN + progressBar;
 
         new BukkitRunnable() {
           @Override
@@ -74,13 +77,13 @@ public class HologramUtil {
 
     StringBuilder bar = new StringBuilder();
     if(filledLength >= 10 && emptyLength <= 0){
-      bar.append(ChatColor.DARK_GREEN);
+      bar.append(NamedTextColor.DARK_GREEN);
       bar.append("█".repeat(filledLength));
     }
     else {
-      bar.append(ChatColor.GREEN);
+      bar.append(NamedTextColor.GREEN);
       bar.append("█".repeat(filledLength));
-      bar.append(ChatColor.RED);
+      bar.append(NamedTextColor.RED);
       bar.append("█".repeat(emptyLength));
     }
 

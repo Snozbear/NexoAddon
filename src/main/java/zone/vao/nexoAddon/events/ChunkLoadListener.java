@@ -69,9 +69,8 @@ public class ChunkLoadListener implements Listener {
     Material aboveBlock = loc.clone().add(0, 1, 0).getBlock().getType();
 
     boolean canReplace = ore.getReplace() != null && ore.getReplace().contains(targetBlock);
-    boolean canPlaceOn = ore.getPlaceOn() != null && ore.getPlaceOn().contains(belowBlock) && targetBlock.isAir();
-    boolean canPlaceBelow = ore.getPlaceBelow() != null && ore.getPlaceBelow().contains(aboveBlock)
-        && (!ore.isOnlyAir() || targetBlock.isAir());
+    boolean canPlaceOn = canPlaceOn(ore, belowBlock, targetBlock);
+    boolean canPlaceBelow = canPlaceBelow(ore, aboveBlock, targetBlock);
 
     return canReplace || canPlaceOn || canPlaceBelow;
   }
@@ -83,5 +82,21 @@ public class ChunkLoadListener implements Listener {
       }
       ore.getNexoFurniture().place(loc);
     }, placementIndex * 5L);
+  }
+
+  private boolean canPlaceOn(Ore ore, Material belowBlock, Material targetBlock){
+    if(ore.getPlaceOn() == null) return false;
+
+    if(!ore.getPlaceOn().contains(belowBlock)) return false;
+
+    return !ore.isOnlyAir() || targetBlock.isAir();
+  }
+
+  private boolean canPlaceBelow(Ore ore, Material aboveBlock, Material targetBlock){
+    if(ore.getPlaceBelow() == null) return false;
+
+    if(!ore.getPlaceBelow().contains(aboveBlock)) return false;
+
+    return !ore.isOnlyAir() || targetBlock.isAir();
   }
 }

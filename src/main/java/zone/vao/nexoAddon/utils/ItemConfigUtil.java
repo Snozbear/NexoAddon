@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
@@ -88,6 +89,8 @@ public class ItemConfigUtil {
         loadAuraMechanic(itemSection, mechanic);
         loadSpawnerBreak(itemSection, mechanic);
         loadMiningToolsMechanic(itemSection, mechanic);
+        loadDropExperienceMechanic(itemSection, mechanic);
+        loadInfested(itemSection, mechanic);
       });
     }
   }
@@ -151,4 +154,34 @@ public class ItemConfigUtil {
       mechanic.setMiningTools(materials, nexoIds, section.getString("Mechanics.custom_block.miningtools.type", "CANCEL_EVENT"));
     }
   }
+
+  private static void loadDropExperienceMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.drop.experience")) {
+      double experience = section.getDouble("Mechanics.custom_block.drop.experience", 0.0);
+      mechanic.setDropExperience(experience);
+    }
+  }
+
+  private static void loadInfested(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.infested.entities")) {
+      List<String> values = section.getStringList("Mechanics.custom_block.infested.entities");
+      List<EntityType> entities = new ArrayList<>();
+
+      for (String value : values) {
+        try {
+          EntityType entityType = EntityType.valueOf(value.toUpperCase());
+          entities.add(entityType);
+        } catch (IllegalArgumentException e) {
+          NexoAddon.getInstance().getLogger().info("Invalid EntityType: " + value);
+        }
+      }
+
+      double probability = section.getDouble("Mechanics.custom_block.infested.probability", 1.0);
+      String selector = section.getString("Mechanics.custom_block.infested.selector", "all");
+      boolean particles = section.getBoolean("Mechanics.custom_block.infested.particles", false);
+
+      mechanic.setInfested(entities, probability, selector, particles);
+    }
+  }
+
 }

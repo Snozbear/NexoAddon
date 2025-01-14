@@ -106,10 +106,10 @@ public class PopulatorsConfigUtil {
 
     List<String> worldNames = section.getStringList("worlds");
     List<World> worlds = parseWorlds(section.getStringList("worlds"));
-    List<Biome> biomes = parseBiomes(section.getStringList("biomes"));
-    if(biomes.isEmpty())
-      biomes = Arrays.stream(Biome.values()).toList();
+    List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
     if (worlds.isEmpty()) return null;
+    if(biomes.isEmpty())
+      biomes = worlds.get(0).getBiomeProvider().getBiomes(worlds.get(0)).stream().toList();
 
     List<Material> replaceMaterials = parseMaterials(section.getStringList("replace"));
     List<Material> placeOnMaterials = parseMaterials(section.getStringList("place_on"));
@@ -162,11 +162,10 @@ public class PopulatorsConfigUtil {
     double chance = section.getDouble("chance", 0.1);
 
     List<World> worlds = parseWorlds(section.getStringList("worlds"));
-    List<Biome> biomes = parseBiomes(section.getStringList("biomes"));
-    if(biomes.isEmpty())
-      biomes = Arrays.stream(Biome.values()).toList();
-
+    List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
     if (worlds.isEmpty()) return null;
+    if(biomes.isEmpty())
+      biomes = worlds.get(0).getBiomeProvider().getBiomes(worlds.get(0)).stream().toList();
 
     try {
       return new CustomTree(
@@ -210,36 +209,20 @@ public class PopulatorsConfigUtil {
     return NexoAddon.getInstance().getServer().createWorld(creator);
   }
 
-  private List<Biome> parseBiomes(List<String> biomeNames) {
+  private List<Biome> parseBiomes(List<World> worlds, List<String> biomeNames) {
     List<Biome> availableBiomes = getAllBiomes();
 
     if (biomeNames.isEmpty()) return availableBiomes;
 
-    return biomeNames.stream()
-        .map(b -> {
-          String biomeName = b.trim().toUpperCase();
-          try {
-            return getBiomeByName(biomeName);
-          } catch (IllegalArgumentException e) {
-            System.out.println("Invalid biome name: " + biomeName + ". Skipping...");
-            return null;
-          }
-        })
-        .filter(biome -> biome != null && availableBiomes.contains(biome))
-        .collect(Collectors.toList());
-  }
-
-  private Biome getBiomeByName(String name) {
-    try {
-      Method byNameMethod = Biome.class.getDeclaredMethod("valueOf", String.class);
-      Biome biome = (Biome) byNameMethod.invoke(null, name);
-      if (biome != null) return biome;
-    } catch (NoSuchMethodException e) {
-      return Biome.valueOf(name);
-    } catch (Exception e) {
-      System.out.println("Failed to get biome by name: " + e.getMessage());
+    for (World world : worlds) {
+      if(world.getBiomeProvider() == null) continue;
+      for (Biome biome : world.getBiomeProvider().getBiomes(world)) {
+          if (biomeNames.contains(biome.getKey().getKey())) {
+            availableBiomes.add(biome);
+        }
+      }
     }
-    throw new IllegalArgumentException("Biome not found: " + name);
+    return availableBiomes;
   }
 
   private List<Biome> getAllBiomes() {

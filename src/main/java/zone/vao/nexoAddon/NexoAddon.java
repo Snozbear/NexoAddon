@@ -216,12 +216,12 @@ public final class NexoAddon extends JavaPlugin {
     worldPopulators.forEach((worldName, populators) -> {
       World world = Bukkit.getWorld(worldName);
       if (world == null) {
-        Bukkit.getLogger().warning("World '" + worldName + "' not found. Skipping populator removal.");
+        getLogger().warning("World '" + worldName + "' not found. Skipping populator removal.");
         return;
       }
       populators.forEach(populator -> {
         if (world.getPopulators().remove(populator)) {
-          Bukkit.getLogger().info("Populator removed from world: " + worldName);
+          getLogger().info("Populator removed from world: " + worldName);
         }
       });
     });
@@ -231,7 +231,7 @@ public final class NexoAddon extends JavaPlugin {
 
   public void addPopulatorToWorld(World world, BlockPopulator populator) {
     if (world == null) {
-      Bukkit.getLogger().severe("World is null. Cannot add Populator.");
+      getLogger().severe("World is null. Cannot add Populator.");
       return;
     }
     if (!world.getPopulators().contains(populator)) {
@@ -240,7 +240,7 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   public void logPopulatorAdded(String type, String name, World world) {
-    Bukkit.getLogger().info(type + " of "+name+" added to world: " + world.getName());
+    getLogger().info(type + " of "+name+" added to world: " + world.getName());
   }
 
   private void registerEvent(Listener listener) {
