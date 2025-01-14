@@ -1,6 +1,5 @@
 package zone.vao.nexoAddon.handlers;
 
-import com.nexomc.nexo.api.events.furniture.NexoFurnitureBreakEvent;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 
 import java.lang.reflect.Method;
