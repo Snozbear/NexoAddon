@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.events.playerNexoBlockBreaks;
 
 import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent;
+import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.GameMode;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
@@ -16,9 +17,12 @@ public class InfestedListener {
         if(NexoAddon.getInstance().getMechanics().isEmpty()) return;
 
         Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(event.getMechanic().getItemID());
-        if (mechanics == null || mechanics.getInfested() == null) return;
-
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        if (event.isCancelled()
+            || mechanics == null
+            || mechanics.getInfested() == null
+            || !ProtectionLib.canBreak(event.getPlayer(),event.getBlock().getLocation())
+            || event.getPlayer().getGameMode() == GameMode.CREATIVE
+        ) return;
 
         double probability = mechanics.getInfested().getProbability();
         if (Math.random() > probability) return;
