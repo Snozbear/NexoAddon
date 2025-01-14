@@ -5,7 +5,6 @@ import lombok.Getter;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.handlers.ApiCompatibilityHandler;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
