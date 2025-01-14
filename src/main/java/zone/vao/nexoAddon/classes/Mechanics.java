@@ -3,6 +3,7 @@ package zone.vao.nexoAddon.classes;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.entity.EntityType;
 import zone.vao.nexoAddon.classes.mechanic.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class Mechanics {
   private SpawnerBreak spawnerBreak;
   private MiningTools miningTools;
   private DropExperience dropExperience;
+  private Infested infested;
 
   public Mechanics(String id) {
     this.id = id;
@@ -50,5 +52,9 @@ public class Mechanics {
 
   public void setDropExperience(double experience) {
     this.dropExperience = new DropExperience(experience);
+  }
+
+  public void setInfested(List<EntityType> entities, double probability, String selector, boolean particles) {
+    this.infested = new Infested(entities, probability, selector, particles);
   }
 }
