@@ -18,6 +18,8 @@ import java.util.*;
 
 public class SkullUtil {
 
+  public static String NEXO_HEAD_BASE64 = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWY1ZTgzNWMxMTZlOGUyMDBlMmUwNmFhNTkzY2FiOGYxYTlmOGM0MGU3ZjAwNWE5Yzc2ZjEyZTI0ZjRjNjM3MCJ9fX0=";
+
   public static void applyTextures(){
 
     Map<String, Components> componentsList = new HashMap<>();
