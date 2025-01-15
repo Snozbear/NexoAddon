@@ -175,7 +175,12 @@ public class ItemConfigUtil {
         }
       }
 
-      List<String> mythicMobs = section.getStringList("Mechanics.custom_block.infested.mythic-mobs");
+      List<String> mythicMobs = List.of();
+      if(NexoAddon.getInstance().isMythicMobsLoaded() && section.contains("Mechanics.custom_block.infested.mythic-mobs")) {
+        mythicMobs = section.getStringList("Mechanics.custom_block.infested.mythic-mobs");
+      } else if(!NexoAddon.getInstance().isMythicMobsLoaded() && section.contains("Mechanics.custom_block.infested.mythic-mobs")){
+        NexoAddon.getInstance().getLogger().warning("MythicMobs is not loaded! Skipping `infested.mythic-mobs`");
+      }
 
       double probability = section.getDouble("Mechanics.custom_block.infested.probability", 1.0);
       String selector = section.getString("Mechanics.custom_block.infested.selector", "all");
