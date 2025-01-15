@@ -12,59 +12,85 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.classes.mechanic.Infested;
 
 import java.util.*;
 
 public class InfestedListener {
     public static void onBreak(NexoNoteBlockBreakEvent event) {
-        if(NexoAddon.getInstance().getMechanics().isEmpty()) return;
+        if (NexoAddon.getInstance().getMechanics().isEmpty()) return;
 
         Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(event.getMechanic().getItemID());
-        if (event.isCancelled()
-            || mechanics == null
-            || mechanics.getInfested() == null
-            || !ProtectionLib.canBreak(event.getPlayer(),event.getBlock().getLocation())
-            || event.getPlayer().getGameMode() == GameMode.CREATIVE
-        ) return;
+        if (shouldCancelEvent(event, mechanics)) return;
 
-        double probability = mechanics.getInfested().getProbability();
-        if (Math.random() > probability) return;
+        Infested infested = mechanics.getInfested();
+        if (Math.random() > infested.getProbability()) return;
 
-        List<EntityType> entities = mechanics.getInfested().getEntities();
-        List<String> mythicMobs = mechanics.getInfested().getMythicMobs();
-        String selector = mechanics.getInfested().getSelector();
-        boolean spawnParticles = mechanics.getInfested().isParticles();
-        boolean drop = mechanics.getInfested().isDrop();
+        handleDrop(event, infested);
+        handleParticles(event, infested);
 
-        if (!drop) event.setDrop(new Drop(Collections.emptyList(), false, false, Objects.requireNonNull(NexoBlocks.customBlockMechanic(event.getBlock().getLocation())).getItemID()));
+        List<Object> allEntities = collectEntities(infested);
 
-        if (spawnParticles) spawnParticles(event.getBlock());
+        if (infested.getSelector().equalsIgnoreCase("all")) {
+            spawnAllEntities(event, allEntities);
+        } else if (infested.getSelector().equalsIgnoreCase("random")) {
+            spawnRandomEntity(event, allEntities);
+        }
+    }
 
-        if (selector.equalsIgnoreCase("all")) {
-            for (EntityType entityType : entities) {
-                spawnEntity(event, entityType);
-            }
-            for (String mythicMob : mythicMobs) {
-                spawnMythicMob(event, mythicMob);
-            }
-        } else if (selector.equalsIgnoreCase("random")) {
-            List<Object> allEntities = new ArrayList<>();
-            allEntities.addAll(entities);
-            allEntities.addAll(mythicMobs);
+    private static boolean shouldCancelEvent(NexoNoteBlockBreakEvent event, Mechanics mechanics) {
+        return event.isCancelled()
+                || mechanics == null
+                || mechanics.getInfested() == null
+                || !ProtectionLib.canBreak(event.getPlayer(), event.getBlock().getLocation())
+                || event.getPlayer().getGameMode() == GameMode.CREATIVE;
+    }
 
-            if (!allEntities.isEmpty()) {
-                Random random = new Random();
-                Object randomEntity = allEntities.get(random.nextInt(allEntities.size()));
+    private static void handleDrop(NexoNoteBlockBreakEvent event, Infested infested) {
+        if (!infested.isDrop()) {
+            event.setDrop(new Drop(
+                    Collections.emptyList(),
+                    false,
+                    false,
+                    Objects.requireNonNull(NexoBlocks.customBlockMechanic(event.getBlock().getLocation())).getItemID()
+            ));
+        }
+    }
 
-                if (randomEntity instanceof EntityType) {
-                    spawnEntity(event, (EntityType) randomEntity);
-                } else if (randomEntity instanceof String) {
-                    spawnMythicMob(event, (String) randomEntity);
-                }
+    private static void handleParticles(NexoNoteBlockBreakEvent event, Infested infested) {
+        if (infested.isParticles()) {
+            spawnParticles(event.getBlock());
+        }
+    }
+
+    private static List<Object> collectEntities(Infested infested) {
+        List<Object> allEntities = new ArrayList<>();
+        allEntities.addAll(infested.getEntities());
+        allEntities.addAll(infested.getMythicMobs());
+        return allEntities;
+    }
+
+    private static void spawnAllEntities(NexoNoteBlockBreakEvent event, List<Object> entities) {
+        for (Object entity : entities) {
+            if (entity instanceof EntityType) {
+                spawnEntity(event, (EntityType) entity);
+            } else if (entity instanceof String) {
+                spawnMythicMob(event, (String) entity);
             }
         }
-
     }
+
+    private static void spawnRandomEntity(NexoNoteBlockBreakEvent event, List<Object> entities) {
+        if (!entities.isEmpty()) {
+            Object randomEntity = entities.get(new Random().nextInt(entities.size()));
+            if (randomEntity instanceof EntityType) {
+                spawnEntity(event, (EntityType) randomEntity);
+            } else if (randomEntity instanceof String) {
+                spawnMythicMob(event, (String) randomEntity);
+            }
+        }
+    }
+
 
     private static void spawnEntity(NexoNoteBlockBreakEvent event, EntityType entityType) {
         event.getBlock().getWorld().spawnEntity(event.getBlock().getLocation().add(0.5, 0, 0.5), entityType);
