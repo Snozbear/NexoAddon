@@ -5,6 +5,7 @@ import com.nexomc.nexo.NexoPlugin;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.items.ItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerTextures;
@@ -30,7 +31,7 @@ public class SkullUtil {
 
     componentsList.forEach((key, component) -> {
 
-      NexoItems.items().stream().filter(a -> Objects.equals(NexoItems.idFromItem(a), key)).findFirst().ifPresent(item -> {
+      NexoItems.items().stream().filter(a -> Objects.equals(NexoItems.idFromItem(a), key) && NexoItems.itemFromId(key).build().getType() == Material.PLAYER_HEAD).findFirst().ifPresent(item -> {
 
         ItemStack itemStack = item.build();
 
