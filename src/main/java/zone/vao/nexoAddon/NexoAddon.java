@@ -60,6 +60,7 @@ public final class NexoAddon extends JavaPlugin {
   private BlockHardnessHandler blockHardnessHandler;
   private ProtocolManager protocolManager;
   private boolean protocolLibLoaded = false;
+  private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
 
     @Override
@@ -78,6 +79,11 @@ public final class NexoAddon extends JavaPlugin {
         this.blockHardnessHandler.registerListener();
       }else{
         getLogger().warning("ProtocolLib not found. Some features remain disabled!");
+      }
+      if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null &&
+          Bukkit.getPluginManager().getPlugin("MythicMobs").isEnabled())
+      {
+        mythicMobsLoaded = true;
       }
 
       initializePopulators();
