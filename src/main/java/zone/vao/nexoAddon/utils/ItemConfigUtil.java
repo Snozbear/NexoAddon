@@ -163,10 +163,9 @@ public class ItemConfigUtil {
   }
 
   private static void loadInfested(ConfigurationSection section, Mechanics mechanic) {
-    if (section.contains("Mechanics.custom_block.infested.entities")) {
+    if (section.contains("Mechanics.custom_block.infested.entities") || section.contains("Mechanics.custom_block.infested.mythic-mobs")) {
       List<String> values = section.getStringList("Mechanics.custom_block.infested.entities");
       List<EntityType> entities = new ArrayList<>();
-
       for (String value : values) {
         try {
           EntityType entityType = EntityType.valueOf(value.toUpperCase());
@@ -176,11 +175,19 @@ public class ItemConfigUtil {
         }
       }
 
+      List<String> mythicMobs = List.of();
+      if(NexoAddon.getInstance().isMythicMobsLoaded() && section.contains("Mechanics.custom_block.infested.mythic-mobs")) {
+        mythicMobs = section.getStringList("Mechanics.custom_block.infested.mythic-mobs");
+      } else if(!NexoAddon.getInstance().isMythicMobsLoaded() && section.contains("Mechanics.custom_block.infested.mythic-mobs")){
+        NexoAddon.getInstance().getLogger().warning("MythicMobs is not loaded! Skipping `infested.mythic-mobs`");
+      }
+
       double probability = section.getDouble("Mechanics.custom_block.infested.probability", 1.0);
       String selector = section.getString("Mechanics.custom_block.infested.selector", "all");
       boolean particles = section.getBoolean("Mechanics.custom_block.infested.particles", false);
+      boolean drop = section.getBoolean("Mechanics.custom_block.infested.drop-loot", true);
 
-      mechanic.setInfested(entities, probability, selector, particles);
+      mechanic.setInfested(entities, mythicMobs, probability, selector, particles, drop);
     }
   }
 
