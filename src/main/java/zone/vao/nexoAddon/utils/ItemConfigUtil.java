@@ -40,6 +40,7 @@ public class ItemConfigUtil {
         loadEquippableComponent(itemSection, component);
         loadJukeboxPlayableComponent(itemSection, component);
         loadFertilizerComponent(itemSection, component);
+        loadSkullValueComponent(itemSection, component);
       });
     }
   }
@@ -69,6 +70,14 @@ public class ItemConfigUtil {
       component.setFertilizer(growthSpeedup, usableOn);
     }
   }
+
+  private static void loadSkullValueComponent(ConfigurationSection section, Components component) {
+    if (section.contains("Components.skull_value")) {
+      String value = section.getString("Components.skull_value", "notch");
+      component.setSkullValue(value);
+    }
+  }
+
 
   public static void loadMechanics() {
     NexoAddon.getInstance().getMechanics().clear();

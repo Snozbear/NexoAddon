@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -31,10 +32,7 @@ import zone.vao.nexoAddon.handlers.BlockHardnessHandler;
 import zone.vao.nexoAddon.handlers.ParticleEffectManager;
 import zone.vao.nexoAddon.handlers.RecipeManager;
 import zone.vao.nexoAddon.metrics.Metrics;
-import zone.vao.nexoAddon.utils.BossBarUtil;
-import zone.vao.nexoAddon.utils.ItemConfigUtil;
-import zone.vao.nexoAddon.utils.PopulatorsConfigUtil;
-import zone.vao.nexoAddon.utils.RecipesUtil;
+import zone.vao.nexoAddon.utils.*;
 
 import java.io.File;
 import java.util.*;
@@ -47,6 +45,7 @@ public final class NexoAddon extends JavaPlugin {
   public Set<File> nexoFiles = new HashSet<>();
   public Map<String, Components> components = new HashMap<>();
   public Map<String, Mechanics> mechanics = new HashMap<>();
+  private Map<String, ItemStack> skulls = new HashMap<>();
   public Map<UUID, BossBarUtil> bossBars = new HashMap<>();
   public FileConfiguration globalConfig;
   public PopulatorsConfigUtil populatorsConfig;
@@ -119,6 +118,7 @@ public final class NexoAddon extends JavaPlugin {
     bossBars.values().forEach(BossBarUtil::removeBar);
     RecipeManager.clearRegisteredRecipes();
     RecipesUtil.loadRecipes();
+    SkullUtil.applyTextures();
     particleEffectManager.stopAuraEffectTask();
     new BukkitRunnable() {
       @Override
