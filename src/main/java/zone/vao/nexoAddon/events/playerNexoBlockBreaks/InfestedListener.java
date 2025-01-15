@@ -13,10 +13,7 @@ import org.bukkit.entity.EntityType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class InfestedListener {
     public static void onBreak(NexoNoteBlockBreakEvent event) {
@@ -39,7 +36,7 @@ public class InfestedListener {
         boolean spawnParticles = mechanics.getInfested().isParticles();
         boolean drop = mechanics.getInfested().isDrop();
 
-        if (!drop) event.setDrop(new Drop(Collections.emptyList(), false, false, NexoBlocks.customBlockMechanic(event.getBlock().getLocation()).getItemID()));
+        if (!drop) event.setDrop(new Drop(Collections.emptyList(), false, false, Objects.requireNonNull(NexoBlocks.customBlockMechanic(event.getBlock().getLocation())).getItemID()));
 
         if (spawnParticles) spawnParticles(event.getBlock());
 
