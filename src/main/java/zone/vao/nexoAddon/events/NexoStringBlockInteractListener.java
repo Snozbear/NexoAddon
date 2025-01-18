@@ -1,7 +1,10 @@
 package zone.vao.nexoAddon.events;
 
+import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.api.events.custom_block.stringblock.NexoStringBlockInteractEvent;
+import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
+import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.NexoAddon;
@@ -23,8 +26,15 @@ public class NexoStringBlockInteractListener implements Listener {
         || mechanicsItem == null || mechanicsItem.getStackable() == null
     ) return;
 
-    if(!mechanicsStringBlock.getStackable().getGroup().equalsIgnoreCase(mechanicsItem.getStackable().getGroup())) return;
+    if(!mechanicsStringBlock.getStackable().getGroup().equalsIgnoreCase(mechanicsItem.getStackable().getGroup())
+        || !ProtectionLib.canBuild(event.getPlayer(), event.getBlock().getLocation())
+    ) return;
 
+    String nextStage = mechanicsStringBlock.getStackable().getNext();
+    StringBlockMechanic newBlock = NexoBlocks.stringMechanic(nextStage);
+    if(newBlock == null) return;
 
+    NexoBlocks.remove(event.getBlock().getLocation());
+    NexoBlocks.place(nextStage, event.getBlock().getLocation());
   }
 }
