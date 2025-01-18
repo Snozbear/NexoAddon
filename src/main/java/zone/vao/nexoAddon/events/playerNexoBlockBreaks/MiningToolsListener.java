@@ -56,9 +56,6 @@ public class MiningToolsListener {
       Drop drop = new Drop(loots, false, false, NexoBlocks.customBlockMechanic(location).getItemID());
       if(ProtectionLib.canBreak(player, location)) {
 
-        BlockBreakEvent blockBreakEvent = new BlockBreakEvent(location.getBlock(), player);
-        if (!EventUtil.callEvent(blockBreakEvent)) return;
-
         NexoBlocks.remove(location, null, drop);
         if(tool.getItemMeta() instanceof Damageable damageable){
           damageable.setDamage(damageable.getDamage() + 1);
