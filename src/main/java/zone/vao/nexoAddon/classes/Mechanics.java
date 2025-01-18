@@ -16,6 +16,7 @@ public class Mechanics {
   private BigMining bigMining;
   private BedrockBreak bedrockBreak;
   private Aura aura;
+  private KillMessage killMessage;
 
   private SpawnerBreak spawnerBreak;
   private MiningTools miningTools;
@@ -56,5 +57,9 @@ public class Mechanics {
 
   public void setInfested(List<EntityType> entities, List<String> mythicMobs, double probability, String selector, boolean particles, boolean drop) {
     this.infested = new Infested(entities, mythicMobs, probability, selector, particles, drop);
+  }
+
+  public void setKillMessage(String deathMessage) {
+    this.killMessage = new KillMessage(deathMessage);
   }
 }

@@ -100,6 +100,7 @@ public class ItemConfigUtil {
         loadMiningToolsMechanic(itemSection, mechanic);
         loadDropExperienceMechanic(itemSection, mechanic);
         loadInfested(itemSection, mechanic);
+        loadKillMessage(itemSection, mechanic);
       });
     }
   }
@@ -200,4 +201,10 @@ public class ItemConfigUtil {
     }
   }
 
+  private static void loadKillMessage(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.kill_message")) {
+      String deathMessage = section.getString("Mechanics.kill_message", null);
+      mechanic.setKillMessage(deathMessage);
+    }
+  }
 }
