@@ -100,6 +100,7 @@ public class ItemConfigUtil {
         loadMiningToolsMechanic(itemSection, mechanic);
         loadDropExperienceMechanic(itemSection, mechanic);
         loadInfested(itemSection, mechanic);
+        loadStackableStringblockMechanic(itemSection, mechanic);
       });
     }
   }
@@ -200,4 +201,11 @@ public class ItemConfigUtil {
     }
   }
 
+  private static void loadStackableStringblockMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.stackable.next")
+        && section.contains("Mechanics.custom_block.stackable.group")
+    ) {
+      mechanic.setStackable(section.getString("Mechanics.custom_block.stackable.next"), section.getString("Mechanics.custom_block.stackable.group"));
+    }
+  }
 }
