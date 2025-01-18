@@ -16,12 +16,12 @@ public class Mechanics {
   private BigMining bigMining;
   private BedrockBreak bedrockBreak;
   private Aura aura;
-  private KillMessage killMessage;
-
   private SpawnerBreak spawnerBreak;
   private MiningTools miningTools;
   private DropExperience dropExperience;
   private Infested infested;
+  private KillMessage killMessage;
+  private Stackable stackable;
 
   public Mechanics(String id) {
     this.id = id;
@@ -58,8 +58,12 @@ public class Mechanics {
   public void setInfested(List<EntityType> entities, List<String> mythicMobs, double probability, String selector, boolean particles, boolean drop) {
     this.infested = new Infested(entities, mythicMobs, probability, selector, particles, drop);
   }
-
+  
   public void setKillMessage(String deathMessage) {
     this.killMessage = new KillMessage(deathMessage);
+  }
+  
+  public void setStackable(String next, String group){
+    this.stackable = new Stackable(next, group);
   }
 }
