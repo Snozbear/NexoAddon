@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -102,6 +103,7 @@ public class ItemConfigUtil {
         loadInfested(itemSection, mechanic);
         loadKillMessage(itemSection, mechanic);
         loadStackableStringblockMechanic(itemSection, mechanic);
+        loadDecayMechanic(itemSection, mechanic);
       });
     }
   }
@@ -214,6 +216,33 @@ public class ItemConfigUtil {
         && section.contains("Mechanics.custom_block.stackable.group")
     ) {
       mechanic.setStackable(section.getString("Mechanics.custom_block.stackable.next"), section.getString("Mechanics.custom_block.stackable.group"));
+    }
+  }
+
+  private static void loadDecayMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.decay.base")
+        && section.contains("Mechanics.custom_block.decay.time")
+        && section.contains("Mechanics.custom_block.decay.chance")
+        && section.contains("Mechanics.custom_block.decay.radius")
+        && section.contains("Mechanics.custom_block.type")
+        && section.getString("Mechanics.custom_block.type").equalsIgnoreCase("CHORUSBLOCK")
+    ) {
+      int time = section.getInt("Mechanics.custom_block.decay.time", 5);
+      double chance = section.getDouble("Mechanics.custom_block.decay.chance", 0.3);
+      List<String> base = section.getStringList("Mechanics.custom_block.decay.base");
+      int radius = section.getInt("Mechanics.custom_block.decay.radius", 5);
+
+      List<String> nexoBaseFinal = new ArrayList<>();
+      List<Material> baseFinal = new ArrayList<>();
+      for (String s : base) {
+        if(NexoItems.itemFromId(s) != null){
+          nexoBaseFinal.add(s);
+        }
+        else if(Material.matchMaterial(s) != null){
+          baseFinal.add(Material.matchMaterial(s));
+        }
+      }
+      mechanic.setDecay(time, chance, baseFinal, nexoBaseFinal, radius);
     }
   }
   

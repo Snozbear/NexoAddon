@@ -22,6 +22,7 @@ public class Mechanics {
   private Infested infested;
   private KillMessage killMessage;
   private Stackable stackable;
+  private Decay decay;
 
   public Mechanics(String id) {
     this.id = id;
@@ -66,4 +67,6 @@ public class Mechanics {
   public void setStackable(String next, String group){
     this.stackable = new Stackable(next, group);
   }
+
+  public void setDecay(int time, double chance, List<Material> base, List<String> nexoBase, int radius){this.decay = new Decay(time, chance, base, nexoBase, radius);}
 }
