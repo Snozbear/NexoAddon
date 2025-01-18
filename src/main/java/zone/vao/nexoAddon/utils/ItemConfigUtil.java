@@ -100,6 +100,7 @@ public class ItemConfigUtil {
         loadMiningToolsMechanic(itemSection, mechanic);
         loadDropExperienceMechanic(itemSection, mechanic);
         loadInfested(itemSection, mechanic);
+        loadKillMessage(itemSection, mechanic);
         loadStackableStringblockMechanic(itemSection, mechanic);
       });
     }
@@ -200,7 +201,14 @@ public class ItemConfigUtil {
       mechanic.setInfested(entities, mythicMobs, probability, selector, particles, drop);
     }
   }
-
+  
+  private static void loadKillMessage(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.kill_message")) {
+      String deathMessage = section.getString("Mechanics.kill_message", null);
+      mechanic.setKillMessage(deathMessage);
+    }
+  }
+  
   private static void loadStackableStringblockMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.custom_block.stackable.next")
         && section.contains("Mechanics.custom_block.stackable.group")
@@ -208,4 +216,5 @@ public class ItemConfigUtil {
       mechanic.setStackable(section.getString("Mechanics.custom_block.stackable.next"), section.getString("Mechanics.custom_block.stackable.group"));
     }
   }
+  
 }
