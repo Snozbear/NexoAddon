@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import static zone.vao.nexoAddon.handlers.ApiCompatibilityHandler.hasChoruses;
+
 public class BlockUtil {
 
   public static final Set<Material> UNBREAKABLE_BLOCKS = Sets.newHashSet(Material.BEDROCK, Material.BARRIER, Material.NETHER_PORTAL, Material.END_PORTAL_FRAME, Material.END_PORTAL, Material.END_GATEWAY);
@@ -26,7 +28,7 @@ public class BlockUtil {
     int radius = 10;
     World world = location.getWorld();
 
-    if (world == null) {
+    if (world == null || VersionUtil.nexoVersionLessThan("0.10.0") || !hasChoruses()) {
       return;
     }
 
