@@ -33,11 +33,11 @@ public class NexoStringBlockInteractListener implements Listener {
         || mechanicsItem == null || mechanicsItem.getStackable() == null
     ) return;
 
-    if(!mechanicsStringBlock.getStackable().getGroup().equalsIgnoreCase(mechanicsItem.getStackable().getGroup())
+    if(!mechanicsStringBlock.getStackable().group().equalsIgnoreCase(mechanicsItem.getStackable().group())
         || !ProtectionLib.canBuild(event.getPlayer(), event.getBlock().getLocation())
     ) return;
 
-    String nextStage = mechanicsStringBlock.getStackable().getNext();
+    String nextStage = mechanicsStringBlock.getStackable().next();
     StringBlockMechanic newBlock = NexoBlocks.stringMechanic(nextStage);
     if(newBlock == null) return;
 

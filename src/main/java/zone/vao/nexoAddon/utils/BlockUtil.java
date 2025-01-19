@@ -2,7 +2,6 @@ package zone.vao.nexoAddon.utils;
 
 import com.google.common.collect.Sets;
 import com.nexomc.nexo.api.NexoBlocks;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -74,13 +73,13 @@ public class BlockUtil {
         }
 
         boolean hasBaseNearby = false;
-        for (int x = -decay.getRadius(); x <= decay.getRadius(); x++) {
-          for (int y = -decay.getRadius(); y <= decay.getRadius(); y++) {
-            for (int z = -decay.getRadius(); z <= decay.getRadius(); z++) {
+        for (int x = -decay.radius(); x <= decay.radius(); x++) {
+          for (int y = -decay.radius(); y <= decay.radius(); y++) {
+            for (int z = -decay.radius(); z <= decay.radius(); z++) {
               Block nearbyBlock = block.getLocation().add(x, y, z).getBlock();
-              if (decay.getBase().contains(nearbyBlock.getType())
+              if (decay.base().contains(nearbyBlock.getType())
                   || NexoBlocks.noteBlockMechanic(nearbyBlock) != null
-                  && decay.getNexoBase().contains(NexoBlocks.noteBlockMechanic(nearbyBlock).getItemID())
+                  && decay.nexoBase().contains(NexoBlocks.noteBlockMechanic(nearbyBlock).getItemID())
               ) {
                 hasBaseNearby = true;
                 break;
@@ -90,7 +89,7 @@ public class BlockUtil {
           if (hasBaseNearby) break;
         }
 
-        if (!hasBaseNearby && Math.random() <= decay.getChance()) {
+        if (!hasBaseNearby && Math.random() <= decay.chance()) {
           new BukkitRunnable() {
             @Override
             public void run(){
@@ -101,6 +100,6 @@ public class BlockUtil {
           cancel();
         }
       }
-    }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0, decay.getTime() * 20L);
+    }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0, decay.time() * 20L);
   }
 }

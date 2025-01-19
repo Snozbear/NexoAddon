@@ -20,7 +20,7 @@ public class EntityDeathListener implements Listener {
             Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(nexoItemId);
             if (mechanics == null || mechanics.getKillMessage() == null) return;
 
-            String deathMessage = mechanics.getKillMessage().getDeathMessage();
+            String deathMessage = mechanics.getKillMessage().deathMessage();
             deathMessage = deathMessage.replace("<player>", event.getEntity().getName());
             deathMessage = deathMessage.replace("<killer>", killer.getName());
             event.deathMessage(MiniMessage.miniMessage().deserialize(deathMessage));

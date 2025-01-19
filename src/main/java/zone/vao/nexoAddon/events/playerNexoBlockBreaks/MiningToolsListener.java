@@ -11,13 +11,10 @@ import com.nexomc.nexo.utils.drops.Loot;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
-import zone.vao.nexoAddon.utils.EventUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +40,14 @@ public class MiningToolsListener {
     if (mechanics == null || mechanics.getMiningTools() == null) return;
 
     if(NexoItems.idFromItem(tool) != null
-        && mechanics.getMiningTools().getNexoIds().contains(NexoItems.idFromItem(tool))
+        && mechanics.getMiningTools().nexoIds().contains(NexoItems.idFromItem(tool))
     ) return;
 
-    if(mechanics.getMiningTools().getMaterials().contains(tool.getType())) return;
+    if(mechanics.getMiningTools().materials().contains(tool.getType())) return;
 
     event.setCancelled(true);
 
-    if(mechanics.getMiningTools().getType().equalsIgnoreCase("CANCEL_DROP")){
+    if(mechanics.getMiningTools().type().equalsIgnoreCase("CANCEL_DROP")){
 
       List<Loot> loots = new ArrayList<>();
       Drop drop = new Drop(loots, false, false, NexoBlocks.customBlockMechanic(location).getItemID());

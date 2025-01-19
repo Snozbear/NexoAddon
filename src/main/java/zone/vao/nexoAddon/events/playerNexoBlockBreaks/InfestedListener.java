@@ -24,16 +24,16 @@ public class InfestedListener {
         if (shouldCancelEvent(event, mechanics)) return;
 
         Infested infested = mechanics.getInfested();
-        if (Math.random() > infested.getProbability()) return;
+        if (Math.random() > infested.probability()) return;
 
         handleDrop(event, infested);
         handleParticles(event, infested);
 
         List<Object> allEntities = collectEntities(infested);
 
-        if (infested.getSelector().equalsIgnoreCase("all")) {
+        if (infested.selector().equalsIgnoreCase("all")) {
             spawnAllEntities(event, allEntities);
-        } else if (infested.getSelector().equalsIgnoreCase("random")) {
+        } else if (infested.selector().equalsIgnoreCase("random")) {
             spawnRandomEntity(event, allEntities);
         }
     }
@@ -47,7 +47,7 @@ public class InfestedListener {
     }
 
     private static void handleDrop(NexoNoteBlockBreakEvent event, Infested infested) {
-        if (!infested.isDrop()) {
+        if (!infested.drop()) {
             event.setDrop(new Drop(
                     Collections.emptyList(),
                     false,
@@ -58,15 +58,15 @@ public class InfestedListener {
     }
 
     private static void handleParticles(NexoNoteBlockBreakEvent event, Infested infested) {
-        if (infested.isParticles()) {
+        if (infested.particles()) {
             spawnParticles(event.getBlock());
         }
     }
 
     private static List<Object> collectEntities(Infested infested) {
         List<Object> allEntities = new ArrayList<>();
-        allEntities.addAll(infested.getEntities());
-        allEntities.addAll(infested.getMythicMobs());
+        allEntities.addAll(infested.entities());
+        allEntities.addAll(infested.mythicMobs());
         return allEntities;
     }
 
