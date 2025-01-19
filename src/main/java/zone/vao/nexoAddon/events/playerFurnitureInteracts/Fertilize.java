@@ -37,7 +37,7 @@ public class Fertilize {
     if(itemId == null
         || !NexoAddon.getInstance().getComponents().containsKey(itemId)
         || fertilizer == null
-        || !fertilizer.getUsableOn().contains(furnitureId)
+        || !fertilizer.usableOn().contains(furnitureId)
         || !event.getBaseEntity().getPersistentDataContainer().has(EVOLUTION_KEY, PersistentDataType.INTEGER)
         || (event.getBaseEntity().getPersistentDataContainer().get(EVOLUTION_KEY, PersistentDataType.INTEGER) >= NexoFurniture.furnitureMechanic(event.getBaseEntity()).getEvolution().getDelay())
         || !(ProtectionLib.canInteract(player, event.getBaseEntity().getLocation()) && ProtectionLib.canUse(player, event.getBaseEntity().getLocation()))
@@ -51,7 +51,7 @@ public class Fertilize {
 
     int evolutionTime = container.get(EVOLUTION_KEY, PersistentDataType.INTEGER);
 
-    evolutionTime += component.getFertilizer().getGrowthSpeedup();
+    evolutionTime += component.getFertilizer().growthSpeedup();
 
     container.set(EVOLUTION_KEY, PersistentDataType.INTEGER, evolutionTime);
 

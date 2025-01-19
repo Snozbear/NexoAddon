@@ -43,7 +43,7 @@ public class SkullUtil {
           NexoPlugin.instance().configsManager().parseItemConfig$core().get(file).remove(key);
           final SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
 
-          PlayerProfile profile = getProfileBase64(component.getSkullValue().getValue(), key);
+          PlayerProfile profile = getProfileBase64(component.getSkullValue().value(), key);
           if(profile == null) return;
           meta.setPlayerProfile(profile);
 

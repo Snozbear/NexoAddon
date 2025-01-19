@@ -60,9 +60,9 @@ public class EquippableListener {
 
     InventoryUtil.removePartialStack(player, player.getInventory().getItemInMainHand(), 1);
 
-    ItemStack previousItem = player.getInventory().getItem(componentItem.getEquippable().getSlot());
+    ItemStack previousItem = player.getInventory().getItem(componentItem.getEquippable().slot());
 
-    player.getInventory().setItem(componentItem.getEquippable().getSlot(), itemToEquip);
+    player.getInventory().setItem(componentItem.getEquippable().slot(), itemToEquip);
 
     returnPreviousItemToInventory(player, previousItem);
   }
