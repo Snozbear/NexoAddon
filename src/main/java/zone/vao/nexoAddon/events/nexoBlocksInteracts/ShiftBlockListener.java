@@ -24,8 +24,8 @@ public class ShiftBlockListener {
     if(customBlockMechanic == null) return;
     ItemStack itemStack = event.getItemInHand();
     if (
-        (mechanics.getShiftBlock().materials().isEmpty() || !mechanics.getShiftBlock().materials().contains(itemStack.getType()))
-            && (mechanics.getShiftBlock().nexoIds().isEmpty() || !mechanics.getShiftBlock().nexoIds().contains(NexoItems.idFromItem(itemStack)))
+        (!mechanics.getShiftBlock().materials().isEmpty() && (itemStack == null || !mechanics.getShiftBlock().materials().contains(itemStack.getType())))
+            && (!mechanics.getShiftBlock().nexoIds().isEmpty() && (itemStack == null || !mechanics.getShiftBlock().nexoIds().contains(NexoItems.idFromItem(itemStack))))
     ) {
       return;
     }
