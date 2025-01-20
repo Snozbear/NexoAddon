@@ -1,6 +1,5 @@
 package zone.vao.nexoAddon.classes.mechanic;
 
-import lombok.Getter;
 import org.bukkit.Material;
 
 import java.util.List;

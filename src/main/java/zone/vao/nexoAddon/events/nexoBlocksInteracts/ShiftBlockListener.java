@@ -4,8 +4,6 @@ import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.api.events.custom_block.NexoBlockInteractEvent;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
-import org.bukkit.Bukkit;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import zone.vao.nexoAddon.NexoAddon;

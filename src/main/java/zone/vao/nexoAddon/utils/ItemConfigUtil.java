@@ -1,7 +1,6 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,7 +12,10 @@ import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.Mechanics;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ItemConfigUtil {
 
