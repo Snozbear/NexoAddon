@@ -3,17 +3,20 @@ package zone.vao.nexoAddon;
 import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.jeff_media.customblockdata.CustomBlockData;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
+import com.nexomc.nexo.api.NexoBlocks;
 import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -100,6 +103,15 @@ public final class NexoAddon extends JavaPlugin {
     RecipeManager.clearRegisteredRecipes();
     if(protocolLibLoaded){
       protocolManager.removePacketListeners(this);
+    }
+    for (Location shiftblock : BlockUtil.processedShiftblocks) {
+      PersistentDataContainer pdc = new CustomBlockData(shiftblock.getBlock(), this);
+      String targetBlock =  pdc.get(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"), PersistentDataType.STRING);
+      if(targetBlock == null || NexoBlocks.blockData(targetBlock) == null) continue;
+
+      shiftblock.getBlock().setBlockData(NexoBlocks.blockData(targetBlock));
+
+      pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
     }
   }
 
@@ -192,6 +204,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new NexoBlockBreakListener());
     registerEvent(new EntityDeathListener());
     registerEvent(new NexoStringBlockInteractListener());
+    registerEvent(new NexoBlockInteractListener());
   }
 
   private void initializeMetrics() {

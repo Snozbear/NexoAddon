@@ -104,6 +104,7 @@ public class ItemConfigUtil {
         loadKillMessage(itemSection, mechanic);
         loadStackableStringblockMechanic(itemSection, mechanic);
         loadDecayMechanic(itemSection, mechanic);
+        loadShiftBlockMechanic(itemSection, mechanic);
       });
     }
   }
@@ -243,6 +244,26 @@ public class ItemConfigUtil {
         }
       }
       mechanic.setDecay(time, chance, baseFinal, nexoBaseFinal, radius);
+    }
+  }
+
+  private static void loadShiftBlockMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.shiftblock.time")
+        && section.contains("Mechanics.custom_block.shiftblock.replace_to")
+    ) {
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+      if(section.contains("Mechanics.custom_block.shiftblock.items")){
+        for (String s : section.getStringList("Mechanics.custom_block.shiftblock.items")) {
+          if(NexoItems.itemFromId(s) != null){
+            nexoIds.add(s);
+          }else if(Material.matchMaterial(s) != null){
+            materials.add(Material.matchMaterial(s));
+          }
+        }
+      }
+
+      mechanic.setShiftBlock(section.getString("Mechanics.custom_block.shiftblock.replace_to"), section.getInt("Mechanics.custom_block.shiftblock.time",200), materials, nexoIds);
     }
   }
   

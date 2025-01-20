@@ -23,6 +23,7 @@ public class Mechanics {
   private KillMessage killMessage;
   private Stackable stackable;
   private Decay decay;
+  private ShiftBlock shiftBlock;
 
   public Mechanics(String id) {
     this.id = id;
@@ -69,4 +70,6 @@ public class Mechanics {
   }
 
   public void setDecay(int time, double chance, List<Material> base, List<String> nexoBase, int radius){this.decay = new Decay(time, chance, base, nexoBase, radius);}
+
+  public void setShiftBlock(String replaceTo, int time, List<Material> materials, List<String> nexoIds){this.shiftBlock = new ShiftBlock(replaceTo, time, materials, nexoIds);}
 }

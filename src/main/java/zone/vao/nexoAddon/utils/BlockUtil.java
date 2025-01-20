@@ -1,11 +1,16 @@
 package zone.vao.nexoAddon.utils;
 
 import com.google.common.collect.Sets;
+import com.jeff_media.customblockdata.CustomBlockData;
 import com.nexomc.nexo.api.NexoBlocks;
+import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
@@ -22,7 +27,55 @@ public class BlockUtil {
 
   public static final Set<Material> UNBREAKABLE_BLOCKS = Sets.newHashSet(Material.BEDROCK, Material.BARRIER, Material.NETHER_PORTAL, Material.END_PORTAL_FRAME, Material.END_PORTAL, Material.END_GATEWAY);
   private static final List<Location> processedChoruses = Collections.synchronizedList(new ArrayList<>());
+  public static final List<Location> processedShiftblocks = Collections.synchronizedList(new ArrayList<>());
 
+
+  public static void startShiftBlock(Location location, CustomBlockMechanic to, CustomBlockMechanic target, int time) {
+    World world = location.getWorld();
+    if(world == null || processedShiftblocks.contains(location)) return;
+
+    Location finalLocation = location.clone();
+
+    processedShiftblocks.add(location);
+    PersistentDataContainer pdc = new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
+    pdc.set(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"), PersistentDataType.STRING, target.getItemID());
+    finalLocation.getBlock().setType(Material.AIR);
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        NexoBlocks.place(to.getItemID(), finalLocation);
+      }
+    }.runTaskLater(NexoAddon.getInstance(), 1);
+
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        if(!NexoBlocks.isCustomBlock(finalLocation.getBlock()) ||
+            !NexoBlocks.customBlockMechanic(finalLocation).getItemID().equalsIgnoreCase(to.getItemID())
+        ) {
+          cancel();
+          processedShiftblocks.remove(finalLocation);
+          pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+          return;
+        }
+
+        new BukkitRunnable() {
+          @Override
+          public void run() {
+            finalLocation.getBlock().setType(Material.AIR);
+          }
+        }.runTask(NexoAddon.getInstance());
+        new BukkitRunnable() {
+          @Override
+          public void run() {
+            NexoBlocks.place(target.getItemID(), finalLocation);
+          }
+        }.runTaskLater(NexoAddon.getInstance(), 1);
+        processedShiftblocks.remove(finalLocation);
+        pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+      }
+    }.runTaskLaterAsynchronously(NexoAddon.getInstance(), time*20L);
+  }
 
   public static void startDecay(Location location) {
     int radius = 10;

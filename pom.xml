@@ -49,6 +49,10 @@
                             <shadedPattern>zone.vao.thirdparties.updatechecker</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>com.jeff_media.customblockdata</pattern>
+                            <shadedPattern>zone.vao.thirdparties.customblockdata</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>co.aikar.commands</pattern>
                             <shadedPattern>zone.vao.thirdparties.aikar.commands</shadedPattern>
                         </relocation>
@@ -179,6 +183,12 @@
             <artifactId>Mythic-Dist</artifactId>
             <version>5.6.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jeff-media</groupId>
+            <artifactId>custom-block-data</artifactId>
+            <version>2.2.3</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
