@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerTextures;
+import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
 
@@ -35,23 +36,28 @@ public class SkullUtil {
 
         ItemStack itemStack = item.build();
 
-        NexoItems.itemMap().forEach((file, items) -> {
+        new BukkitRunnable() {
+          @Override
+          public void run(){
+            NexoItems.itemMap().forEach((file, items) -> {
 
-          if(!items.containsKey(key)) return;
+              if(!items.containsKey(key)) return;
 
-          NexoItems.itemMap().get(file).remove(key);
-          NexoPlugin.instance().configsManager().parseItemConfig$core().get(file).remove(key);
-          final SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
+              NexoItems.itemMap().get(file).remove(key);
+              NexoPlugin.instance().configsManager().parseItemConfig$core().get(file).remove(key);
+              final SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
 
-          PlayerProfile profile = getProfileBase64(component.getSkullValue().value(), key);
-          if(profile == null) return;
-          meta.setPlayerProfile(profile);
+              PlayerProfile profile = getProfileBase64(component.getSkullValue().value(), key);
+              if(profile == null) return;
+              meta.setPlayerProfile(profile);
 
-          itemStack.setItemMeta(meta);
-          ItemBuilder itemBuilder =  new ItemBuilder(itemStack);
+              itemStack.setItemMeta(meta);
+              ItemBuilder itemBuilder =  new ItemBuilder(itemStack);
 
-          NexoItems.itemMap().get(file).put(key, itemBuilder);
-        });
+              NexoItems.itemMap().get(file).put(key, itemBuilder);
+            });
+          }
+        }.runTaskAsynchronously(NexoAddon.getInstance());
       });
     });
   }
