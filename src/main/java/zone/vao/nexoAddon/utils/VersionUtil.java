@@ -6,8 +6,16 @@ public class VersionUtil {
 
   public static boolean isVersionLessThan(String targetVersion) {
     String version = Bukkit.getBukkitVersion();
-    String[] versionParts = version.split("-")[0].split("\\.");
+    return checkVersion(targetVersion, version);
+  }
 
+  public static boolean nexoVersionLessThan(String targetVersion) {
+    String version = Bukkit.getPluginManager().getPlugin("Nexo").getDescription().getVersion();
+    return checkVersion(targetVersion, version);
+  }
+
+  private static boolean checkVersion(String targetVersion, String version) {
+    String[] versionParts = version.split("-")[0].split("\\.");
     String[] targetVersionParts = targetVersion.split("\\.");
 
     int length = Math.max(versionParts.length, targetVersionParts.length);
@@ -26,7 +34,6 @@ public class VersionUtil {
         return false;
       }
     }
-
     return false;
   }
 }

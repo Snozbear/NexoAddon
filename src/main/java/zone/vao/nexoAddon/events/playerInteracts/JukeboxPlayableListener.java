@@ -61,7 +61,7 @@ public class JukeboxPlayableListener {
     if (component != null && component.getPlayable() != null) {
       jukebox.getWorld().getNearbyEntities(jukebox.getLocation(), 16,16,16).forEach(entity -> {
         if(entity instanceof Player player){
-          player.stopSound(component.getPlayable().getSongKey(), SoundCategory.RECORDS);
+          player.stopSound(component.getPlayable().songKey(), SoundCategory.RECORDS);
         }
       });
     }
@@ -114,13 +114,13 @@ public class JukeboxPlayableListener {
 
     jukebox.getWorld().playSound(
         jukebox.getLocation(),
-        component.getPlayable().getSongKey(),
+        component.getPlayable().songKey(),
         SoundCategory.RECORDS,
         1f,
         1f
     );
 
-    NexoAddon.getInstance().jukeboxLocations.put(jukebox.getLocation().toString(), component.getPlayable().getSongKey());
+    NexoAddon.getInstance().jukeboxLocations.put(jukebox.getLocation().toString(), component.getPlayable().songKey());
     InventoryUtil.removePartialStack(player, player.getInventory().getItemInMainHand(), 1);
   }
 }
