@@ -76,7 +76,7 @@ public class ItemConfigUtil {
 
   private static void loadSkullValueComponent(ConfigurationSection section, Components component) {
     if (section.contains("Components.skull_value")) {
-      String value = section.getString("Components.skull_value", SkullUtil.NEXO_HEAD_BASE64);
+      String value = section.getString("Components.skull_value", SkullUtil.NEXOADDON_HEAD_BASE64);
       component.setSkullValue(value);
     }
   }
