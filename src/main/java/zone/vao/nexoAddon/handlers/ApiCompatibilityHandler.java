@@ -1,5 +1,6 @@
 package zone.vao.nexoAddon.handlers;
 
+import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 
 import java.lang.reflect.Method;
@@ -19,6 +20,15 @@ public class ApiCompatibilityHandler {
       }
     } catch (Exception e) {
       throw new RuntimeException("Error invoking method on mechanic", e);
+    }
+  }
+
+  public static boolean hasChoruses() {
+    try {
+      Method oldMethod = NexoBlocks.INSTANCE.getClass().getMethod("isNexoChorusBlock");
+      return oldMethod != null;
+    } catch (NoSuchMethodException e) {
+      return false;
     }
   }
 }

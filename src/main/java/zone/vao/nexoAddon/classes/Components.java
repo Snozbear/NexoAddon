@@ -5,6 +5,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.classes.component.Equippable;
 import zone.vao.nexoAddon.classes.component.Fertilizer;
 import zone.vao.nexoAddon.classes.component.JukeboxPlayable;
+import zone.vao.nexoAddon.classes.component.SkullValue;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Components {
   private Equippable equippable;
   private JukeboxPlayable playable;
   private Fertilizer fertilizer;
+  private SkullValue skullValue;
 
   public Components(String id) {
     this.id = id;
@@ -28,8 +30,8 @@ public class Components {
     this.playable = new JukeboxPlayable(songKey);
   }
 
-  public void setFertilizer(int growthSpeedup, List<String> usableOn) {
-    this.fertilizer = new Fertilizer(growthSpeedup, usableOn);
-  }
+  public void setFertilizer(int growthSpeedup, List<String> usableOn) {this.fertilizer = new Fertilizer(growthSpeedup, usableOn);}
+
+  public void setSkullValue(String value){this.skullValue = new SkullValue(value);}
 }
 
