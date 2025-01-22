@@ -2,6 +2,7 @@ package zone.vao.nexoAddon.events.blockBreaks;
 
 import com.nexomc.nexo.api.NexoItems;
 import io.th0rgal.protectionlib.ProtectionLib;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -56,7 +57,7 @@ public class SpawnerBreakListener {
         ItemMeta spawnerMeta = spawnerItem.getItemMeta();
 
         if (spawnerMeta != null) {
-            spawnerMeta.setDisplayName(entityType.name() + " Spawner");
+            spawnerMeta.displayName(Component.text(entityType.name() + " Spawner"));
             spawnerMeta.getPersistentDataContainer()
                     .set(new NamespacedKey(NexoAddon.getInstance(), SPAWNER_TYPE_KEY), PersistentDataType.STRING, entityType.name());
             spawnerItem.setItemMeta(spawnerMeta);
