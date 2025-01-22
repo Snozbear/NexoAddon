@@ -61,9 +61,9 @@ public class PrepareRecipesListener implements Listener {
 
     if (baseMeta == null || resultMeta == null) return;
 
-    resultMeta.displayName(baseMeta.hasDisplayName() ? baseMeta.displayName() : resultMeta.displayName());
+    resultMeta.setDisplayName(baseMeta.hasDisplayName() ? baseMeta.getDisplayName() : resultMeta.getDisplayName());
     if (!resultMeta.hasLore() && baseMeta.hasLore()) {
-      resultMeta.lore(baseMeta.lore());
+      resultMeta.setLore(baseMeta.getLore());
     }
 
     boolean copyTrim = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_trim", false);
@@ -109,7 +109,7 @@ public class PrepareRecipesListener implements Listener {
         if (!customItem.getType().equals(item.getType())) return false;
 
         if (customItem.hasItemMeta() && customItem.getItemMeta().hasDisplayName()) {
-          if (!Objects.equals(customItem.getItemMeta().displayName(), item.getItemMeta().displayName())) {
+          if (!Objects.equals(customItem.getItemMeta().getDisplayName(), item.getItemMeta().getDisplayName())) {
             return false;
           }
         }
@@ -156,19 +156,19 @@ public class PrepareRecipesListener implements Listener {
     event.setCancelled(true);
     player.playSound(player, Sound.BLOCK_SMITHING_TABLE_USE, 1.0F, 1.0F);
 
-    processIngredients(smithingInventory);
+    processIngredients(smithingInventory, player);
 
     smithingInventory.setResult(null);
     player.getInventory().addItem(result);
   }
 
-  private void processIngredients(SmithingInventory inventory) {
-    consumeItem(inventory, 0);
-    consumeItem(inventory, 1);
-    consumeItem(inventory, 2);
+  private void processIngredients(SmithingInventory inventory, Player player) {
+    consumeItem(inventory, 0, player);
+    consumeItem(inventory, 1, player);
+    consumeItem(inventory, 2, player);
   }
 
-  private void consumeItem(SmithingInventory inventory, int slot) {
+  private void consumeItem(SmithingInventory inventory, int slot, Player player) {
     ItemStack item = inventory.getItem(slot);
     if (item == null || item.getAmount() <= 1) {
       inventory.setItem(slot, null);
