@@ -12,7 +12,10 @@ import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.Mechanics;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ItemConfigUtil {
 
@@ -40,6 +43,7 @@ public class ItemConfigUtil {
         loadEquippableComponent(itemSection, component);
         loadJukeboxPlayableComponent(itemSection, component);
         loadFertilizerComponent(itemSection, component);
+        loadSkullValueComponent(itemSection, component);
       });
     }
   }
@@ -70,6 +74,14 @@ public class ItemConfigUtil {
     }
   }
 
+  private static void loadSkullValueComponent(ConfigurationSection section, Components component) {
+    if (section.contains("Components.skull_value")) {
+      String value = section.getString("Components.skull_value", SkullUtil.NEXO_HEAD_BASE64);
+      component.setSkullValue(value);
+    }
+  }
+
+
   public static void loadMechanics() {
     NexoAddon.getInstance().getMechanics().clear();
 
@@ -91,6 +103,10 @@ public class ItemConfigUtil {
         loadMiningToolsMechanic(itemSection, mechanic);
         loadDropExperienceMechanic(itemSection, mechanic);
         loadInfested(itemSection, mechanic);
+        loadKillMessage(itemSection, mechanic);
+        loadStackableStringblockMechanic(itemSection, mechanic);
+        loadDecayMechanic(itemSection, mechanic);
+        loadShiftBlockMechanic(itemSection, mechanic);
       });
     }
   }
@@ -163,10 +179,9 @@ public class ItemConfigUtil {
   }
 
   private static void loadInfested(ConfigurationSection section, Mechanics mechanic) {
-    if (section.contains("Mechanics.custom_block.infested.entities")) {
+    if (section.contains("Mechanics.custom_block.infested.entities") || section.contains("Mechanics.custom_block.infested.mythic-mobs")) {
       List<String> values = section.getStringList("Mechanics.custom_block.infested.entities");
       List<EntityType> entities = new ArrayList<>();
-
       for (String value : values) {
         try {
           EntityType entityType = EntityType.valueOf(value.toUpperCase());
@@ -176,12 +191,82 @@ public class ItemConfigUtil {
         }
       }
 
+      List<String> mythicMobs = List.of();
+      if(NexoAddon.getInstance().isMythicMobsLoaded() && section.contains("Mechanics.custom_block.infested.mythic-mobs")) {
+        mythicMobs = section.getStringList("Mechanics.custom_block.infested.mythic-mobs");
+      } else if(!NexoAddon.getInstance().isMythicMobsLoaded() && section.contains("Mechanics.custom_block.infested.mythic-mobs")){
+        NexoAddon.getInstance().getLogger().warning("MythicMobs is not loaded! Skipping `infested.mythic-mobs`");
+      }
+
       double probability = section.getDouble("Mechanics.custom_block.infested.probability", 1.0);
       String selector = section.getString("Mechanics.custom_block.infested.selector", "all");
       boolean particles = section.getBoolean("Mechanics.custom_block.infested.particles", false);
+      boolean drop = section.getBoolean("Mechanics.custom_block.infested.drop-loot", true);
 
-      mechanic.setInfested(entities, probability, selector, particles);
+      mechanic.setInfested(entities, mythicMobs, probability, selector, particles, drop);
+    }
+  }
+  
+  private static void loadKillMessage(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.kill_message")) {
+      String deathMessage = section.getString("Mechanics.kill_message", null);
+      mechanic.setKillMessage(deathMessage);
+    }
+  }
+  
+  private static void loadStackableStringblockMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.stackable.next")
+        && section.contains("Mechanics.custom_block.stackable.group")
+    ) {
+      mechanic.setStackable(section.getString("Mechanics.custom_block.stackable.next"), section.getString("Mechanics.custom_block.stackable.group"));
     }
   }
 
+  private static void loadDecayMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.decay.base")
+        && section.contains("Mechanics.custom_block.decay.time")
+        && section.contains("Mechanics.custom_block.decay.chance")
+        && section.contains("Mechanics.custom_block.decay.radius")
+        && section.contains("Mechanics.custom_block.type")
+        && section.getString("Mechanics.custom_block.type").equalsIgnoreCase("CHORUSBLOCK")
+    ) {
+      int time = section.getInt("Mechanics.custom_block.decay.time", 5);
+      double chance = section.getDouble("Mechanics.custom_block.decay.chance", 0.3);
+      List<String> base = section.getStringList("Mechanics.custom_block.decay.base");
+      int radius = section.getInt("Mechanics.custom_block.decay.radius", 5);
+
+      List<String> nexoBaseFinal = new ArrayList<>();
+      List<Material> baseFinal = new ArrayList<>();
+      for (String s : base) {
+        if(NexoItems.itemFromId(s) != null){
+          nexoBaseFinal.add(s);
+        }
+        else if(Material.matchMaterial(s) != null){
+          baseFinal.add(Material.matchMaterial(s));
+        }
+      }
+      mechanic.setDecay(time, chance, baseFinal, nexoBaseFinal, radius);
+    }
+  }
+
+  private static void loadShiftBlockMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.shiftblock.time")
+        && section.contains("Mechanics.custom_block.shiftblock.replace_to")
+    ) {
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+      if(section.contains("Mechanics.custom_block.shiftblock.items")){
+        for (String s : section.getStringList("Mechanics.custom_block.shiftblock.items")) {
+          if(NexoItems.itemFromId(s) != null){
+            nexoIds.add(s);
+          }else if(Material.matchMaterial(s) != null){
+            materials.add(Material.matchMaterial(s));
+          }
+        }
+      }
+
+      mechanic.setShiftBlock(section.getString("Mechanics.custom_block.shiftblock.replace_to"), section.getInt("Mechanics.custom_block.shiftblock.time",200), materials, nexoIds);
+    }
+  }
+  
 }
