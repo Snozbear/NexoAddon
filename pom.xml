@@ -6,7 +6,7 @@
 
     <groupId>zone.vao</groupId>
     <artifactId>NexoAddon</artifactId>
-    <version>1.7.2-dev</version>
+    <version>1.8.0</version>
     <packaging>jar</packaging>
 
     <name>NexoAddon</name>
