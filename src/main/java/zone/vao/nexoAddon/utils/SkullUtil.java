@@ -19,7 +19,7 @@ import java.util.*;
 
 public class SkullUtil {
 
-  public static String NEXO_HEAD_BASE64 = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWY1ZTgzNWMxMTZlOGUyMDBlMmUwNmFhNTkzY2FiOGYxYTlmOGM0MGU3ZjAwNWE5Yzc2ZjEyZTI0ZjRjNjM3MCJ9fX0=";
+  public static String NEXOADDON_HEAD_BASE64 = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWY1ZTgzNWMxMTZlOGUyMDBlMmUwNmFhNTkzY2FiOGYxYTlmOGM0MGU3ZjAwNWE5Yzc2ZjEyZTI0ZjRjNjM3MCJ9fX0=";
 
   public static void applyTextures(){
 
@@ -64,7 +64,11 @@ public class SkullUtil {
       urlObject = getUrlFromBase64(base64);
     } catch (MalformedURLException exception) {
       NexoAddon.getInstance().getLogger().warning("Invalid base64: "+itemId);
-      return null;
+      try {
+        urlObject = getUrlFromBase64(NEXOADDON_HEAD_BASE64);
+      } catch(MalformedURLException ignored) {
+        return null;
+      }
     }
     textures.setSkin(urlObject);
     profile.setTextures(textures);
