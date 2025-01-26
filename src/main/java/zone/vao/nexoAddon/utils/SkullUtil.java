@@ -36,28 +36,23 @@ public class SkullUtil {
 
         ItemStack itemStack = item.build();
 
-        new BukkitRunnable() {
-          @Override
-          public void run(){
-            NexoItems.itemMap().forEach((file, items) -> {
+        NexoItems.itemMap().forEach((file, items) -> {
 
-              if(!items.containsKey(key)) return;
+          if(!items.containsKey(key)) return;
 
-              NexoItems.itemMap().get(file).remove(key);
-              NexoPlugin.instance().configsManager().parseItemConfig$core().get(file).remove(key);
-              final SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
+          NexoItems.itemMap().get(file).remove(key);
+          NexoPlugin.instance().configsManager().parseItemConfig$core().get(file).remove(key);
+          final SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
 
-              PlayerProfile profile = getProfileBase64(component.getSkullValue().value(), key);
-              if(profile == null) return;
-              meta.setPlayerProfile(profile);
+          PlayerProfile profile = getProfileBase64(component.getSkullValue().value(), key);
+          if(profile == null) return;
+          meta.setPlayerProfile(profile);
 
-              itemStack.setItemMeta(meta);
-              ItemBuilder itemBuilder =  new ItemBuilder(itemStack);
+          itemStack.setItemMeta(meta);
+          ItemBuilder itemBuilder =  new ItemBuilder(itemStack);
 
-              NexoItems.itemMap().get(file).put(key, itemBuilder);
-            });
-          }
-        }.runTaskAsynchronously(NexoAddon.getInstance());
+          NexoItems.itemMap().get(file).put(key, itemBuilder);
+        });
       });
     });
   }
