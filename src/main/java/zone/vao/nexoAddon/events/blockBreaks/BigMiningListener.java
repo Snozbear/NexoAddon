@@ -101,7 +101,7 @@ public class BigMiningListener {
     if (!EventUtil.callEvent(blockBreakEvent)) return;
 
     if (blockBreakEvent.isDropItems()) {
-      block.breakNaturally(tool);
+      block.breakNaturally(tool, true, true);
     } else {
       block.setType(Material.AIR);
     }
