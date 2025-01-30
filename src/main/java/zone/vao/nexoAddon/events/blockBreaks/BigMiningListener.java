@@ -18,6 +18,7 @@ import zone.vao.nexoAddon.utils.BlockUtil;
 import zone.vao.nexoAddon.utils.EventUtil;
 
 import java.util.List;
+import java.util.Set;
 
 public class BigMiningListener {
 
@@ -35,7 +36,7 @@ public class BigMiningListener {
       return;
     }
 
-    List<Block> targetBlocks = player.getLastTwoTargetBlocks(null, 5);
+    List<Block> targetBlocks = player.getLastTwoTargetBlocks(Set.of(Material.AIR, Material.WATER, Material.LAVA, Material.LADDER), 5);
     if (targetBlocks.size() < 2) return;
 
     BigMining bigMiningMechanic = NexoAddon.getInstance()
