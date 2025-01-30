@@ -3,6 +3,7 @@ package zone.vao.nexoAddon.events;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.populators.orePopulator.CustomOrePopulator;
@@ -32,6 +33,13 @@ public class WorldLoadListener implements Listener {
         });
       }
     }.runTaskLater(NexoAddon.getInstance(), 20L*5);
+
+  }
+
+  @EventHandler
+  public void onWorldLoad(WorldUnloadEvent event) {
+
+    NexoAddon.getInstance().removePopulators(event.getWorld());
 
   }
 }
