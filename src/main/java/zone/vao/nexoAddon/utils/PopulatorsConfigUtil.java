@@ -5,9 +5,7 @@ import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -108,8 +106,6 @@ public class PopulatorsConfigUtil {
     List<World> worlds = parseWorlds(section.getStringList("worlds"));
     List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
     if (worlds.isEmpty()) return null;
-    if(biomes.isEmpty())
-      biomes = worlds.get(0).getBiomeProvider().getBiomes(worlds.get(0)).stream().toList();
 
     List<Material> replaceMaterials = parseMaterials(section.getStringList("replace"));
     List<Material> placeOnMaterials = parseMaterials(section.getStringList("place_on"));
@@ -210,19 +206,15 @@ public class PopulatorsConfigUtil {
   }
 
   private List<Biome> parseBiomes(List<World> worlds, List<String> biomeNames) {
-    List<Biome> availableBiomes = getAllBiomes();
+    List<Biome> availableBiomes = new ArrayList<>();
 
-    if (biomeNames.isEmpty()) return availableBiomes;
-
-    for (World world : worlds) {
-      if(world.getBiomeProvider() == null) continue;
-      for (Biome biome : world.getBiomeProvider().getBiomes(world)) {
-          if (biomeNames.contains(biome.getKey().getKey())) {
-            availableBiomes.add(biome);
+      for (Biome biome : getAllBiomes()) {
+        if (biomeNames.contains(biome.name().toUpperCase().replace(" ", "_"))) {
+          availableBiomes.add(biome);
         }
-      }
     }
-    return availableBiomes;
+
+    return availableBiomes.isEmpty() ? getAllBiomes() : availableBiomes;
   }
 
   private List<Biome> getAllBiomes() {
@@ -230,8 +222,7 @@ public class PopulatorsConfigUtil {
       Method valuesMethod = Biome.class.getDeclaredMethod("values");
       return Arrays.asList((Biome[]) valuesMethod.invoke(null));
     } catch (Exception e) {
-      System.out.println("Failed to fetch biomes dynamically: " + e.getMessage());
-      return new ArrayList<>();
+      return Registry.BIOME.stream().toList();
     }
   }
 

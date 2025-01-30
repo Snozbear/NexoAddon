@@ -248,6 +248,18 @@ public final class NexoAddon extends JavaPlugin {
     worldPopulators.clear();
   }
 
+  public void removePopulators(World world) {
+    worldPopulators.forEach((worldName, populators) -> {
+      if(!world.getName().equals(worldName)) return;
+      populators.forEach(populator -> {
+        if (world.getPopulators().remove(populator)) {
+          getLogger().info("Populator removed from world: " + worldName);
+        }
+      });
+    });
+    worldPopulators.remove(world.getName());
+  }
+
 
   public void addPopulatorToWorld(World world, BlockPopulator populator) {
     if (world == null) {
