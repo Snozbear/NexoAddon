@@ -3,6 +3,7 @@ package zone.vao.nexoAddon.events.playerNexoBlockBreaks;
 import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ExperienceOrb;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
@@ -17,7 +18,9 @@ public class DropExperienceListener {
 
         double experience = mechanics.getDropExperience().experience();
 
-        if (!event.isCancelled() && !(event.getPlayer().getGameMode() == GameMode.CREATIVE)) {
+        boolean isSilktouch = event.getPlayer().getInventory().getItemInMainHand().containsEnchantment(Enchantment.SILK_TOUCH);
+
+        if (!event.isCancelled() && !(event.getPlayer().getGameMode() == GameMode.CREATIVE) && !isSilktouch) {
             Location location = event.getBlock().getLocation();
             if (location.getWorld() != null) {
                 ExperienceOrb orb = location.getWorld().spawn(location, ExperienceOrb.class);

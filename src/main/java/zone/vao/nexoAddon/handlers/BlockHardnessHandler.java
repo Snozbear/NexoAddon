@@ -1,11 +1,13 @@
 package zone.vao.nexoAddon.handlers;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListener;
+import com.github.retrooper.packetevents.event.PacketReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.protocol.player.DiggingAction;
+import com.github.retrooper.packetevents.util.Vector3i;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockBreakAnimation;
 import com.nexomc.nexo.api.NexoItems;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.*;
@@ -23,42 +25,36 @@ import zone.vao.nexoAddon.utils.EventUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BlockHardnessHandler {
+public class BlockHardnessHandler implements PacketListener {
 
   private final Map<Location, BukkitTask> breakingTasks = new HashMap<>();
   private final Map<Location, Integer> breakingProgress = new HashMap<>();
 
-  public void registerListener() {
-    if (!NexoAddon.getInstance().isProtocolLibLoaded()) {
-      return;
+  @Override
+  public void onPacketReceive(PacketReceiveEvent event) {
+
+    Player player = event.getPlayer();
+
+    Bukkit.broadcastMessage(event.getPacketType().getName());
+    if (event.getPacketType() != PacketType.Play.Client.PLAYER_DIGGING) return;
+    if (player.getGameMode() == GameMode.CREATIVE) return;
+
+    WrapperPlayClientPlayerDigging digging = new WrapperPlayClientPlayerDigging(event);
+    Vector3i position = digging.getBlockPosition();
+    DiggingAction digType = digging.getAction();
+    if(digType == null) return;
+    Location location = new Location(player.getWorld(), position.getX(), position.getY(), position.getZ());
+
+    Bukkit.broadcastMessage(digging.getAction().name());
+    if (digType == DiggingAction.START_DIGGING) {
+      handleStartBreak(player, location, digging);
+    } else if (digType == DiggingAction.FINISHED_DIGGING ||
+        digType == DiggingAction.CANCELLED_DIGGING) {
+      handleStopBreak(location, digging);
     }
-    NexoAddon.getInstance().getProtocolManager().addPacketListener(new PacketAdapter(NexoAddon.getInstance(), PacketType.Play.Client.BLOCK_DIG) {
-      @Override
-      public void onPacketReceiving(PacketEvent event) {
-        PacketContainer packet = event.getPacket();
-        Player player = event.getPlayer();
-
-        if (player.getGameMode() == GameMode.CREATIVE) return;
-
-        BlockPosition position = packet.getBlockPositionModifier().read(0);
-        EnumWrappers.PlayerDigType digType = null;
-        try {
-          digType = packet.getEnumModifier(EnumWrappers.PlayerDigType.class, 2).read(0);
-        }catch(Exception ignored){}
-        if(digType == null) return;
-        Location location = new Location(player.getWorld(), position.getX(), position.getY(), position.getZ());
-
-        if (digType == EnumWrappers.PlayerDigType.START_DESTROY_BLOCK) {
-          handleStartBreak(player, location);
-        } else if (digType == EnumWrappers.PlayerDigType.ABORT_DESTROY_BLOCK ||
-            digType == EnumWrappers.PlayerDigType.STOP_DESTROY_BLOCK) {
-          handleStopBreak(location);
-        }
-      }
-    });
   }
 
-  private void handleStartBreak(Player player, Location location) {
+  private void handleStartBreak(Player player, Location location, WrapperPlayClientPlayerDigging digging) {
     ItemStack tool = player.getInventory().getItemInMainHand();
     String toolId = NexoItems.idFromItem(tool);
 
@@ -83,16 +79,16 @@ public class BlockHardnessHandler {
       @Override
       public void run() {
         if (!block.getType().equals(Material.BEDROCK)) {
-          stopBreaking(location);
+          stopBreaking(location, digging);
           return;
         }
 
         progress++;
         breakingProgress.put(location, progress);
-        sendBlockBreakAnimation(location, progress);
+        sendBlockBreakAnimation(location, progress, digging);
 
         if (progress >= hardness) {
-          stopBreaking(location);
+          stopBreaking(location, digging);
           if (EventUtil.callEvent(new BlockBreakEvent(block, player)) && ProtectionLib.canBreak(player, location)) {
             Bukkit.getScheduler().runTask(NexoAddon.getInstance(), () -> {
               if(Math.random() <= probability)
@@ -116,28 +112,25 @@ public class BlockHardnessHandler {
     }, 0L, 10L));
   }
 
-  private void handleStopBreak(Location location) {
-    stopBreaking(location);
+  private void handleStopBreak(Location location, WrapperPlayClientPlayerDigging digging) {
+    stopBreaking(location, digging);
   }
 
-  private void stopBreaking(Location location) {
+  private void stopBreaking(Location location, WrapperPlayClientPlayerDigging digging) {
     BukkitTask task = breakingTasks.remove(location);
     if (task != null) {
       task.cancel();
     }
     breakingProgress.remove(location);
-    sendBlockBreakAnimation(location, -1);
+    sendBlockBreakAnimation(location, -1, digging);
   }
 
-  private void sendBlockBreakAnimation(Location location, int stage) {
-    PacketContainer packet = new PacketContainer(PacketType.Play.Server.BLOCK_BREAK_ANIMATION);
-    packet.getIntegers().write(0, location.hashCode());
-    packet.getIntegers().write(1, stage);
-    packet.getBlockPositionModifier().write(0, new BlockPosition(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+  private void sendBlockBreakAnimation(Location location, int stage, WrapperPlayClientPlayerDigging digging) {
+    WrapperPlayServerBlockBreakAnimation newDigging = new WrapperPlayServerBlockBreakAnimation(location.hashCode(), digging.getBlockPosition(), (byte) stage);
 
     for (Player player : location.getWorld().getPlayers()) {
       try {
-        NexoAddon.getInstance().getProtocolManager().sendServerPacket(player, packet);
+        PacketEvents.getAPI().getPlayerManager().sendPacket(player, newDigging);
       } catch (Exception e) {
         e.printStackTrace();
       }

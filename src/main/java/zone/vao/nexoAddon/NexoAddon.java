@@ -1,9 +1,8 @@
 package zone.vao.nexoAddon;
 
 import co.aikar.commands.PaperCommandManager;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
@@ -65,14 +64,23 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, String> jukeboxLocations = new HashMap<>();
   public Map<String, Integer> customBlockLights = new HashMap<>();
   private BlockHardnessHandler blockHardnessHandler;
-  private ProtocolManager protocolManager;
-  private boolean protocolLibLoaded = false;
+  private boolean packeteventsLoaded = false;
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
 
   @Override
   public void onLoad() {
-    PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+    if (Bukkit.getPluginManager().getPlugin("packetevents") != null &&
+        Bukkit.getPluginManager().getPlugin("packetevents").isEnabled()) {
+      packeteventsLoaded = true;
+//      PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+//      PacketEvents.getAPI().load();
+
+      PacketEvents.getAPI().getEventManager().registerListener(
+          new BlockHardnessHandler(), PacketListenerPriority.NORMAL);
+    }else{
+      getLogger().warning("PacketEvents not found. Some features remain disabled!");
+    }
   }
 
   @Override
@@ -83,16 +91,9 @@ public final class NexoAddon extends JavaPlugin {
     saveDefaultConfig();
     globalConfig = getConfig();
     initializeCommandManager();
-      if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null &&
-          Bukkit.getPluginManager().getPlugin("ProtocolLib").isEnabled()) {
-        protocolLibLoaded = true;
-        PacketEvents.getAPI().init();
-        this.protocolManager = ProtocolLibrary.getProtocolManager();
-        this.blockHardnessHandler = new BlockHardnessHandler();
-        this.blockHardnessHandler.registerListener();
-      }else{
-        getLogger().warning("ProtocolLib not found. Some features remain disabled!");
-      }
+    if(packeteventsLoaded) {
+//      PacketEvents.getAPI().init();
+    }
       if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null &&
           Bukkit.getPluginManager().getPlugin("MythicMobs").isEnabled())
       {
@@ -111,10 +112,8 @@ public final class NexoAddon extends JavaPlugin {
   public void onDisable() {
     bossBars.values().forEach(BossBarUtil::removeBar);
     clearPopulators();
+//    PacketEvents.getAPI().terminate();
     RecipeManager.clearRegisteredRecipes();
-    if(protocolLibLoaded){
-      protocolManager.removePacketListeners(this);
-    }
     for (Location shiftblock : BlockUtil.processedShiftblocks) {
       PersistentDataContainer pdc = new CustomBlockData(shiftblock.getBlock(), this);
       String targetBlock =  pdc.get(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"), PersistentDataType.STRING);
