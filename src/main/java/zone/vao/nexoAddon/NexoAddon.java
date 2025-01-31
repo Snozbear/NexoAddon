@@ -3,10 +3,12 @@ package zone.vao.nexoAddon;
 import co.aikar.commands.PaperCommandManager;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.PacketEvents;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.nexomc.nexo.api.NexoBlocks;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -68,7 +70,12 @@ public final class NexoAddon extends JavaPlugin {
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
 
-    @Override
+  @Override
+  public void onLoad() {
+    PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+  }
+
+  @Override
   public void onEnable() {
     
     instance = this;
@@ -79,6 +86,7 @@ public final class NexoAddon extends JavaPlugin {
       if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null &&
           Bukkit.getPluginManager().getPlugin("ProtocolLib").isEnabled()) {
         protocolLibLoaded = true;
+        PacketEvents.getAPI().init();
         this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.blockHardnessHandler = new BlockHardnessHandler();
         this.blockHardnessHandler.registerListener();
