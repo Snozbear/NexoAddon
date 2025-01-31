@@ -3,12 +3,10 @@ package zone.vao.nexoAddon;
 import co.aikar.commands.PaperCommandManager;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerCommon;
-import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.nexomc.nexo.api.NexoBlocks;
-import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -39,6 +37,7 @@ import zone.vao.nexoAddon.events.*;
 import zone.vao.nexoAddon.handlers.BlockHardnessHandler;
 import zone.vao.nexoAddon.handlers.ParticleEffectManager;
 import zone.vao.nexoAddon.handlers.RecipeManager;
+import zone.vao.nexoAddon.hooks.PacketEventsHook;
 import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.*;
 
@@ -64,28 +63,28 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, List<BlockPopulator>> worldPopulators = new HashMap<>();
   public Map<String, String> jukeboxLocations = new HashMap<>();
   public Map<String, Integer> customBlockLights = new HashMap<>();
-  private BlockHardnessHandler blockHardnessHandler;
-  private PacketListenerCommon packetListenerCommon;
+  public BlockHardnessHandler blockHardnessHandler;
+  public PacketListenerCommon packetListenerCommon;
   private boolean packeteventsLoaded = false;
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
 
   @Override
   public void onLoad() {
-    if (Bukkit.getPluginManager().getPlugin("packetevents") != null) {
+    instance = this;
+    if (isPacketEventsPresent()) {
       packeteventsLoaded = true;
-      blockHardnessHandler = new BlockHardnessHandler();
-      packetListenerCommon = PacketEvents.getAPI().getEventManager().registerListener(
-          blockHardnessHandler, PacketListenerPriority.NORMAL);
+      PacketEventsHook.registerListener();
     }else{
+      getLogger().warning(System.lineSeparator());
       getLogger().warning("PacketEvents not found. Some features remain disabled!");
+      getLogger().warning(System.lineSeparator());
     }
   }
 
   @Override
   public void onEnable() {
-    
-    instance = this;
+
     ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
@@ -267,6 +266,14 @@ public final class NexoAddon extends JavaPlugin {
     worldPopulators.remove(world.getName());
   }
 
+  public boolean isPacketEventsPresent() {
+    try {
+      Class.forName("com.github.retrooper.packetevents.event.PacketListener");
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 
   public void addPopulatorToWorld(World world, BlockPopulator populator) {
     if (world == null) {
