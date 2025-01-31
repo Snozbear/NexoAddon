@@ -2,6 +2,7 @@ package zone.vao.nexoAddon;
 
 import co.aikar.commands.PaperCommandManager;
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.jeff_media.updatechecker.UpdateCheckSource;
@@ -64,20 +65,18 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, String> jukeboxLocations = new HashMap<>();
   public Map<String, Integer> customBlockLights = new HashMap<>();
   private BlockHardnessHandler blockHardnessHandler;
+  private PacketListenerCommon packetListenerCommon;
   private boolean packeteventsLoaded = false;
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
 
   @Override
   public void onLoad() {
-    if (Bukkit.getPluginManager().getPlugin("packetevents") != null &&
-        Bukkit.getPluginManager().getPlugin("packetevents").isEnabled()) {
+    if (Bukkit.getPluginManager().getPlugin("packetevents") != null) {
       packeteventsLoaded = true;
-//      PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-//      PacketEvents.getAPI().load();
-
-      PacketEvents.getAPI().getEventManager().registerListener(
-          new BlockHardnessHandler(), PacketListenerPriority.NORMAL);
+      blockHardnessHandler = new BlockHardnessHandler();
+      packetListenerCommon = PacketEvents.getAPI().getEventManager().registerListener(
+          blockHardnessHandler, PacketListenerPriority.NORMAL);
     }else{
       getLogger().warning("PacketEvents not found. Some features remain disabled!");
     }
@@ -112,7 +111,8 @@ public final class NexoAddon extends JavaPlugin {
   public void onDisable() {
     bossBars.values().forEach(BossBarUtil::removeBar);
     clearPopulators();
-//    PacketEvents.getAPI().terminate();
+    if(packeteventsLoaded)
+      PacketEvents.getAPI().getEventManager().unregisterListener(packetListenerCommon);
     RecipeManager.clearRegisteredRecipes();
     for (Location shiftblock : BlockUtil.processedShiftblocks) {
       PersistentDataContainer pdc = new CustomBlockData(shiftblock.getBlock(), this);
