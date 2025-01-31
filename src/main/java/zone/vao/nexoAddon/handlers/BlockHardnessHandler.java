@@ -35,7 +35,6 @@ public class BlockHardnessHandler implements PacketListener {
 
     Player player = event.getPlayer();
 
-    Bukkit.broadcastMessage(event.getPacketType().getName());
     if (event.getPacketType() != PacketType.Play.Client.PLAYER_DIGGING) return;
     if (player.getGameMode() == GameMode.CREATIVE) return;
 
@@ -45,7 +44,6 @@ public class BlockHardnessHandler implements PacketListener {
     if(digType == null) return;
     Location location = new Location(player.getWorld(), position.getX(), position.getY(), position.getZ());
 
-    Bukkit.broadcastMessage(digging.getAction().name());
     if (digType == DiggingAction.START_DIGGING) {
       handleStartBreak(player, location, digging);
     } else if (digType == DiggingAction.FINISHED_DIGGING ||
@@ -83,9 +81,14 @@ public class BlockHardnessHandler implements PacketListener {
           return;
         }
 
+        int lastStage = breakingProgress.getOrDefault(location, -1);
         progress++;
         breakingProgress.put(location, progress);
-        sendBlockBreakAnimation(location, progress, digging);
+
+        int newStage = getBreakStage(progress, hardness);
+        if (newStage != lastStage) {
+          sendBlockBreakAnimation(location, newStage, digging);
+        }
 
         if (progress >= hardness) {
           stopBreaking(location, digging);
@@ -111,6 +114,13 @@ public class BlockHardnessHandler implements PacketListener {
       }
     }, 0L, 10L));
   }
+
+  private int getBreakStage(double progress, double hardness) {
+    double ratio = progress / hardness;
+    if (ratio >= 1) return 9;
+    return Math.min(9, (int) Math.ceil(9 * ratio));
+  }
+
 
   private void handleStopBreak(Location location, WrapperPlayClientPlayerDigging digging) {
     stopBreaking(location, digging);
