@@ -5,7 +5,9 @@ import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent
 import com.nexomc.nexo.utils.drops.Drop;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.th0rgal.protectionlib.ProtectionLib;
-import org.bukkit.*;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import zone.vao.nexoAddon.NexoAddon;
