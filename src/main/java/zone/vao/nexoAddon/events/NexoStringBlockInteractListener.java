@@ -46,6 +46,7 @@ public class NexoStringBlockInteractListener implements Listener {
     Drop drop = new Drop(loots, false, false, newBlock.getItemID());
     NexoBlocks.remove(event.getBlock().getLocation(), null, drop);
     NexoBlocks.place(nextStage, event.getBlock().getLocation());
+    event.getPlayer().swingMainHand();
     if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
       InventoryUtil.removePartialStack(event.getPlayer(), event.getItemInHand(), 1);
   }
