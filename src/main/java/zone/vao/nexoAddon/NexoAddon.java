@@ -9,6 +9,7 @@ import com.jeff_media.updatechecker.UpdateChecker;
 import com.nexomc.nexo.api.NexoBlocks;
 import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -89,21 +90,17 @@ public final class NexoAddon extends JavaPlugin {
     saveDefaultConfig();
     globalConfig = getConfig();
     initializeCommandManager();
-    if(packeteventsLoaded) {
-//      PacketEvents.getAPI().init();
+    if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null &&
+        Bukkit.getPluginManager().getPlugin("MythicMobs").isEnabled())
+    {
+      mythicMobsLoaded = true;
     }
-      if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null &&
-          Bukkit.getPluginManager().getPlugin("MythicMobs").isEnabled())
-      {
-        mythicMobsLoaded = true;
-      }
 
-      initializePopulators();
-      registerEvents();
-      particleEffectManager = new ParticleEffectManager();
-      particleEffectManager.startAuraEffectTask();
-      initializeMetrics();
-      getLogger().info("NexoAddon enabled!");
+    registerEvents();
+    particleEffectManager = new ParticleEffectManager();
+    particleEffectManager.startAuraEffectTask();
+    initializeMetrics();
+    getLogger().info("NexoAddon enabled!");
   }
 
   @Override
@@ -154,7 +151,7 @@ public final class NexoAddon extends JavaPlugin {
     manager.registerCommand(new NexoAddonCommand());
   }
 
-  private void initializePopulators() {
+  public void initializePopulators() {
     populatorsConfig = new PopulatorsConfigUtil(getDataFolder(), getClassLoader());
     initializeOres();
     initializeTrees();

@@ -95,6 +95,7 @@ public class PopulatorsConfigUtil {
         || (!NexoBlocks.isCustomBlock(key)
         && !NexoFurniture.isFurniture(key)
         && (material == null || !material.isBlock()))) {
+      NexoAddon.getInstance().getLogger().warning("Incorrect key value! "+key);
       return null;
     }
 
@@ -106,9 +107,10 @@ public class PopulatorsConfigUtil {
     double clusterChance = section.getDouble("cluster_chance", 0.0);
 
     List<String> worldNames = section.getStringList("worlds");
-    List<World> worlds = parseWorlds(section.getStringList("worlds"));
-    List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
+    NexoAddon.getInstance().getLogger().info(key+" worlds: "+worldNames);
+    List<World> worlds = parseWorlds(worldNames);
     if (worlds.isEmpty()) return null;
+    List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
 
     List<Material> replaceMaterials = parseMaterials(section.getStringList("replace"));
     List<Material> placeOnMaterials = parseMaterials(section.getStringList("place_on"));
@@ -186,6 +188,7 @@ public class PopulatorsConfigUtil {
     return worldNames.stream()
         .map(name -> {
           World world = NexoAddon.getInstance().getServer().getWorld(name);
+          NexoAddon.getInstance().getLogger().warning(name+" found: "+(world != null));
           if (world == null) {
             NexoAddon.getInstance().getLogger().info("Loading world:" + name);
             world = loadWorld(name);
