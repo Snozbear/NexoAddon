@@ -165,6 +165,9 @@ public class CustomOrePopulator extends BlockPopulator {
     } else{
       limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getVanillaMaterial().createBlockData());
     }
+    if(position.below().blockType.equals(Material.GRASS_BLOCK) && !limitedRegion.getBlockData(position.below().x, position.below().y, position.below().z).equals(Material.GRASS_BLOCK.createBlockData())){
+      limitedRegion.setBlockData(position.below().x(), position.below().y(), position.below().z(), Material.GRASS_BLOCK.createBlockData());
+    }
   }
 
   public record PlacementPosition(WorldInfo worldInfo, int x, int y, int z, Material blockType, Biome biome, LimitedRegion limitedRegion) {
