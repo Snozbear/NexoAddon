@@ -78,7 +78,7 @@ public class BigMiningListener {
 
           if (tempLocation.equals(origin)) continue;
 
-          attemptBlockBreak(player, tempLocation.getBlock(), tool);
+          attemptBlockBreak(player, tempLocation.getBlock(), tool, mechanic);
         }
       }
     }
@@ -93,13 +93,13 @@ public class BigMiningListener {
     };
   }
 
-  private static void attemptBlockBreak(Player player, Block block, ItemStack tool) {
+  private static void attemptBlockBreak(Player player, Block block, ItemStack tool, BigMining mechanic) {
     if (isUnbreakableBlock(player, block)) return;
 
     activeBlockBreaks++;
     BlockBreakEvent blockBreakEvent = new BlockBreakEvent(block, player);
 
-    if (!EventUtil.callEvent(blockBreakEvent)) return;
+    if (!EventUtil.callEvent(blockBreakEvent) || !mechanic.materials().isEmpty() && !mechanic.materials().contains(block.getType())) return;
 
     if (blockBreakEvent.isDropItems()) {
       block.breakNaturally(tool, true, true);
