@@ -124,7 +124,13 @@ public class ItemConfigUtil {
       int radius = section.getInt("Mechanics.bigmining.radius", 1);
       int depth = section.getInt("Mechanics.bigmining.depth", 1);
       boolean switchable = section.getBoolean("Mechanics.bigmining.switchable", false);
-      mechanic.setBigMining(radius, depth, switchable);
+      List<Material> materials = new ArrayList<>();
+      for (String s : section.getStringList("Mechanics.bigmining.materials")) {
+        Material material = Material.matchMaterial(s);
+        if(material != null) materials.add(material);
+      }
+
+      mechanic.setBigMining(radius, depth, switchable, materials);
     }
   }
 
@@ -265,7 +271,7 @@ public class ItemConfigUtil {
         }
       }
 
-      mechanic.setShiftBlock(section.getString("Mechanics.custom_block.shiftblock.replace_to"), section.getInt("Mechanics.custom_block.shiftblock.time",200), materials, nexoIds);
+      mechanic.setShiftBlock(section.getString("Mechanics.custom_block.shiftblock.replace_to"), section.getInt("Mechanics.custom_block.shiftblock.time",200), materials, nexoIds, section.getBoolean("Mechanics.custom_block.shiftblock.on_interact",true), section.getBoolean("Mechanics.custom_block.shiftblock.on_break",false), section.getBoolean("Mechanics.custom_block.shiftblock.on_place",false));
     }
   }
   

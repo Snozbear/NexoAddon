@@ -33,8 +33,8 @@ public class Mechanics {
     this.repair = new Repair(ration, fixedAmount);
   }
 
-  public void setBigMining(int radius, int depth, boolean switchable) {
-    this.bigMining = new BigMining(radius, depth, switchable);
+  public void setBigMining(int radius, int depth, boolean switchable, List<Material> materials) {
+    this.bigMining = new BigMining(radius, depth, switchable, materials);
   }
 
   public void setBedrockBreak(int hardness, double probability, int durabilityCost, boolean disableOnFirstLayer) {
@@ -71,5 +71,5 @@ public class Mechanics {
 
   public void setDecay(int time, double chance, List<Material> base, List<String> nexoBase, int radius){this.decay = new Decay(time, chance, base, nexoBase, radius);}
 
-  public void setShiftBlock(String replaceTo, int time, List<Material> materials, List<String> nexoIds){this.shiftBlock = new ShiftBlock(replaceTo, time, materials, nexoIds);}
+  public void setShiftBlock(String replaceTo, int time, List<Material> materials, List<String> nexoIds, boolean onInteract, boolean onDestroy, boolean onPlace){this.shiftBlock = new ShiftBlock(replaceTo, time, materials, nexoIds, onInteract, onDestroy, onPlace);}
 }

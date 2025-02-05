@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.events.playerNexoBlockBreaks.DropExperienceListener;
 import zone.vao.nexoAddon.events.playerNexoBlockBreaks.InfestedListener;
 import zone.vao.nexoAddon.events.playerNexoBlockBreaks.MiningToolsListener;
+import zone.vao.nexoAddon.events.playerNexoBlockBreaks.ShiftBlockListener;
 import zone.vao.nexoAddon.utils.BlockUtil;
 
 public class NexoBlockBreakListener implements Listener {
@@ -18,6 +19,7 @@ public class NexoBlockBreakListener implements Listener {
     MiningToolsListener.onBreak(event);
     DropExperienceListener.onBreak(event);
     InfestedListener.onBreak(event);
+    ShiftBlockListener.onShiftBlockBreak(event);
   }
 
   @EventHandler
