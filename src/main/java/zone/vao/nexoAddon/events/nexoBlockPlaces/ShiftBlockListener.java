@@ -2,7 +2,7 @@ package zone.vao.nexoAddon.events.nexoBlockPlaces;
 
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
-import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent;
+import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockPlaceEvent;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import org.bukkit.inventory.ItemStack;
 import zone.vao.nexoAddon.NexoAddon;
@@ -11,7 +11,7 @@ import zone.vao.nexoAddon.classes.Mechanics;
 import static zone.vao.nexoAddon.utils.BlockUtil.startShiftBlock;
 
 public class ShiftBlockListener {
-  public static void onShiftBlockBreak(final NexoNoteBlockBreakEvent event) {
+  public static void onShiftBlockPlace(final NexoNoteBlockPlaceEvent event) {
 
     Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(event.getMechanic().getItemID());
     if(mechanics == null || mechanics.getShiftBlock() == null || !mechanics.getShiftBlock().onPlace()) return;

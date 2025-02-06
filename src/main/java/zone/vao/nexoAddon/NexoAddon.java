@@ -211,6 +211,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new EntityDeathListener());
     registerEvent(new NexoStringBlockInteractListener());
     registerEvent(new NexoBlockInteractListener());
+    registerEvent(new NexoBlockPlaceListener());
   }
 
   private void initializeMetrics() {
