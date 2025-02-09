@@ -37,12 +37,26 @@ public class Fertilize {
     if(itemId == null
         || !NexoAddon.getInstance().getComponents().containsKey(itemId)
         || fertilizer == null
-        || !fertilizer.usableOn().contains(furnitureId)
+        || !fertilizer.usableOn.contains(furnitureId)
         || !event.getBaseEntity().getPersistentDataContainer().has(EVOLUTION_KEY, PersistentDataType.INTEGER)
         || (event.getBaseEntity().getPersistentDataContainer().get(EVOLUTION_KEY, PersistentDataType.INTEGER) >= NexoFurniture.furnitureMechanic(event.getBaseEntity()).getEvolution().getDelay())
         || !(ProtectionLib.canInteract(player, event.getBaseEntity().getLocation()) && ProtectionLib.canUse(player, event.getBaseEntity().getLocation()))
     ) return;
-    fertilizeFurniture(event.getBaseEntity(), player, NexoAddon.getInstance().getComponents().get(itemId));
+
+    Components component = NexoAddon.getInstance().getComponents().get(itemId);
+    int cooldown = component.getFertilizer().cooldown;
+    if (cooldown > 0) {
+      long now = System.currentTimeMillis();
+      if (Fertilizer.cooldowns.containsKey(player.getUniqueId()) && Fertilizer.cooldowns.get(player.getUniqueId()) > now) {
+        return;
+      }
+    }
+
+    if (cooldown > 0) {
+      Fertilizer.cooldowns.put(player.getUniqueId(), System.currentTimeMillis() + cooldown * 1000L);
+    }
+
+    fertilizeFurniture(event.getBaseEntity(), player, component);
   }
 
   private static void fertilizeFurniture(ItemDisplay itemDisplay, Player player, Components component) {
@@ -51,7 +65,7 @@ public class Fertilize {
 
     int evolutionTime = container.get(EVOLUTION_KEY, PersistentDataType.INTEGER);
 
-    evolutionTime += component.getFertilizer().growthSpeedup();
+    evolutionTime += component.getFertilizer().growthSpeedup;
 
     container.set(EVOLUTION_KEY, PersistentDataType.INTEGER, evolutionTime);
 

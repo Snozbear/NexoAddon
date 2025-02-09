@@ -10,6 +10,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.Damageable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
+import zone.vao.nexoAddon.classes.component.Fertilizer;
 import zone.vao.nexoAddon.utils.EventUtil;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 
@@ -25,10 +26,22 @@ public class FertilizeVanillaCrops {
 
     if (!canApplyFertilizer(player, clickedBlock, component)) return;
 
-    int growthSpeedup = Math.max(0, component.getFertilizer().growthSpeedup());
+    int cooldown = component.getFertilizer().cooldown;
+    if (cooldown > 0) {
+      long now = System.currentTimeMillis();
+      if (Fertilizer.cooldowns.containsKey(player.getUniqueId()) && Fertilizer.cooldowns.get(player.getUniqueId()) > now) {
+        return;
+      }
+    }
+
+    int growthSpeedup = Math.max(0, component.getFertilizer().growthSpeedup);
     boolean appliedSuccessfully = applyFertilizer(clickedBlock, growthSpeedup, event.getBlockFace());
 
     if (!appliedSuccessfully) return;
+
+    if (cooldown > 0) {
+      Fertilizer.cooldowns.put(player.getUniqueId(), System.currentTimeMillis() + cooldown * 1000L);
+    }
 
     event.setCancelled(true);
     if(EventUtil.callEvent(event))
@@ -49,7 +62,7 @@ public class FertilizeVanillaCrops {
     boolean canInteract = ProtectionLib.canInteract(player, block.getLocation()) &&
         ProtectionLib.canUse(player, block.getLocation());
     boolean isUsableOnBlock = component.getFertilizer()
-        .usableOn()
+        .usableOn
         .stream()
         .anyMatch(blockType -> blockType.equals("_MINECRAFT") ||
             blockType.equals(block.getType().toString().toUpperCase()));

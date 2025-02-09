@@ -30,7 +30,7 @@ public class Components {
     this.playable = new JukeboxPlayable(songKey);
   }
 
-  public void setFertilizer(int growthSpeedup, List<String> usableOn) {this.fertilizer = new Fertilizer(growthSpeedup, usableOn);}
+  public void setFertilizer(int growthSpeedup, List<String> usableOn, int cooldown) {this.fertilizer = new Fertilizer(growthSpeedup, usableOn,cooldown);}
 
   public void setSkullValue(String value){this.skullValue = new SkullValue(value);}
 }

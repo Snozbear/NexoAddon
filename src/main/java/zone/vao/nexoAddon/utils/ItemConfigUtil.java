@@ -70,7 +70,7 @@ public class ItemConfigUtil {
     if (section.contains("Components.fertilizer.growth_speedup") && section.contains("Components.fertilizer.usable_on")) {
       int growthSpeedup = section.getInt("Components.fertilizer.growth_speedup", 1000);
       List<String> usableOn = section.getStringList("Components.fertilizer.usable_on");
-      component.setFertilizer(growthSpeedup, usableOn);
+      component.setFertilizer(growthSpeedup, usableOn, section.getInt("Components.fertilizer.cooldown", 0));
     }
   }
 
