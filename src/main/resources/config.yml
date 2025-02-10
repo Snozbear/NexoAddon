@@ -10,3 +10,5 @@ messages:
   bigmining:
     on: <green>Bigmining on
     off: <red>Bigmining off
+  bottledexp:
+    not_enough_exp: <red>Not enough experience to convert

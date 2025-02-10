@@ -107,6 +107,7 @@ public class ItemConfigUtil {
         loadStackableStringblockMechanic(itemSection, mechanic);
         loadDecayMechanic(itemSection, mechanic);
         loadShiftBlockMechanic(itemSection, mechanic);
+        loadBottledExpMechanic(itemSection, mechanic);
       });
     }
   }
@@ -274,5 +275,10 @@ public class ItemConfigUtil {
       mechanic.setShiftBlock(section.getString("Mechanics.custom_block.shiftblock.replace_to"), section.getInt("Mechanics.custom_block.shiftblock.time",200), materials, nexoIds, section.getBoolean("Mechanics.custom_block.shiftblock.on_interact",true), section.getBoolean("Mechanics.custom_block.shiftblock.on_break",false), section.getBoolean("Mechanics.custom_block.shiftblock.on_place",false));
     }
   }
-  
+
+  private static void loadBottledExpMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.bottledexp.ratio")) {
+      mechanic.setBottledExp(section.getDouble("Mechanics.bottledexp.ratio", 0.5), section.getInt("Mechanics.bottledexp.cost", 1));
+    }
+  }
 }
