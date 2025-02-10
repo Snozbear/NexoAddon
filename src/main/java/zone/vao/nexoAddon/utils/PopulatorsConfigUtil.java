@@ -102,8 +102,8 @@ public class PopulatorsConfigUtil {
     int minY = section.getInt("minY", 0);
     int maxY = Math.max(section.getInt("maxY", 0), minY);
     double chance = section.getDouble("chance", 0.1);
-    int iterations = Math.abs(section.getInt("iterations", 50));
-    int veinSize = section.getInt("vein_size", 0);
+    Object iterations = parseIterationValue(section, "iterations", 50);
+    Object veinSize = parseIterationValue(section, "vein_size", 0);
     double clusterChance = section.getDouble("cluster_chance", 0.0);
 
     List<String> worldNames = section.getStringList("worlds");
@@ -238,6 +238,37 @@ public class PopulatorsConfigUtil {
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
+
+  private Object parseIterationValue(ConfigurationSection section, String key, int defaultValue) {
+    Object value = section.get(key, defaultValue);
+    if (value instanceof String str) {
+      if (str.contains("-")) {
+        String[] parts = str.split("-");
+        try {
+          int min = Integer.parseInt(parts[0].trim());
+          int max = Integer.parseInt(parts[1].trim());
+          if (min > max) {
+            int temp = min;
+            min = max;
+            max = temp;
+          }
+          return min+"-"+max;
+        } catch (NumberFormatException e) {
+          return defaultValue;
+        }
+      } else {
+        try {
+          return Integer.parseInt(str.trim());
+        } catch (NumberFormatException e) {
+          return defaultValue;
+        }
+      }
+    } else if (value instanceof Number) {
+      return ((Number) value).intValue();
+    }
+    return defaultValue;
+  }
+
 
   private void logError(String message) {
     NexoAddon.getInstance().getLogger().severe(message);

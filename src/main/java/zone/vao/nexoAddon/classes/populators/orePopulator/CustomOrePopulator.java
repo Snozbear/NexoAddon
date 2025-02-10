@@ -31,7 +31,15 @@ public class CustomOrePopulator extends BlockPopulator {
   private void generateOre(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion, Ore ore) {
     if (random.nextDouble() > ore.getChance()) return;
 
-    int attempts = ore.getIterations();
+    int attempts;
+    if(ore.getIterations() instanceof String str){
+      String[] parts = str.split("-");
+      int min = Integer.parseInt(parts[0].trim());
+      int max = Integer.parseInt(parts[1].trim());
+      attempts = random.nextInt(max - min + 1) + min;
+    }else{
+      attempts = (int) ore.getIterations();
+    }
     int successfulPlacements = 0;
     int totalAttempts = 0;
     int maxRetries = attempts * 80;
@@ -41,9 +49,17 @@ public class CustomOrePopulator extends BlockPopulator {
       PlacementPosition position = getRandomPlacementPosition(chunkX, chunkZ, limitedRegion, ore, random, worldInfo);
 
       if(position == null) continue;
-
-      if (random.nextDouble() <= ore.getClusterChance() && ore.getVeinSize() > 0 && ore.getClusterChance() > 0.0) {
-        successfulPlacements += generateVein(worldInfo, random, limitedRegion, position, ore);
+      int veinSize;
+      if(ore.getVeinSize() instanceof String str){
+        String[] parts = str.split("-");
+        int min = Integer.parseInt(parts[0].trim());
+        int max = Integer.parseInt(parts[1].trim());
+        veinSize = random.nextInt(max - min + 1) + min;
+      }else{
+        veinSize = (int) ore.getVeinSize();
+      }
+      if (random.nextDouble() <= ore.getClusterChance() && veinSize > 0 && ore.getClusterChance() > 0.0) {
+        successfulPlacements += generateVein(worldInfo, random, limitedRegion, position, ore, veinSize);
       } else {
         if (canReplaceBlock(position, ore)) {
           placeBlock(position, ore, worldInfo, limitedRegion);
@@ -59,8 +75,8 @@ public class CustomOrePopulator extends BlockPopulator {
     }
   }
 
-  private int generateVein(WorldInfo worldInfo, Random random, LimitedRegion limitedRegion, PlacementPosition start, Ore ore) {
-    int veinSize = ore.getVeinSize();
+  private int generateVein(WorldInfo worldInfo, Random random, LimitedRegion limitedRegion, PlacementPosition start, Ore ore, int veinSize) {
+
     int placedBlocks = 0;
 
     for (int i = 0; i < veinSize; i++) {

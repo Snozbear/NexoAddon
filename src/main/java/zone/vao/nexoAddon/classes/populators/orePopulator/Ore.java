@@ -26,12 +26,12 @@ public class Ore {
   public List<String> worldNames;
   public List<Biome> biomes;
   public boolean onlyAir;
-  int iterations;
+  Object iterations;
   boolean tall;
-  int veinSize;
+  Object veinSize;
   double clusterChance;
 
-  public Ore(String id, Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<Material> placeBelow, List<World> worlds, List<String> worldNames, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance, boolean onlyAir) {
+  public Ore(String id, Material vanillaMaterial, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<Material> placeBelow, List<World> worlds, List<String> worldNames, List<Biome> biomes, Object iterations, boolean tall, Object veinSize, double clusterChance, boolean onlyAir) {
     this.id = id;
     this.vanillaMaterial = vanillaMaterial;
     this.minLevel = minLevel;
@@ -50,7 +50,7 @@ public class Ore {
     this.onlyAir = onlyAir;
   }
 
-  public Ore(String id, FurnitureMechanic nexoFurniture, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<Material> placeBelow, List<World> worlds, List<String> worldNames, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance, boolean onlyAir) {
+  public Ore(String id, FurnitureMechanic nexoFurniture, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<Material> placeBelow, List<World> worlds, List<String> worldNames, List<Biome> biomes, Object iterations, boolean tall, Object veinSize, double clusterChance, boolean onlyAir) {
     this.id = id;
     this.nexoFurniture = nexoFurniture;
     this.minLevel = minLevel;
@@ -69,7 +69,7 @@ public class Ore {
     this.onlyAir = onlyAir;
   }
 
-  public Ore(String id, CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<Material> placeBelow, List<World> worlds, List<String> worldNames, List<Biome> biomes, int iterations, boolean tall, int veinSize, double clusterChance, boolean onlyAir) {
+  public Ore(String id, CustomBlockMechanic nexoBlocks, int minLevel, int maxLevel, double chance, List<Material> replace, List<Material> placeOn, List<Material> placeBelow, List<World> worlds, List<String> worldNames, List<Biome> biomes, Object iterations, boolean tall, Object veinSize, double clusterChance, boolean onlyAir) {
     this.id = id;
     this.nexoBlocks = nexoBlocks;
     this.minLevel = minLevel;
