@@ -1,10 +1,8 @@
-package zone.vao.nexoAddon.events;
+package zone.vao.nexoAddon.events.inventoryClicks;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import zone.vao.nexoAddon.events.inventoryClicks.EquippableListener;
-import zone.vao.nexoAddon.events.inventoryClicks.RepairListener;
 
 public class InventoryClickListener implements Listener {
 

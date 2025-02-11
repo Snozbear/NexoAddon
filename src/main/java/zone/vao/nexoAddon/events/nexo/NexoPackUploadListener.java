@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.events;
+package zone.vao.nexoAddon.events.nexo;
 
 import com.nexomc.nexo.api.events.resourcepack.NexoPackUploadEvent;
 import org.bukkit.event.EventHandler;
