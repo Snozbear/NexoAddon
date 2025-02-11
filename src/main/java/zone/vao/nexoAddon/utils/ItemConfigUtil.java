@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -108,6 +109,7 @@ public class ItemConfigUtil {
         loadDecayMechanic(itemSection, mechanic);
         loadShiftBlockMechanic(itemSection, mechanic);
         loadBottledExpMechanic(itemSection, mechanic);
+        loadUnstackableStringblockMechanic(itemSection, mechanic);
       });
     }
   }
@@ -263,8 +265,6 @@ public class ItemConfigUtil {
         && section.contains("Mechanics.custom_block.decay.time")
         && section.contains("Mechanics.custom_block.decay.chance")
         && section.contains("Mechanics.custom_block.decay.radius")
-        && section.contains("Mechanics.custom_block.type")
-        && section.getString("Mechanics.custom_block.type").equalsIgnoreCase("CHORUSBLOCK")
     ) {
       int time = section.getInt("Mechanics.custom_block.decay.time", 5);
       double chance = section.getDouble("Mechanics.custom_block.decay.chance", 0.3);
@@ -308,6 +308,28 @@ public class ItemConfigUtil {
   private static void loadBottledExpMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.bottledexp.ratio")) {
       mechanic.setBottledExp(section.getDouble("Mechanics.bottledexp.ratio", 0.5), section.getInt("Mechanics.bottledexp.cost", 1));
+    }
+  }
+
+  private static void loadUnstackableStringblockMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.unstackable.next")
+        && section.contains("Mechanics.custom_block.unstackable.give")
+    ) {
+      List<String> rawItems = section.getStringList("Mechanics.custom_block.unstackable.items");
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+
+      for (String rawItem : rawItems) {
+        if(Material.matchMaterial(rawItem) != null){
+          materials.add(Material.matchMaterial(rawItem));
+          continue;
+        }
+        if(NexoItems.itemFromId(rawItem) != null){
+          nexoIds.add(rawItem);
+        }
+      }
+
+      mechanic.setUnstackable(section.getString("Mechanics.custom_block.unstackable.next"), section.getString("Mechanics.custom_block.unstackable.give"), materials, nexoIds);
     }
   }
 }

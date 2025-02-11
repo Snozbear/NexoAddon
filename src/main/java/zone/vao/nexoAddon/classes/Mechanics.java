@@ -25,6 +25,7 @@ public class Mechanics {
   private Decay decay;
   private ShiftBlock shiftBlock;
   private BottledExp bottledExp;
+  private Unstackable unstackable;
 
   public Mechanics(String id) {
     this.id = id;
@@ -75,4 +76,6 @@ public class Mechanics {
   public void setShiftBlock(String replaceTo, int time, List<Material> materials, List<String> nexoIds, boolean onInteract, boolean onDestroy, boolean onPlace){this.shiftBlock = new ShiftBlock(replaceTo, time, materials, nexoIds, onInteract, onDestroy, onPlace);}
 
   public void setBottledExp(Double ration, int cost) {this.bottledExp = new BottledExp(ration, cost);}
+
+  public void setUnstackable(String next, String give, List<Material> materials, List<String> nexoIds) {this.unstackable = new Unstackable(next, give, materials, nexoIds);}
 }

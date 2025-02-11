@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.events.nexo.blocks.playerNexoBlockBreaks;
+package zone.vao.nexoAddon.events.nexo.blocks.breaks;
 
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;

@@ -36,7 +36,7 @@ import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.*;
 import zone.vao.nexoAddon.events.blocks.BlockBreakListener;
 import zone.vao.nexoAddon.events.blocks.BlockPlaceListener;
-import zone.vao.nexoAddon.events.blocks.NexoStringBlockInteractListener;
+import zone.vao.nexoAddon.events.nexo.blocks.NexoStringBlockInteractListener;
 import zone.vao.nexoAddon.events.inventoryClicks.InventoryClickListener;
 import zone.vao.nexoAddon.events.nexo.NexoItemsLoadedListener;
 import zone.vao.nexoAddon.events.nexo.NexoPackUploadListener;
