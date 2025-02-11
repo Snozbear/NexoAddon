@@ -44,7 +44,7 @@ public class RepairListener {
     if (mechanics == null || mechanics.getRepair() == null) return false;
 
     Repair repair = mechanics.getRepair();
-    if (!isItemWhitelisted(currentItem, repair)) {
+    if (!isItemAllowed(currentItem, repair)) {
       return false;
     }
 
@@ -121,14 +121,31 @@ public class RepairListener {
     player.updateInventory();
   }
 
-  private static boolean isItemWhitelisted(ItemStack item, Repair repair) {
+  private static boolean isItemAllowed(ItemStack item, Repair repair) {
     if (item == null || item.getType() == Material.AIR) {
       return false;
     }
-    if (repair.materials().contains(item.getType())) {
-      return true;
+    boolean whitelistDefined = !repair.materials().isEmpty() || !repair.nexoIds().isEmpty();
+    boolean blacklistDefined = !repair.materialsBlacklist().isEmpty() || !repair.nexoIdsBlacklist().isEmpty();
+    if (blacklistDefined) {
+      if (repair.materialsBlacklist().contains(item.getType())) {
+        return false;
+      }
+      String itemId = NexoItems.idFromItem(item);
+      if (itemId != null && repair.nexoIdsBlacklist().contains(itemId)) {
+        return false;
+      }
     }
-    String itemId = NexoItems.idFromItem(item);
-    return itemId != null && repair.nexoIds().contains(itemId);
+    if (whitelistDefined) {
+      boolean whitelisted = repair.materials().contains(item.getType());
+      if (!whitelisted) {
+        String itemId = NexoItems.idFromItem(item);
+        whitelisted = itemId != null && repair.nexoIds().contains(itemId);
+      }
+      if (!whitelisted) {
+        return false;
+      }
+    }
+    return true;
   }
 }

@@ -30,8 +30,8 @@ public class Mechanics {
     this.id = id;
   }
 
-  public void setRepair(double ration, int fixedAmount, List<Material> materials, List<String> nexoIds) {
-    this.repair = new Repair(ration, fixedAmount, materials, nexoIds);
+  public void setRepair(double ration, int fixedAmount, List<Material> materials, List<String> nexoIds, List<Material> materialsBlacklist, List<String> nexoIdsBlacklist) {
+    this.repair = new Repair(ration, fixedAmount, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
   }
 
   public void setBigMining(int radius, int depth, boolean switchable, List<Material> materials) {

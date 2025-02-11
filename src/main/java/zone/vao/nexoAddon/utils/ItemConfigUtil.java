@@ -117,8 +117,11 @@ public class ItemConfigUtil {
       double ratio = section.getDouble("Mechanics.repair.ratio");
       int fixedAmount = section.getInt("Mechanics.repair.fixed_amount");
       List<String> rawItems = section.getStringList("Mechanics.repair.whitelist");
+      List<String> rawItemsBlacklist = section.getStringList("Mechanics.repair.blacklist");
       List<Material> materials = new ArrayList<>();
       List<String> nexoIds = new ArrayList<>();
+      List<Material> materialsBlacklist = new ArrayList<>();
+      List<String> nexoIdsBlacklist = new ArrayList<>();
       if(!rawItems.isEmpty()){
         for (String rawItem : rawItems) {
           if(Material.matchMaterial(rawItem) != null) {
@@ -130,8 +133,19 @@ public class ItemConfigUtil {
           }
         }
       }
+      if(!rawItemsBlacklist.isEmpty()){
+        for (String rawItem : rawItemsBlacklist) {
+          if(Material.matchMaterial(rawItem) != null) {
+            materialsBlacklist.add(Material.matchMaterial(rawItem));
+            continue;
+          }
+          if(NexoItems.itemFromId(rawItem) != null) {
+            nexoIdsBlacklist.add(rawItem);
+          }
+        }
+      }
 
-      mechanic.setRepair(ratio, fixedAmount, materials, nexoIds);
+      mechanic.setRepair(ratio, fixedAmount, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
     }
   }
 
