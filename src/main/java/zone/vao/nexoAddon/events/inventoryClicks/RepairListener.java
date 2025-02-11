@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.classes.mechanic.Repair;
 
 public class RepairListener {
 
@@ -42,6 +43,11 @@ public class RepairListener {
     Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(repairItemId);
     if (mechanics == null || mechanics.getRepair() == null) return false;
 
+    Repair repair = mechanics.getRepair();
+    if (!isItemWhitelisted(currentItem, repair)) {
+      return false;
+    }
+
     String currentItemId = NexoItems.idFromItem(currentItem);
     if (currentItemId != null) {
       Mechanics currentMechanics = NexoAddon.getInstance().getMechanics().get(currentItemId);
@@ -59,7 +65,7 @@ public class RepairListener {
     if(repairRatio > 0) {
 
       Damageable currentMeta = (Damageable) currentItem.getItemMeta();
-      int repairAmount = (int) (currentMeta.getDamage() * repairRatio);
+      int repairAmount = (int) Math.ceil((currentMeta.getDamage() * repairRatio));
       currentMeta.setDamage(Math.max(0, currentMeta.getDamage() - repairAmount));
       currentItem.setItemMeta(currentMeta);
 
@@ -113,5 +119,16 @@ public class RepairListener {
     event.getClickedInventory().setItem(event.getSlot(), currentItem);
     player.setItemOnCursor(cursorItem == null ? new ItemStack(Material.AIR) : cursorItem);
     player.updateInventory();
+  }
+
+  private static boolean isItemWhitelisted(ItemStack item, Repair repair) {
+    if (item == null || item.getType() == Material.AIR) {
+      return false;
+    }
+    if (repair.materials().contains(item.getType())) {
+      return true;
+    }
+    String itemId = NexoItems.idFromItem(item);
+    return itemId != null && repair.nexoIds().contains(itemId);
   }
 }
