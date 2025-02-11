@@ -24,17 +24,19 @@ public class Mechanics {
   private Stackable stackable;
   private Decay decay;
   private ShiftBlock shiftBlock;
+  private BottledExp bottledExp;
+  private Unstackable unstackable;
 
   public Mechanics(String id) {
     this.id = id;
   }
 
-  public void setRepair(double ration, int fixedAmount) {
-    this.repair = new Repair(ration, fixedAmount);
+  public void setRepair(double ration, int fixedAmount, List<Material> materials, List<String> nexoIds, List<Material> materialsBlacklist, List<String> nexoIdsBlacklist) {
+    this.repair = new Repair(ration, fixedAmount, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
   }
 
-  public void setBigMining(int radius, int depth, boolean switchable) {
-    this.bigMining = new BigMining(radius, depth, switchable);
+  public void setBigMining(int radius, int depth, boolean switchable, List<Material> materials) {
+    this.bigMining = new BigMining(radius, depth, switchable, materials);
   }
 
   public void setBedrockBreak(int hardness, double probability, int durabilityCost, boolean disableOnFirstLayer) {
@@ -71,5 +73,9 @@ public class Mechanics {
 
   public void setDecay(int time, double chance, List<Material> base, List<String> nexoBase, int radius){this.decay = new Decay(time, chance, base, nexoBase, radius);}
 
-  public void setShiftBlock(String replaceTo, int time, List<Material> materials, List<String> nexoIds){this.shiftBlock = new ShiftBlock(replaceTo, time, materials, nexoIds);}
+  public void setShiftBlock(String replaceTo, int time, List<Material> materials, List<String> nexoIds, boolean onInteract, boolean onDestroy, boolean onPlace){this.shiftBlock = new ShiftBlock(replaceTo, time, materials, nexoIds, onInteract, onDestroy, onPlace);}
+
+  public void setBottledExp(Double ration, int cost) {this.bottledExp = new BottledExp(ration, cost);}
+
+  public void setUnstackable(String next, String give, List<Material> materials, List<String> nexoIds) {this.unstackable = new Unstackable(next, give, materials, nexoIds);}
 }

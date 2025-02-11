@@ -1,8 +1,8 @@
 package zone.vao.nexoAddon;
 
 import co.aikar.commands.PaperCommandManager;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerCommon;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
@@ -34,9 +34,23 @@ import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTreePopulator;
 import zone.vao.nexoAddon.classes.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.*;
+import zone.vao.nexoAddon.events.blocks.BlockBreakListener;
+import zone.vao.nexoAddon.events.blocks.BlockPlaceListener;
+import zone.vao.nexoAddon.events.nexo.blocks.NexoStringBlockInteractListener;
+import zone.vao.nexoAddon.events.inventoryClicks.InventoryClickListener;
+import zone.vao.nexoAddon.events.nexo.NexoItemsLoadedListener;
+import zone.vao.nexoAddon.events.nexo.NexoPackUploadListener;
+import zone.vao.nexoAddon.events.nexo.blocks.NexoBlockBreakListener;
+import zone.vao.nexoAddon.events.nexo.blocks.NexoBlockInteractListener;
+import zone.vao.nexoAddon.events.nexo.blocks.NexoBlockPlaceListener;
+import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureBreakListener;
+import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureInteractListener;
+import zone.vao.nexoAddon.events.player.PlayerInteractListener;
+import zone.vao.nexoAddon.events.player.PlayerMovementListener;
 import zone.vao.nexoAddon.handlers.BlockHardnessHandler;
 import zone.vao.nexoAddon.handlers.ParticleEffectManager;
 import zone.vao.nexoAddon.handlers.RecipeManager;
+import zone.vao.nexoAddon.hooks.PacketEventsHook;
 import zone.vao.nexoAddon.metrics.Metrics;
 import zone.vao.nexoAddon.utils.*;
 
@@ -62,51 +76,52 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, List<BlockPopulator>> worldPopulators = new HashMap<>();
   public Map<String, String> jukeboxLocations = new HashMap<>();
   public Map<String, Integer> customBlockLights = new HashMap<>();
-  private BlockHardnessHandler blockHardnessHandler;
-  private ProtocolManager protocolManager;
-  private boolean protocolLibLoaded = false;
+  public BlockHardnessHandler blockHardnessHandler;
+  public PacketListenerCommon packetListenerCommon;
+  private boolean packeteventsLoaded = false;
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
 
-    @Override
-  public void onEnable() {
-    
+  @Override
+  public void onLoad() {
     instance = this;
+    if (isPacketEventsPresent()) {
+      packeteventsLoaded = true;
+      PacketEventsHook.registerListener();
+    }else{
+      getLogger().warning(System.lineSeparator());
+      getLogger().warning("PacketEvents not found. Some features remain disabled!");
+      getLogger().warning(System.lineSeparator());
+    }
+  }
+
+  @Override
+  public void onEnable() {
+
     ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
     initializeCommandManager();
-      if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null &&
-          Bukkit.getPluginManager().getPlugin("ProtocolLib").isEnabled()) {
-        protocolLibLoaded = true;
-        this.protocolManager = ProtocolLibrary.getProtocolManager();
-        this.blockHardnessHandler = new BlockHardnessHandler();
-        this.blockHardnessHandler.registerListener();
-      }else{
-        getLogger().warning("ProtocolLib not found. Some features remain disabled!");
-      }
-      if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null &&
-          Bukkit.getPluginManager().getPlugin("MythicMobs").isEnabled())
-      {
-        mythicMobsLoaded = true;
-      }
+    if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null &&
+        Bukkit.getPluginManager().getPlugin("MythicMobs").isEnabled())
+    {
+      mythicMobsLoaded = true;
+    }
 
-      initializePopulators();
-      registerEvents();
-      particleEffectManager = new ParticleEffectManager();
-      particleEffectManager.startAuraEffectTask();
-      initializeMetrics();
-      getLogger().info("NexoAddon enabled!");
+    registerEvents();
+    particleEffectManager = new ParticleEffectManager();
+    particleEffectManager.startAuraEffectTask();
+    initializeMetrics();
+    getLogger().info("NexoAddon enabled!");
   }
 
   @Override
   public void onDisable() {
     bossBars.values().forEach(BossBarUtil::removeBar);
     clearPopulators();
+    if(packeteventsLoaded)
+      PacketEvents.getAPI().getEventManager().unregisterListener(packetListenerCommon);
     RecipeManager.clearRegisteredRecipes();
-    if(protocolLibLoaded){
-      protocolManager.removePacketListeners(this);
-    }
     for (Location shiftblock : BlockUtil.processedShiftblocks) {
       PersistentDataContainer pdc = new CustomBlockData(shiftblock.getBlock(), this);
       String targetBlock =  pdc.get(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"), PersistentDataType.STRING);
@@ -126,8 +141,10 @@ public final class NexoAddon extends JavaPlugin {
   public void reload() {
     reloadConfig();
     globalConfig = getConfig();
-    clearPopulators();
-    initializePopulators();
+    Bukkit.getScheduler().runTask(this, () -> {
+      clearPopulators();
+      initializePopulators();
+    });
     reloadNexoFiles();
     loadComponentsIfSupported();
     bossBars.values().forEach(BossBarUtil::removeBar);
@@ -148,28 +165,30 @@ public final class NexoAddon extends JavaPlugin {
     manager.registerCommand(new NexoAddonCommand());
   }
 
-  private void initializePopulators() {
+  public void initializePopulators() {
     populatorsConfig = new PopulatorsConfigUtil(getDataFolder(), getClassLoader());
     initializeOres();
     initializeTrees();
   }
 
   private void initializeOres() {
-    ores = populatorsConfig.loadOresFromConfig();
-    orePopulator.clearOres();
-    ores.forEach(orePopulator::addOre);
-    orePopulator.getOres().forEach(ore -> {
-      if(ore.getNexoFurniture() != null) return;
-      for (World world : ore.getWorlds()) {
+    Bukkit.getScheduler().runTask(this, () -> {
+      ores = populatorsConfig.loadOresFromConfig();
+      orePopulator.clearOres();
+      ores.forEach(orePopulator::addOre);
+      orePopulator.getOres().forEach(ore -> {
+        if(ore.getNexoFurniture() != null) return;
+        for (World world : ore.getWorlds()) {
 
-        CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
-        if(!worldPopulators.containsKey(world.getName())) {
-          worldPopulators.put(world.getName(), new ArrayList<>());
+          CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
+          if(!worldPopulators.containsKey(world.getName())) {
+            worldPopulators.put(world.getName(), new ArrayList<>());
+          }
+          addPopulatorToWorld(world, customOrePopulator);
+          worldPopulators.get(world.getName()).add(customOrePopulator);
+          logPopulatorAdded("BlockPopulator", ore.getId(), world);
         }
-        addPopulatorToWorld(world, customOrePopulator);
-        worldPopulators.get(world.getName()).add(customOrePopulator);
-        logPopulatorAdded("BlockPopulator", ore.getId(), world);
-      }
+      });
     });
   }
 
@@ -208,6 +227,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new EntityDeathListener());
     registerEvent(new NexoStringBlockInteractListener());
     registerEvent(new NexoBlockInteractListener());
+    registerEvent(new NexoBlockPlaceListener());
   }
 
   private void initializeMetrics() {
@@ -260,6 +280,14 @@ public final class NexoAddon extends JavaPlugin {
     worldPopulators.remove(world.getName());
   }
 
+  public boolean isPacketEventsPresent() {
+    try {
+      Class.forName("com.github.retrooper.packetevents.event.PacketListener");
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 
   public void addPopulatorToWorld(World world, BlockPopulator populator) {
     if (world == null) {

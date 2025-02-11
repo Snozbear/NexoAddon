@@ -1,16 +1,13 @@
 package zone.vao.nexoAddon.events.inventoryClicks;
 
 import com.nexomc.nexo.api.NexoItems;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Components;
-import zone.vao.nexoAddon.classes.Mechanics;
 import zone.vao.nexoAddon.utils.VersionUtil;
 
 public class EquippableListener {

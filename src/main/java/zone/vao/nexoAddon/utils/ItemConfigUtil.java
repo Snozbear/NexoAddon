@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -70,7 +71,7 @@ public class ItemConfigUtil {
     if (section.contains("Components.fertilizer.growth_speedup") && section.contains("Components.fertilizer.usable_on")) {
       int growthSpeedup = section.getInt("Components.fertilizer.growth_speedup", 1000);
       List<String> usableOn = section.getStringList("Components.fertilizer.usable_on");
-      component.setFertilizer(growthSpeedup, usableOn);
+      component.setFertilizer(growthSpeedup, usableOn, section.getInt("Components.fertilizer.cooldown", 0));
     }
   }
 
@@ -107,6 +108,8 @@ public class ItemConfigUtil {
         loadStackableStringblockMechanic(itemSection, mechanic);
         loadDecayMechanic(itemSection, mechanic);
         loadShiftBlockMechanic(itemSection, mechanic);
+        loadBottledExpMechanic(itemSection, mechanic);
+        loadUnstackableStringblockMechanic(itemSection, mechanic);
       });
     }
   }
@@ -115,7 +118,36 @@ public class ItemConfigUtil {
     if (section.contains("Mechanics.repair.ratio") || section.contains("Mechanics.repair.fixed_amount")) {
       double ratio = section.getDouble("Mechanics.repair.ratio");
       int fixedAmount = section.getInt("Mechanics.repair.fixed_amount");
-      mechanic.setRepair(ratio, fixedAmount);
+      List<String> rawItems = section.getStringList("Mechanics.repair.whitelist");
+      List<String> rawItemsBlacklist = section.getStringList("Mechanics.repair.blacklist");
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+      List<Material> materialsBlacklist = new ArrayList<>();
+      List<String> nexoIdsBlacklist = new ArrayList<>();
+      if(!rawItems.isEmpty()){
+        for (String rawItem : rawItems) {
+          if(Material.matchMaterial(rawItem) != null) {
+            materials.add(Material.matchMaterial(rawItem));
+            continue;
+          }
+          if(NexoItems.itemFromId(rawItem) != null) {
+            nexoIds.add(rawItem);
+          }
+        }
+      }
+      if(!rawItemsBlacklist.isEmpty()){
+        for (String rawItem : rawItemsBlacklist) {
+          if(Material.matchMaterial(rawItem) != null) {
+            materialsBlacklist.add(Material.matchMaterial(rawItem));
+            continue;
+          }
+          if(NexoItems.itemFromId(rawItem) != null) {
+            nexoIdsBlacklist.add(rawItem);
+          }
+        }
+      }
+
+      mechanic.setRepair(ratio, fixedAmount, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
     }
   }
 
@@ -124,7 +156,13 @@ public class ItemConfigUtil {
       int radius = section.getInt("Mechanics.bigmining.radius", 1);
       int depth = section.getInt("Mechanics.bigmining.depth", 1);
       boolean switchable = section.getBoolean("Mechanics.bigmining.switchable", false);
-      mechanic.setBigMining(radius, depth, switchable);
+      List<Material> materials = new ArrayList<>();
+      for (String s : section.getStringList("Mechanics.bigmining.materials")) {
+        Material material = Material.matchMaterial(s);
+        if(material != null) materials.add(material);
+      }
+
+      mechanic.setBigMining(radius, depth, switchable, materials);
     }
   }
 
@@ -227,8 +265,6 @@ public class ItemConfigUtil {
         && section.contains("Mechanics.custom_block.decay.time")
         && section.contains("Mechanics.custom_block.decay.chance")
         && section.contains("Mechanics.custom_block.decay.radius")
-        && section.contains("Mechanics.custom_block.type")
-        && section.getString("Mechanics.custom_block.type").equalsIgnoreCase("CHORUSBLOCK")
     ) {
       int time = section.getInt("Mechanics.custom_block.decay.time", 5);
       double chance = section.getDouble("Mechanics.custom_block.decay.chance", 0.3);
@@ -265,8 +301,35 @@ public class ItemConfigUtil {
         }
       }
 
-      mechanic.setShiftBlock(section.getString("Mechanics.custom_block.shiftblock.replace_to"), section.getInt("Mechanics.custom_block.shiftblock.time",200), materials, nexoIds);
+      mechanic.setShiftBlock(section.getString("Mechanics.custom_block.shiftblock.replace_to"), section.getInt("Mechanics.custom_block.shiftblock.time",200), materials, nexoIds, section.getBoolean("Mechanics.custom_block.shiftblock.on_interact",true), section.getBoolean("Mechanics.custom_block.shiftblock.on_break",false), section.getBoolean("Mechanics.custom_block.shiftblock.on_place",false));
     }
   }
-  
+
+  private static void loadBottledExpMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.bottledexp.ratio")) {
+      mechanic.setBottledExp(section.getDouble("Mechanics.bottledexp.ratio", 0.5), section.getInt("Mechanics.bottledexp.cost", 1));
+    }
+  }
+
+  private static void loadUnstackableStringblockMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.unstackable.next")
+        && section.contains("Mechanics.custom_block.unstackable.give")
+    ) {
+      List<String> rawItems = section.getStringList("Mechanics.custom_block.unstackable.items");
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+
+      for (String rawItem : rawItems) {
+        if(Material.matchMaterial(rawItem) != null){
+          materials.add(Material.matchMaterial(rawItem));
+          continue;
+        }
+        if(NexoItems.itemFromId(rawItem) != null){
+          nexoIds.add(rawItem);
+        }
+      }
+
+      mechanic.setUnstackable(section.getString("Mechanics.custom_block.unstackable.next"), section.getString("Mechanics.custom_block.unstackable.give"), materials, nexoIds);
+    }
+  }
 }

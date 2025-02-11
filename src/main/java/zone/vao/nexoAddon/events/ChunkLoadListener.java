@@ -37,9 +37,17 @@ public class ChunkLoadListener implements Listener {
       if (random.nextDouble() > ore.getChance()) return;
 
       int successfulPlacements = 0;
-      int maxRetries = ore.getIterations() * 20;
+      int maxRetries;
+      if(ore.getIterations() instanceof String str){
+        String[] parts = str.split("-");
+        int min = Integer.parseInt(parts[0].trim());
+        int max = Integer.parseInt(parts[1].trim());
+        maxRetries = (random.nextInt(max - min + 1) + min) * 20;
+      }else{
+        maxRetries = (int) ore.getIterations() * 20;
+      }
 
-      for (int attempt = 0; attempt < maxRetries && successfulPlacements < ore.getIterations(); attempt++) {
+      for (int attempt = 0; attempt < maxRetries && successfulPlacements < (maxRetries/20); attempt++) {
         Location loc = getRandomLocation(chunk, random, ore);
 
         if (!isValidBiome(loc, ore)) continue;

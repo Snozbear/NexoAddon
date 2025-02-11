@@ -9,7 +9,10 @@ import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
+import zone.vao.nexoAddon.NexoAddon;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class CustomOrePopulator extends BlockPopulator {
@@ -31,7 +34,15 @@ public class CustomOrePopulator extends BlockPopulator {
   private void generateOre(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion, Ore ore) {
     if (random.nextDouble() > ore.getChance()) return;
 
-    int attempts = ore.getIterations();
+    int attempts;
+    if(ore.getIterations() instanceof String str){
+      String[] parts = str.split("-");
+      int min = Integer.parseInt(parts[0].trim());
+      int max = Integer.parseInt(parts[1].trim());
+      attempts = random.nextInt(max - min + 1) + min;
+    }else{
+      attempts = (int) ore.getIterations();
+    }
     int successfulPlacements = 0;
     int totalAttempts = 0;
     int maxRetries = attempts * 80;
@@ -41,9 +52,17 @@ public class CustomOrePopulator extends BlockPopulator {
       PlacementPosition position = getRandomPlacementPosition(chunkX, chunkZ, limitedRegion, ore, random, worldInfo);
 
       if(position == null) continue;
-
-      if (random.nextDouble() <= ore.getClusterChance() && ore.getVeinSize() > 0 && ore.getClusterChance() > 0.0) {
-        successfulPlacements += generateVein(worldInfo, random, limitedRegion, position, ore);
+      int veinSize;
+      if(ore.getVeinSize() instanceof String str){
+        String[] parts = str.split("-");
+        int min = Integer.parseInt(parts[0].trim());
+        int max = Integer.parseInt(parts[1].trim());
+        veinSize = random.nextInt(max - min + 1) + min;
+      }else{
+        veinSize = (int) ore.getVeinSize();
+      }
+      if (random.nextDouble() <= ore.getClusterChance() && veinSize > 0 && ore.getClusterChance() > 0.0) {
+        successfulPlacements += generateVein(worldInfo, random, limitedRegion, position, ore, veinSize);
       } else {
         if (canReplaceBlock(position, ore)) {
           placeBlock(position, ore, worldInfo, limitedRegion);
@@ -59,8 +78,8 @@ public class CustomOrePopulator extends BlockPopulator {
     }
   }
 
-  private int generateVein(WorldInfo worldInfo, Random random, LimitedRegion limitedRegion, PlacementPosition start, Ore ore) {
-    int veinSize = ore.getVeinSize();
+  private int generateVein(WorldInfo worldInfo, Random random, LimitedRegion limitedRegion, PlacementPosition start, Ore ore, int veinSize) {
+
     int placedBlocks = 0;
 
     for (int i = 0; i < veinSize; i++) {
@@ -94,34 +113,56 @@ public class CustomOrePopulator extends BlockPopulator {
   }
 
   private PlacementPosition getAdjacentPlacementPosition(PlacementPosition start, Random random, LimitedRegion limitedRegion, Ore ore, boolean below) {
-    int xOffset = random.nextInt(3) - 1;
-    int yOffset = below ? -1 : (random.nextInt(3) - 1);
-    int zOffset = random.nextInt(3) - 1;
+    List<int[]> checkedLocations = new ArrayList<>();
+    int attempts = 0;
 
-    int x = start.x() + xOffset;
-    int y = start.y() + yOffset;
-    int z = start.z() + zOffset;
+    try {
+      for (int i = 0; i < 10 || attempts >= 100; i++) {
+        attempts++;
+        int xOffset = random.nextInt(3) - 1;
+        int yOffset = below ? -1 : (random.nextInt(3) - 1);
+        int zOffset = random.nextInt(3) - 1;
 
-    if (!limitedRegion.isInRegion(x, y, z)) return null;
+        int x = start.x() + xOffset;
+        int y = start.y() + yOffset;
+        int z = start.z() + zOffset;
 
-    Material blockType = limitedRegion.getType(x, y, z);
-    Biome biome = limitedRegion.getBiome(x, y, z);
+        if (checkedLocations.contains(new int[]{x, y, z})) {
+          i--;
+          continue;
+        }
+        checkedLocations.add(new int[]{x, y, z});
+        if (!limitedRegion.isInRegion(x, y, z))
+          continue;
 
-    return new PlacementPosition(start.worldInfo, x, y, z, blockType, biome, limitedRegion);
+        Material blockType = limitedRegion.getType(x, y, z);
+
+        if ((ore.getPlaceOn().contains(blockType) && (!ore.isOnlyAir() || !blockType.isAir())) || ore.getReplace().contains(blockType) || (ore.getPlaceBelow().contains(blockType) && (!ore.isOnlyAir() || !blockType.isAir()))) {
+          return new PlacementPosition(start.worldInfo, x, y, z, blockType, start.biome(), limitedRegion);
+        }
+      }
+      return null;
+    }catch(Exception ignored){
+      return null;
+    }
   }
 
-
   private PlacementPosition getRandomPlacementPosition(int chunkX, int chunkZ, LimitedRegion limitedRegion, Ore ore, Random random, WorldInfo worldInfo) {
-    int x = (chunkX << 4) + random.nextInt(16);
-    int z = (chunkZ << 4) + random.nextInt(16);
-    int y = ore.getMinLevel() + random.nextInt(ore.getMaxLevel() - ore.getMinLevel() + 1);
+    try {
+      int x = (chunkX << 4) + random.nextInt(16);
+      int z = (chunkZ << 4) + random.nextInt(16);
+      int y = ore.getMinLevel() + random.nextInt(ore.getMaxLevel() - ore.getMinLevel() + 1);
 
-    if (!limitedRegion.isInRegion(x, y, z)) return null;
+      if (!limitedRegion.isInRegion(x, y, z))
+        return null;
 
-    Material blockType = limitedRegion.getType(x, y, z);
-    Biome biome = limitedRegion.getBiome(x, y, z);
+      Material blockType = limitedRegion.getType(x, y, z);
+      Biome biome = limitedRegion.getBiome(x, y, z);
 
-    return new PlacementPosition(worldInfo,  x, y, z, blockType, biome, limitedRegion);
+      return new PlacementPosition(worldInfo, x, y, z, blockType, biome, limitedRegion);
+    }catch(Exception ignored){
+      return null;
+    }
   }
 
   private boolean canReplaceBlock(PlacementPosition position, Ore ore) {
@@ -164,6 +205,9 @@ public class CustomOrePopulator extends BlockPopulator {
       }
     } else{
       limitedRegion.setBlockData(position.x(), position.y(), position.z(), ore.getVanillaMaterial().createBlockData());
+    }
+    if(position.below().blockType.equals(Material.GRASS_BLOCK) && !limitedRegion.getBlockData(position.below().x, position.below().y, position.below().z).equals(Material.GRASS_BLOCK.createBlockData())){
+      limitedRegion.setBlockData(position.below().x(), position.below().y(), position.below().z(), Material.GRASS_BLOCK.createBlockData());
     }
   }
 

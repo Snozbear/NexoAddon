@@ -5,7 +5,10 @@ import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
-import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.Registry;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -92,20 +95,22 @@ public class PopulatorsConfigUtil {
         || (!NexoBlocks.isCustomBlock(key)
         && !NexoFurniture.isFurniture(key)
         && (material == null || !material.isBlock()))) {
+      NexoAddon.getInstance().getLogger().warning("Incorrect key value! "+key);
       return null;
     }
 
     int minY = section.getInt("minY", 0);
     int maxY = Math.max(section.getInt("maxY", 0), minY);
     double chance = section.getDouble("chance", 0.1);
-    int iterations = Math.abs(section.getInt("iterations", 50));
-    int veinSize = section.getInt("vein_size", 0);
+    Object iterations = parseIterationValue(section, "iterations", 50);
+    Object veinSize = parseIterationValue(section, "vein_size", 0);
     double clusterChance = section.getDouble("cluster_chance", 0.0);
 
     List<String> worldNames = section.getStringList("worlds");
-    List<World> worlds = parseWorlds(section.getStringList("worlds"));
-    List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
+    NexoAddon.getInstance().getLogger().info(key+" worlds: "+worldNames);
+    List<World> worlds = parseWorlds(worldNames);
     if (worlds.isEmpty()) return null;
+    List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
 
     List<Material> replaceMaterials = parseMaterials(section.getStringList("replace"));
     List<Material> placeOnMaterials = parseMaterials(section.getStringList("place_on"));
@@ -183,6 +188,7 @@ public class PopulatorsConfigUtil {
     return worldNames.stream()
         .map(name -> {
           World world = NexoAddon.getInstance().getServer().getWorld(name);
+          NexoAddon.getInstance().getLogger().warning(name+" found: "+(world != null));
           if (world == null) {
             NexoAddon.getInstance().getLogger().info("Loading world:" + name);
             world = loadWorld(name);
@@ -218,12 +224,7 @@ public class PopulatorsConfigUtil {
   }
 
   private List<Biome> getAllBiomes() {
-    try {
-      Method valuesMethod = Biome.class.getDeclaredMethod("values");
-      return Arrays.asList((Biome[]) valuesMethod.invoke(null));
-    } catch (Exception e) {
-      return Registry.BIOME.stream().toList();
-    }
+    return Registry.BIOME.stream().toList();
   }
 
   private List<Material> parseMaterials(List<String> materialNames) {
@@ -232,6 +233,37 @@ public class PopulatorsConfigUtil {
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
+
+  private Object parseIterationValue(ConfigurationSection section, String key, int defaultValue) {
+    Object value = section.get(key, defaultValue);
+    if (value instanceof String str) {
+      if (str.contains("-")) {
+        String[] parts = str.split("-");
+        try {
+          int min = Integer.parseInt(parts[0].trim());
+          int max = Integer.parseInt(parts[1].trim());
+          if (min > max) {
+            int temp = min;
+            min = max;
+            max = temp;
+          }
+          return min+"-"+max;
+        } catch (NumberFormatException e) {
+          return defaultValue;
+        }
+      } else {
+        try {
+          return Integer.parseInt(str.trim());
+        } catch (NumberFormatException e) {
+          return defaultValue;
+        }
+      }
+    } else if (value instanceof Number) {
+      return ((Number) value).intValue();
+    }
+    return defaultValue;
+  }
+
 
   private void logError(String message) {
     NexoAddon.getInstance().getLogger().severe(message);

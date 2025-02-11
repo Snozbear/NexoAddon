@@ -22,13 +22,4 @@ public class ApiCompatibilityHandler {
       throw new RuntimeException("Error invoking method on mechanic", e);
     }
   }
-
-  public static boolean hasChoruses() {
-    try {
-      Method oldMethod = NexoBlocks.INSTANCE.getClass().getMethod("isNexoChorusBlock");
-      return oldMethod != null;
-    } catch (NoSuchMethodException e) {
-      return false;
-    }
-  }
 }
