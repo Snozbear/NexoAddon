@@ -8,16 +8,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.handlers.TallStringBlocksHandler;
 
-import static zone.vao.nexoAddon.handlers.ApiCompatibilityHandler.hasChoruses;
-
-
 public class ShearsBreak {
 
   public static void onBlockBreak(BlockBreakEvent event) {
 
     handleStringBlocks(event);
-    if(hasChoruses())
-      handleChorusBlocks(event);
+    handleChorusBlocks(event);
   }
 
   private static void handleStringBlocks(BlockBreakEvent event){

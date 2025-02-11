@@ -4,10 +4,7 @@ import com.google.common.collect.Sets;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -20,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import static zone.vao.nexoAddon.handlers.ApiCompatibilityHandler.hasChoruses;
 
 public class BlockUtil {
 
@@ -81,7 +76,7 @@ public class BlockUtil {
     int radius = 10;
     World world = location.getWorld();
 
-    if (world == null || VersionUtil.nexoVersionLessThan("0.10.0") || !hasChoruses()) {
+    if (world == null || VersionUtil.nexoVersionLessThan("0.10.0")) {
       return;
     }
 
@@ -98,8 +93,8 @@ public class BlockUtil {
                 continue;
               }
 
-              if (NexoBlocks.isNexoChorusBlock(block)) {
-                String itemId = NexoBlocks.chorusBlockMechanic(block).getItemID();
+              if (NexoBlocks.isCustomBlock(block)) {
+                String itemId = NexoBlocks.customBlockMechanic(block.getLocation()).getItemID();
                 Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(itemId);
 
                 if (mechanic != null && mechanic.getDecay() != null) {
@@ -133,8 +128,8 @@ public class BlockUtil {
             for (int z = -decay.radius(); z <= decay.radius(); z++) {
               Block nearbyBlock = block.getLocation().add(x, y, z).getBlock();
               if (decay.base().contains(nearbyBlock.getType())
-                  || NexoBlocks.noteBlockMechanic(nearbyBlock) != null
-                  && decay.nexoBase().contains(NexoBlocks.noteBlockMechanic(nearbyBlock).getItemID())
+                  || NexoBlocks.customBlockMechanic(nearbyBlock.getLocation()) != null
+                  && decay.nexoBase().contains(NexoBlocks.customBlockMechanic(nearbyBlock.getLocation()).getItemID())
               ) {
                 hasBaseNearby = true;
                 break;
