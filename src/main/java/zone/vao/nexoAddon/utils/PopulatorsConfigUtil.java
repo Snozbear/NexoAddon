@@ -5,14 +5,12 @@ import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
-import org.bukkit.Material;
-import org.bukkit.Registry;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.generator.WorldInfo;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
 import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTree;
@@ -224,12 +222,7 @@ public class PopulatorsConfigUtil {
   }
 
   private List<Biome> getAllBiomes() {
-    try {
-      Method valuesMethod = Biome.class.getDeclaredMethod("values");
-      return Arrays.asList((Biome[]) valuesMethod.invoke(null));
-    } catch (Exception e) {
-      return Registry.BIOME.stream().toList();
-    }
+    return Registry.BIOME.stream().toList();
   }
 
   private List<Material> parseMaterials(List<String> materialNames) {
