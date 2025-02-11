@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.events.blocks;
+package zone.vao.nexoAddon.events.nexo.blocks.interacts;
 
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
@@ -8,8 +8,6 @@ import com.nexomc.nexo.utils.drops.Drop;
 import com.nexomc.nexo.utils.drops.Loot;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.GameMode;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 import zone.vao.nexoAddon.utils.InventoryUtil;
@@ -17,10 +15,9 @@ import zone.vao.nexoAddon.utils.InventoryUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NexoStringBlockInteractListener implements Listener {
+public class Stackable {
 
-  @EventHandler
-  public void onNexoStringBlockInteract(final NexoStringBlockInteractEvent event) {
+  public static void onStackable(final NexoStringBlockInteractEvent event) {
     if(NexoAddon.getInstance().getMechanics().isEmpty()) return;
 
     String itemId = NexoItems.idFromItem(event.getItemInHand());
