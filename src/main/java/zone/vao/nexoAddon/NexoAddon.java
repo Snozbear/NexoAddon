@@ -141,8 +141,10 @@ public final class NexoAddon extends JavaPlugin {
   public void reload() {
     reloadConfig();
     globalConfig = getConfig();
-    clearPopulators();
-    initializePopulators();
+    Bukkit.getScheduler().runTask(this, () -> {
+      clearPopulators();
+      initializePopulators();
+    });
     reloadNexoFiles();
     loadComponentsIfSupported();
     bossBars.values().forEach(BossBarUtil::removeBar);
@@ -170,21 +172,23 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void initializeOres() {
-    ores = populatorsConfig.loadOresFromConfig();
-    orePopulator.clearOres();
-    ores.forEach(orePopulator::addOre);
-    orePopulator.getOres().forEach(ore -> {
-      if(ore.getNexoFurniture() != null) return;
-      for (World world : ore.getWorlds()) {
+    Bukkit.getScheduler().runTask(this, () -> {
+      ores = populatorsConfig.loadOresFromConfig();
+      orePopulator.clearOres();
+      ores.forEach(orePopulator::addOre);
+      orePopulator.getOres().forEach(ore -> {
+        if(ore.getNexoFurniture() != null) return;
+        for (World world : ore.getWorlds()) {
 
-        CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
-        if(!worldPopulators.containsKey(world.getName())) {
-          worldPopulators.put(world.getName(), new ArrayList<>());
+          CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
+          if(!worldPopulators.containsKey(world.getName())) {
+            worldPopulators.put(world.getName(), new ArrayList<>());
+          }
+          addPopulatorToWorld(world, customOrePopulator);
+          worldPopulators.get(world.getName()).add(customOrePopulator);
+          logPopulatorAdded("BlockPopulator", ore.getId(), world);
         }
-        addPopulatorToWorld(world, customOrePopulator);
-        worldPopulators.get(world.getName()).add(customOrePopulator);
-        logPopulatorAdded("BlockPopulator", ore.getId(), world);
-      }
+      });
     });
   }
 

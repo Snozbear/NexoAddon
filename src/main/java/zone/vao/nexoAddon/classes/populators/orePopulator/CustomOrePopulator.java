@@ -9,6 +9,7 @@ import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
+import zone.vao.nexoAddon.NexoAddon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,33 +114,37 @@ public class CustomOrePopulator extends BlockPopulator {
 
   private PlacementPosition getAdjacentPlacementPosition(PlacementPosition start, Random random, LimitedRegion limitedRegion, Ore ore, boolean below) {
     List<int[]> checkedLocations = new ArrayList<>();
+    int attempts = 0;
 
-    for (int i = 0; i < 10; i++) {
-      int xOffset = random.nextInt(3) - 1;
-      int yOffset = below ? -1 : (random.nextInt(3) - 1);;
-      int zOffset = random.nextInt(3) - 1;
+    try {
+      for (int i = 0; i < 10 || attempts >= 100; i++) {
+        attempts++;
+        int xOffset = random.nextInt(3) - 1;
+        int yOffset = below ? -1 : (random.nextInt(3) - 1);
+        int zOffset = random.nextInt(3) - 1;
 
-      int x = start.x() + xOffset;
-      int y = start.y() + yOffset;
-      int z = start.z() + zOffset;
+        int x = start.x() + xOffset;
+        int y = start.y() + yOffset;
+        int z = start.z() + zOffset;
 
-      if(checkedLocations.contains(new int[]{x, y, z})){
-        i--;
-        continue;
+        if (checkedLocations.contains(new int[]{x, y, z})) {
+          i--;
+          continue;
+        }
+        checkedLocations.add(new int[]{x, y, z});
+        if (!limitedRegion.isInRegion(x, y, z))
+          continue;
+
+        Material blockType = limitedRegion.getType(x, y, z);
+
+        if ((ore.getPlaceOn().contains(blockType) && (!ore.isOnlyAir() || !blockType.isAir())) || ore.getReplace().contains(blockType) || (ore.getPlaceBelow().contains(blockType) && (!ore.isOnlyAir() || !blockType.isAir()))) {
+          return new PlacementPosition(start.worldInfo, x, y, z, blockType, start.biome(), limitedRegion);
+        }
       }
-      checkedLocations.add(new int[]{x, y, z});
-      if (!limitedRegion.isInRegion(x, y, z)) continue;
-
-      Material blockType = limitedRegion.getType(x, y, z);
-
-      if ((ore.getPlaceOn().contains(blockType) && (!ore.isOnlyAir() || !blockType.isAir()))
-          || ore.getReplace().contains(blockType)
-          || (ore.getPlaceBelow().contains(blockType) && (!ore.isOnlyAir() || !blockType.isAir()))
-      ) {
-        return new PlacementPosition(start.worldInfo, x, y, z, blockType, start.biome(), limitedRegion);
-      }
+      return null;
+    }catch(Exception ignored){
+      return null;
     }
-    return null;
   }
 
   private PlacementPosition getRandomPlacementPosition(int chunkX, int chunkZ, LimitedRegion limitedRegion, Ore ore, Random random, WorldInfo worldInfo) {
