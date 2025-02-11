@@ -148,16 +148,21 @@ public class CustomOrePopulator extends BlockPopulator {
   }
 
   private PlacementPosition getRandomPlacementPosition(int chunkX, int chunkZ, LimitedRegion limitedRegion, Ore ore, Random random, WorldInfo worldInfo) {
-    int x = (chunkX << 4) + random.nextInt(16);
-    int z = (chunkZ << 4) + random.nextInt(16);
-    int y = ore.getMinLevel() + random.nextInt(ore.getMaxLevel() - ore.getMinLevel() + 1);
+    try {
+      int x = (chunkX << 4) + random.nextInt(16);
+      int z = (chunkZ << 4) + random.nextInt(16);
+      int y = ore.getMinLevel() + random.nextInt(ore.getMaxLevel() - ore.getMinLevel() + 1);
 
-    if (!limitedRegion.isInRegion(x, y, z)) return null;
+      if (!limitedRegion.isInRegion(x, y, z))
+        return null;
 
-    Material blockType = limitedRegion.getType(x, y, z);
-    Biome biome = limitedRegion.getBiome(x, y, z);
+      Material blockType = limitedRegion.getType(x, y, z);
+      Biome biome = limitedRegion.getBiome(x, y, z);
 
-    return new PlacementPosition(worldInfo,  x, y, z, blockType, biome, limitedRegion);
+      return new PlacementPosition(worldInfo, x, y, z, blockType, biome, limitedRegion);
+    }catch(Exception ignored){
+      return null;
+    }
   }
 
   private boolean canReplaceBlock(PlacementPosition position, Ore ore) {
