@@ -234,12 +234,14 @@ public final class NexoAddon extends JavaPlugin {
 
     Metrics metrics = new Metrics(this, 24168);
     metrics.addCustomChart(new Metrics.SimplePie("marketplace", () -> "%%__POLYMART__%%".equals("1") ? "polymart" : "spigot"));
-    new UpdateChecker(this, UpdateCheckSource.POLYMART, "6950")
-        .setDownloadLink(6950)
-        .checkEveryXHours(24)
-        .setNotifyOpsOnJoin(true)
-        .setDonationLink("https://buymeacoffee.com/naimad")
-        .checkNow();
+
+    if(getGlobalConfig().getBoolean("update_checker", true))
+      new UpdateChecker(this, UpdateCheckSource.POLYMART, "6950")
+          .setDownloadLink(6950)
+          .checkEveryXHours(24)
+          .setNotifyOpsOnJoin(true)
+          .setDonationLink("https://buymeacoffee.com/naimad")
+          .checkNow();
   }
 
   private void reloadNexoFiles() {
