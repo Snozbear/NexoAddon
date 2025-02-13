@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BlockUtil {
 
   public static final Set<Material> UNBREAKABLE_BLOCKS = Sets.newHashSet(Material.BEDROCK, Material.BARRIER, Material.NETHER_PORTAL, Material.END_PORTAL_FRAME, Material.END_PORTAL, Material.END_GATEWAY);
-  private static final Set<Location> processedChoruses = ConcurrentHashMap.newKeySet();
+  private static final Set<Location> processedCustomBlocks = ConcurrentHashMap.newKeySet();
   public static final Set<Location> processedShiftblocks = ConcurrentHashMap.newKeySet();
 
   public static void startShiftBlock(Location location, CustomBlockMechanic to, CustomBlockMechanic target, int time) {
@@ -86,7 +86,7 @@ public class BlockUtil {
               Location currentLocation = location.clone().add(x, y, z);
               Block block = currentLocation.getBlock();
 
-              if (processedChoruses.contains(currentLocation)) {
+              if (processedCustomBlocks.contains(currentLocation)) {
                 continue;
               }
 
@@ -97,7 +97,7 @@ public class BlockUtil {
                 if (mechanic != null && mechanic.getDecay() != null) {
                   Decay decay = mechanic.getDecay();
 
-                  processedChoruses.add(currentLocation);
+                  processedCustomBlocks.add(currentLocation);
                   startDecayTimer(block, decay);
                 }
               }
@@ -114,7 +114,7 @@ public class BlockUtil {
       @Override
       public void run() {
         if (block.getType() == Material.AIR && !NexoBlocks.isCustomBlock(block)) {
-          processedChoruses.remove(block.getLocation());
+          processedCustomBlocks.remove(block.getLocation());
           cancel();
           return;
         }
@@ -143,7 +143,7 @@ public class BlockUtil {
               NexoBlocks.remove(block.getLocation());
             }
           }.runTask(NexoAddon.getInstance());
-          processedChoruses.remove(block.getLocation());
+          processedCustomBlocks.remove(block.getLocation());
           cancel();
         }
       }
