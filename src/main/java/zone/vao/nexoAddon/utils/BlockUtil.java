@@ -13,17 +13,14 @@ import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 import zone.vao.nexoAddon.classes.mechanic.Decay;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BlockUtil {
 
   public static final Set<Material> UNBREAKABLE_BLOCKS = Sets.newHashSet(Material.BEDROCK, Material.BARRIER, Material.NETHER_PORTAL, Material.END_PORTAL_FRAME, Material.END_PORTAL, Material.END_GATEWAY);
-  private static final List<Location> processedChoruses = Collections.synchronizedList(new ArrayList<>());
-  public static final List<Location> processedShiftblocks = Collections.synchronizedList(new ArrayList<>());
-
+  private static final Set<Location> processedChoruses = ConcurrentHashMap.newKeySet();
+  public static final Set<Location> processedShiftblocks = ConcurrentHashMap.newKeySet();
 
   public static void startShiftBlock(Location location, CustomBlockMechanic to, CustomBlockMechanic target, int time) {
     World world = location.getWorld();
