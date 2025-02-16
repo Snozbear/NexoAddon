@@ -1,8 +1,12 @@
 package zone.vao.nexoAddon.events.nexo.blocks.places;
 
+import com.jeff_media.customblockdata.CustomBlockData;
+import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.events.custom_block.NexoBlockPlaceEvent;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 import zone.vao.nexoAddon.utils.BlockUtil;
@@ -26,6 +30,8 @@ public class BlockAuraListener {
 
         if(!event.isCancelled()) {
             BlockUtil.startBlockAura(particle, location, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed);
+            CustomBlockData customBlockData =  new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
+            customBlockData.set(new NamespacedKey(NexoAddon.getInstance(), "blockAura"), PersistentDataType.STRING, NexoBlocks.customBlockMechanic(location).getItemID());
         }
     }
 }
