@@ -19,18 +19,18 @@ public class BlockAuraListener {
         if (mechanics == null || mechanics.getBlockAura() == null) return;
         Particle particle = mechanics.getBlockAura().particle();
         Location location = event.getBlock().getLocation();
-        double xOffset = mechanics.getBlockAura().xOffset();
-        double yOffset = mechanics.getBlockAura().yOffset();
-        double zOffset = mechanics.getBlockAura().zOffset();
+        String xOffsetRange = mechanics.getBlockAura().xOffset();
+        String yOffsetRange = mechanics.getBlockAura().yOffset();
+        String zOffsetRange = mechanics.getBlockAura().zOffset();
         int amount = mechanics.getBlockAura().amount();
         double deltaX = mechanics.getBlockAura().deltaX();
         double deltaY = mechanics.getBlockAura().deltaY();
         double deltaZ = mechanics.getBlockAura().deltaZ();
         double speed = mechanics.getBlockAura().speed();
 
-        if(!event.isCancelled()) {
-            BlockUtil.startBlockAura(particle, location, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed);
-            CustomBlockData customBlockData =  new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
+        if (!event.isCancelled()) {
+            BlockUtil.startBlockAura(particle, location, xOffsetRange, yOffsetRange, zOffsetRange, amount, deltaX, deltaY, deltaZ, speed);
+            CustomBlockData customBlockData = new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
             customBlockData.set(new NamespacedKey(NexoAddon.getInstance(), "blockAura"), PersistentDataType.STRING, NexoBlocks.customBlockMechanic(location).getItemID());
         }
     }

@@ -80,7 +80,7 @@ public class Mechanics {
 
   public void setUnstackable(String next, String give, List<Material> materials, List<String> nexoIds) {this.unstackable = new Unstackable(next, give, materials, nexoIds);}
 
-  public void setBlockAura(Particle particle, double xOffset, double yOffset, double zOffset, int amount, double deltaX, double deltaY, double deltaZ, double speed) {
+  public void setBlockAura(Particle particle, String xOffset, String yOffset, String zOffset, int amount, double deltaX, double deltaY, double deltaZ, double speed) {
     this.blockAura = new BlockAura(particle, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed);
   }
 }
