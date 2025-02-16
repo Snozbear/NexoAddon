@@ -9,10 +9,7 @@ import com.jeff_media.updatechecker.UpdateChecker;
 import com.nexomc.nexo.api.NexoBlocks;
 import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.generator.BlockPopulator;
@@ -22,6 +19,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.Mechanics;
@@ -36,6 +34,7 @@ import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.*;
 import zone.vao.nexoAddon.events.blocks.BlockBreakListener;
 import zone.vao.nexoAddon.events.blocks.BlockPlaceListener;
+import zone.vao.nexoAddon.events.chunk.ChunkLoadListener;
 import zone.vao.nexoAddon.events.nexo.blocks.NexoStringBlockInteractListener;
 import zone.vao.nexoAddon.events.inventoryClicks.InventoryClickListener;
 import zone.vao.nexoAddon.events.nexo.NexoItemsLoadedListener;
@@ -81,6 +80,8 @@ public final class NexoAddon extends JavaPlugin {
   private boolean packeteventsLoaded = false;
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
+  private final Map<Location, BukkitTask> particleTasks = new HashMap<>();
+
 
   @Override
   public void onLoad() {
@@ -131,6 +132,8 @@ public final class NexoAddon extends JavaPlugin {
 
       pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
     }
+    particleTasks.values().forEach(BukkitTask::cancel);
+    particleTasks.clear();
   }
 
   @Override
@@ -158,6 +161,11 @@ public final class NexoAddon extends JavaPlugin {
         particleEffectManager.startAuraEffectTask();
       }
     }.runTaskLater(this, 2L);
+    for (World world : Bukkit.getWorlds()) {
+      for (Chunk chunk : world.getLoadedChunks()) {
+        BlockUtil.restartBlockAura(chunk);
+      }
+    }
   }
 
   private void initializeCommandManager() {

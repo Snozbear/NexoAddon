@@ -1,8 +1,6 @@
-package zone.vao.nexoAddon.events;
+package zone.vao.nexoAddon.events.chunk;
 
 import org.bukkit.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
@@ -10,10 +8,9 @@ import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
 import java.util.List;
 import java.util.Random;
 
-public class ChunkLoadListener implements Listener {
+public class FurniturePopulator {
 
-  @EventHandler
-  public void onChunkLoad(ChunkLoadEvent event) {
+  public static void onLoad(ChunkLoadEvent event){
     World world = event.getWorld();
     Chunk chunk = event.getChunk();
 
@@ -29,7 +26,7 @@ public class ChunkLoadListener implements Listener {
     furniturePopulators.forEach(ore -> processOre(world, chunk, ore));
   }
 
-  private void processOre(World world, Chunk chunk, Ore ore) {
+  private static void processOre(World world, Chunk chunk, Ore ore) {
     if (!ore.getWorlds().contains(world)) return;
 
     Bukkit.getScheduler().runTaskAsynchronously(NexoAddon.getInstance(), () -> {
@@ -60,18 +57,28 @@ public class ChunkLoadListener implements Listener {
     });
   }
 
-  private Location getRandomLocation(Chunk chunk, Random random, Ore ore) {
+  private static Location getRandomLocation(
+      Chunk chunk,
+      Random random,
+      Ore ore
+  ) {
     int x = (chunk.getX() << 4) + random.nextInt(16);
     int z = (chunk.getZ() << 4) + random.nextInt(16);
     int y = ore.getMinLevel() + random.nextInt(ore.getMaxLevel() - ore.getMinLevel() + 1);
     return new Location(chunk.getWorld(), x, y, z);
   }
 
-  private boolean isValidBiome(Location loc, Ore ore) {
+  private static boolean isValidBiome(
+      Location loc,
+      Ore ore
+  ) {
     return ore.getBiomes().contains(loc.getBlock().getBiome());
   }
 
-  private boolean canPlaceOre(Location loc, Ore ore) {
+  private static boolean canPlaceOre(
+      Location loc,
+      Ore ore
+  ) {
     Material targetBlock = loc.getBlock().getType();
     Material belowBlock = loc.clone().add(0, -1, 0).getBlock().getType();
     Material aboveBlock = loc.clone().add(0, 1, 0).getBlock().getType();
@@ -83,7 +90,11 @@ public class ChunkLoadListener implements Listener {
     return canReplace || canPlaceOn || canPlaceBelow;
   }
 
-  private void scheduleOrePlacement(Location loc, Ore ore, int placementIndex) {
+  private static void scheduleOrePlacement(
+      Location loc,
+      Ore ore,
+      int placementIndex
+  ) {
     Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
       if (ore.getReplace() != null && ore.getReplace().contains(loc.getBlock().getType())) {
         loc.getBlock().setType(Material.AIR);
@@ -92,7 +103,11 @@ public class ChunkLoadListener implements Listener {
     }, placementIndex * 5L);
   }
 
-  private boolean canPlaceOn(Ore ore, Material belowBlock, Material targetBlock){
+  private static boolean canPlaceOn(
+      Ore ore,
+      Material belowBlock,
+      Material targetBlock
+  ){
     if(ore.getPlaceOn() == null) return false;
 
     if(!ore.getPlaceOn().contains(belowBlock)) return false;
@@ -100,7 +115,11 @@ public class ChunkLoadListener implements Listener {
     return !ore.isOnlyAir() || targetBlock.isAir();
   }
 
-  private boolean canPlaceBelow(Ore ore, Material aboveBlock, Material targetBlock){
+  private static boolean canPlaceBelow(
+      Ore ore,
+      Material aboveBlock,
+      Material targetBlock
+  ){
     if(ore.getPlaceBelow() == null) return false;
 
     if(!ore.getPlaceBelow().contains(aboveBlock)) return false;

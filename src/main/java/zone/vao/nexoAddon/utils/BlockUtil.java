@@ -9,6 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 import zone.vao.nexoAddon.classes.mechanic.Decay;
@@ -148,5 +149,67 @@ public class BlockUtil {
         }
       }
     }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0, decay.time() * 20L);
+  }
+
+  public static void startBlockAura(Particle particle, Location location, double xOffset, double yOffset, double zOffset, int amount, double deltaX, double deltaY, double deltaZ, double speed) {
+    BukkitTask task = new BukkitRunnable() {
+      @Override
+      public void run() {
+        World world = location.getWorld();
+        if(!NexoBlocks.isCustomBlock(location.getBlock())){
+          cancel();
+          stopBlockAura(location);
+          return;
+        }
+        if (world != null) {
+          world.spawnParticle(
+                  particle,
+                  location.clone().add(xOffset, yOffset, zOffset),
+                  amount,
+                  deltaX, deltaY, deltaZ,
+                  speed
+          );
+        }
+      }
+    }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0L, NexoAddon.getInstance().getGlobalConfig().getLong("aura_mechanic_delay", 10));
+
+    NexoAddon.getInstance().getParticleTasks().put(location, task);
+  }
+
+  public static void stopBlockAura(Location location) {
+    BukkitTask task = NexoAddon.getInstance().getParticleTasks().remove(location);
+    CustomBlockData customBlockData =  new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
+    customBlockData.remove(new NamespacedKey(NexoAddon.getInstance(), "blockAura"));
+    if (task != null && task.isCancelled()) {
+      task.cancel();
+    }
+  }
+
+  public static void restartBlockAura(Chunk chunk){
+    for(Block block : CustomBlockData.getBlocksWithCustomData(NexoAddon.getInstance(), chunk)){
+      CustomBlockData customBlockData = new CustomBlockData(block, (NexoAddon.getInstance()));
+      if(!customBlockData.has(new NamespacedKey(NexoAddon.getInstance(), "blockAura"), PersistentDataType.STRING)) continue;
+      if(!NexoBlocks.isCustomBlock(block)){
+        customBlockData.clear();
+        continue;
+      }
+
+      if(NexoAddon.getInstance().getMechanics().isEmpty()) continue;
+
+      if(NexoAddon.getInstance().getParticleTasks().containsKey(block.getLocation())) continue;
+      Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(NexoBlocks.customBlockMechanic(block.getLocation()).getItemID());
+      if (mechanics == null || mechanics.getBlockAura() == null) return;
+      Particle particle = mechanics.getBlockAura().particle();
+      Location location = block.getLocation();
+      double xOffset = mechanics.getBlockAura().xOffset();
+      double yOffset = mechanics.getBlockAura().yOffset();
+      double zOffset = mechanics.getBlockAura().zOffset();
+      int amount = mechanics.getBlockAura().amount();
+      double deltaX = mechanics.getBlockAura().deltaX();
+      double deltaY = mechanics.getBlockAura().deltaY();
+      double deltaZ = mechanics.getBlockAura().deltaZ();
+      double speed = mechanics.getBlockAura().speed();
+      BlockUtil.startBlockAura(particle, location, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed);
+    }
   }
 }

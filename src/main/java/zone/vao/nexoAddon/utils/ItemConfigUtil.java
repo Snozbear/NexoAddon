@@ -1,7 +1,6 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -110,6 +109,7 @@ public class ItemConfigUtil {
         loadShiftBlockMechanic(itemSection, mechanic);
         loadBottledExpMechanic(itemSection, mechanic);
         loadUnstackableStringblockMechanic(itemSection, mechanic);
+        loadBlockAuraMechanic(itemSection, mechanic);
       });
     }
   }
@@ -330,6 +330,21 @@ public class ItemConfigUtil {
       }
 
       mechanic.setUnstackable(section.getString("Mechanics.custom_block.unstackable.next"), section.getString("Mechanics.custom_block.unstackable.give"), materials, nexoIds);
+    }
+  }
+
+  private static void loadBlockAuraMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.custom_block.block_aura.particle")) {
+      Particle particle = Particle.valueOf(section.getString("Mechanics.custom_block.block_aura.particle", "FLAME").toUpperCase());
+      double xOffset = section.getDouble("Mechanics.custom_block.block_aura.xOffset", 0.5);
+      double yOffset = section.getDouble("Mechanics.custom_block.block_aura.yOffset", 0.5);
+      double zOffset = section.getDouble("Mechanics.custom_block.block_aura.zOffset", 0.5);
+      int amount = section.getInt("Mechanics.custom_block.block_aura.amount", 10);
+      double deltaX = section.getDouble("Mechanics.custom_block.block_aura.deltaX", 0.6);
+      double deltaY = section.getDouble("Mechanics.custom_block.block_aura.deltaY", 0.6);
+      double deltaZ = section.getDouble("Mechanics.custom_block.block_aura.deltaZ", 0.6);
+      double speed = section.getDouble("Mechanics.custom_block.block_aura.speed", 0.05);
+      mechanic.setBlockAura(particle, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed);
     }
   }
 }
