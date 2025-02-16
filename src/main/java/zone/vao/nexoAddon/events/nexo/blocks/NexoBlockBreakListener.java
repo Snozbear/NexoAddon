@@ -1,5 +1,6 @@
 package zone.vao.nexoAddon.events.nexo.blocks;
 
+import com.nexomc.nexo.api.events.custom_block.NexoBlockBreakEvent;
 import com.nexomc.nexo.api.events.custom_block.chorusblock.NexoChorusBlockBreakEvent;
 import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent;
 import org.bukkit.event.EventHandler;
@@ -17,12 +18,16 @@ public class NexoBlockBreakListener implements Listener {
     DropExperienceListener.onBreak(event);
     InfestedListener.onBreak(event);
     ShiftBlockListener.onShiftBlockBreak(event);
-    BlockAuraListener.onBlockBreak(event);
   }
 
   @EventHandler
   public void onChorusBreak(NexoChorusBlockBreakEvent event) {
 
     MiningToolsListener.onBreak(event);
+  }
+
+  @EventHandler
+  public void onNexoBlockBreak(NexoBlockBreakEvent event) {
+    BlockAuraListener.onBlockBreak(event);
   }
 }
