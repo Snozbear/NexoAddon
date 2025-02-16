@@ -81,6 +81,8 @@ public final class NexoAddon extends JavaPlugin {
   private boolean packeteventsLoaded = false;
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
+  private final Map<Location, Integer> particleTasks = new HashMap<>();
+
 
   @Override
   public void onLoad() {
@@ -131,6 +133,8 @@ public final class NexoAddon extends JavaPlugin {
 
       pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
     }
+    particleTasks.values().forEach(Bukkit.getScheduler()::cancelTask);
+    particleTasks.clear();
   }
 
   @Override

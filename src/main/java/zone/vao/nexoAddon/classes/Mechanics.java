@@ -26,6 +26,7 @@ public class Mechanics {
   private ShiftBlock shiftBlock;
   private BottledExp bottledExp;
   private Unstackable unstackable;
+  private BlockAura blockAura;
 
   public Mechanics(String id) {
     this.id = id;
@@ -78,4 +79,8 @@ public class Mechanics {
   public void setBottledExp(Double ration, int cost) {this.bottledExp = new BottledExp(ration, cost);}
 
   public void setUnstackable(String next, String give, List<Material> materials, List<String> nexoIds) {this.unstackable = new Unstackable(next, give, materials, nexoIds);}
+
+  public void setBlockAura(Particle particle, double xOffset, double yOffset, double zOffset, int amount, double deltaX, double deltaY, double deltaZ, double speed) {
+    this.blockAura = new BlockAura(particle, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed);
+  }
 }

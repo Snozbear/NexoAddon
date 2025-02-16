@@ -149,4 +149,31 @@ public class BlockUtil {
       }
     }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0, decay.time() * 20L);
   }
+
+  public static void startBlockAura(Particle particle, Location location, double xOffset, double yOffset, double zOffset, int amount, double deltaX, double deltaY, double deltaZ, double speed) {
+    int taskId = new BukkitRunnable() {
+      @Override
+      public void run() {
+        World world = location.getWorld();
+        if (world != null) {
+          world.spawnParticle(
+                  particle,
+                  location.clone().add(xOffset, yOffset, zOffset),
+                  amount,
+                  deltaX, deltaY, deltaZ,
+                  speed
+          );
+        }
+      }
+    }.runTaskTimer(NexoAddon.getInstance(), 0L, 10L).getTaskId();
+
+    NexoAddon.getInstance().getParticleTasks().put(location, taskId);
+  }
+
+  public static void stopBlockAura(Location location) {
+    Integer taskId = NexoAddon.getInstance().getParticleTasks().remove(location);
+    if (taskId != null) {
+      Bukkit.getScheduler().cancelTask(taskId);
+    }
+  }
 }
