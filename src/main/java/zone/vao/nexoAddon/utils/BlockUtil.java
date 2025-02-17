@@ -151,17 +151,21 @@ public class BlockUtil {
     }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0, decay.time() * 20L);
   }
 
-  public static void startBlockAura(Particle particle, Location location, double xOffset, double yOffset, double zOffset, int amount, double deltaX, double deltaY, double deltaZ, double speed) {
+  public static void startBlockAura(Particle particle, Location location, String xOffsetRange, String yOffsetRange, String zOffsetRange, int amount, double deltaX, double deltaY, double deltaZ, double speed) {
     BukkitTask task = new BukkitRunnable() {
       @Override
       public void run() {
         World world = location.getWorld();
-        if(!NexoBlocks.isCustomBlock(location.getBlock())){
+        if (!NexoBlocks.isCustomBlock(location.getBlock())) {
           cancel();
           stopBlockAura(location);
           return;
         }
         if (world != null) {
+          double xOffset = RandomRangeUtil.parseAndGetRandomValue(xOffsetRange);
+          double yOffset = RandomRangeUtil.parseAndGetRandomValue(yOffsetRange);
+          double zOffset = RandomRangeUtil.parseAndGetRandomValue(zOffsetRange);
+
           world.spawnParticle(
                   particle,
                   location.clone().add(xOffset, yOffset, zOffset),
@@ -201,15 +205,15 @@ public class BlockUtil {
       if (mechanics == null || mechanics.getBlockAura() == null) return;
       Particle particle = mechanics.getBlockAura().particle();
       Location location = block.getLocation();
-      double xOffset = mechanics.getBlockAura().xOffset();
-      double yOffset = mechanics.getBlockAura().yOffset();
-      double zOffset = mechanics.getBlockAura().zOffset();
+      String xOffsetRange = mechanics.getBlockAura().xOffset();
+      String yOffsetRange = mechanics.getBlockAura().yOffset();
+      String zOffsetRange = mechanics.getBlockAura().zOffset();
       int amount = mechanics.getBlockAura().amount();
       double deltaX = mechanics.getBlockAura().deltaX();
       double deltaY = mechanics.getBlockAura().deltaY();
       double deltaZ = mechanics.getBlockAura().deltaZ();
       double speed = mechanics.getBlockAura().speed();
-      BlockUtil.startBlockAura(particle, location, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed);
+      BlockUtil.startBlockAura(particle, location, xOffsetRange, yOffsetRange, zOffsetRange, amount, deltaX, deltaY, deltaZ, speed);
     }
   }
 }
