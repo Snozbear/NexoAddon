@@ -27,9 +27,10 @@ public class BlockAuraListener {
         double deltaY = mechanics.getBlockAura().deltaY();
         double deltaZ = mechanics.getBlockAura().deltaZ();
         double speed = mechanics.getBlockAura().speed();
+        boolean force = mechanics.getBlockAura().force();
 
         if (!event.isCancelled()) {
-            BlockUtil.startBlockAura(particle, location, xOffsetRange, yOffsetRange, zOffsetRange, amount, deltaX, deltaY, deltaZ, speed);
+            BlockUtil.startBlockAura(particle, location, xOffsetRange, yOffsetRange, zOffsetRange, amount, deltaX, deltaY, deltaZ, speed, force);
             CustomBlockData customBlockData = new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
             customBlockData.set(new NamespacedKey(NexoAddon.getInstance(), "blockAura"), PersistentDataType.STRING, NexoBlocks.customBlockMechanic(location).getItemID());
         }
