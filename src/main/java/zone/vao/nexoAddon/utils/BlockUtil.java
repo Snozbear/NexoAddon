@@ -151,7 +151,7 @@ public class BlockUtil {
     }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0, decay.time() * 20L);
   }
 
-  public static void startBlockAura(Particle particle, Location location, String xOffsetRange, String yOffsetRange, String zOffsetRange, int amount, double deltaX, double deltaY, double deltaZ, double speed) {
+  public static void startBlockAura(Particle particle, Location location, String xOffsetRange, String yOffsetRange, String zOffsetRange, int amount, double deltaX, double deltaY, double deltaZ, double speed, boolean force) {
     BukkitTask task = new BukkitRunnable() {
       @Override
       public void run() {
@@ -171,7 +171,9 @@ public class BlockUtil {
                   location.clone().add(xOffset, yOffset, zOffset),
                   amount,
                   deltaX, deltaY, deltaZ,
-                  speed
+                  speed,
+                  null,
+                  force
           );
         }
       }
@@ -213,7 +215,8 @@ public class BlockUtil {
       double deltaY = mechanics.getBlockAura().deltaY();
       double deltaZ = mechanics.getBlockAura().deltaZ();
       double speed = mechanics.getBlockAura().speed();
-      BlockUtil.startBlockAura(particle, location, xOffsetRange, yOffsetRange, zOffsetRange, amount, deltaX, deltaY, deltaZ, speed);
+      boolean force = mechanics.getBlockAura().force();
+      BlockUtil.startBlockAura(particle, location, xOffsetRange, yOffsetRange, zOffsetRange, amount, deltaX, deltaY, deltaZ, speed, force);
     }
   }
 }

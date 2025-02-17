@@ -344,7 +344,8 @@ public class ItemConfigUtil {
       double deltaY = section.getDouble("Mechanics.custom_block.block_aura.deltaY", 0.6);
       double deltaZ = section.getDouble("Mechanics.custom_block.block_aura.deltaZ", 0.6);
       double speed = section.getDouble("Mechanics.custom_block.block_aura.speed", 0.05);
-      mechanic.setBlockAura(particle, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed);
+      boolean force = section.getBoolean("Mechanics.custom_block.block_aura.force", true);
+      mechanic.setBlockAura(particle, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed, force);
     }
   }
 }
