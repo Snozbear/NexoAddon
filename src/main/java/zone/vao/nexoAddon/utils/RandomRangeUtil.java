@@ -45,8 +45,8 @@ public class RandomRangeUtil {
             String[] parts = input.split("..");
             if (parts.length == 2) {
                 try {
-                    double num1 = Double.parseDouble(parts[0]);
-                    double num2 = Double.parseDouble(parts[1]);
+                    double num1 = parts[0].isEmpty() ? 0 : Double.parseDouble(parts[0]);
+                    double num2 = parts[1].isEmpty() ? num1 + 1 : Double.parseDouble(parts[1]);
                     double min = Math.min(num1, num2);
                     double max = Math.max(num1, num2);
                     return min + (max - min) * random.nextDouble();
