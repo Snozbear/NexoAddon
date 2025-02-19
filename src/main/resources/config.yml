@@ -6,6 +6,8 @@ double_hit_destroy_mechanic: true           # Destroy furniture with double hit
 count_shears_as_silktouch: [ ]              # List of STRINGBLOCKs and CHORUSBLOCKs ids
 aura_mechanic_delay: 5                      # Delay of refreshing particles in ticks
 
+update_checker: true
+
 messages:
   bigmining:
     on: <green>Bigmining on

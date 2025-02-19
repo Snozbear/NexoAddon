@@ -1,7 +1,8 @@
 package zone.vao.nexoAddon.utils;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import com.nexomc.nexo.NexoPlugin;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.items.ItemBuilder;
 import org.bukkit.Bukkit;
@@ -39,18 +40,23 @@ public class SkullUtil {
 
           if(!items.containsKey(key)) return;
 
-          NexoItems.itemMap().get(file).remove(key);
-          NexoPlugin.instance().configsManager().parseItemConfig$core().get(file).remove(key);
+          NexoItems.items().remove(item);
+          NexoItems.unexcludedItems(file).remove(item);
+
           final SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
-
           PlayerProfile profile = getProfileBase64(component.getSkullValue().value(), key);
-          if(profile == null) return;
-          meta.setPlayerProfile(profile);
 
+          if(profile == null) return;
+
+          meta.setPlayerProfile(profile);
           itemStack.setItemMeta(meta);
           ItemBuilder itemBuilder =  new ItemBuilder(itemStack);
 
+          // Replace NexoItem in NexoItems Cache
           NexoItems.itemMap().get(file).put(key, itemBuilder);
+          NexoItems.items().add(itemBuilder);
+          NexoItems.entries().put(key, itemBuilder);
+          NexoItems.unexcludedItems(file).add(itemBuilder);
         });
       });
     });
@@ -78,7 +84,12 @@ public class SkullUtil {
   public static URL getUrlFromBase64(String base64) throws MalformedURLException {
     try {
       String decoded = new String(Base64.getDecoder().decode(base64));
-      return URI.create(decoded.substring("{\"textures\":{\"SKIN\":{\"url\":\"".length(), decoded.length() - "\"}}}".length())).toURL();
+      JsonObject json = JsonParser.parseString(decoded).getAsJsonObject();
+      String url = json.getAsJsonObject("textures")
+          .getAsJsonObject("SKIN")
+          .get("url")
+          .getAsString();
+      return URI.create(url).toURL();
     } catch (Throwable t) {
       throw new MalformedURLException("Invalid base64 string: " + base64);
     }

@@ -9,21 +9,19 @@ import org.bukkit.block.Block;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 import zone.vao.nexoAddon.classes.mechanic.Decay;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BlockUtil {
 
   public static final Set<Material> UNBREAKABLE_BLOCKS = Sets.newHashSet(Material.BEDROCK, Material.BARRIER, Material.NETHER_PORTAL, Material.END_PORTAL_FRAME, Material.END_PORTAL, Material.END_GATEWAY);
-  private static final List<Location> processedChoruses = Collections.synchronizedList(new ArrayList<>());
-  public static final List<Location> processedShiftblocks = Collections.synchronizedList(new ArrayList<>());
-
+  private static final Set<Location> processedCustomBlocks = ConcurrentHashMap.newKeySet();
+  public static final Set<Location> processedShiftblocks = ConcurrentHashMap.newKeySet();
 
   public static void startShiftBlock(Location location, CustomBlockMechanic to, CustomBlockMechanic target, int time) {
     World world = location.getWorld();
@@ -89,7 +87,7 @@ public class BlockUtil {
               Location currentLocation = location.clone().add(x, y, z);
               Block block = currentLocation.getBlock();
 
-              if (processedChoruses.contains(currentLocation)) {
+              if (processedCustomBlocks.contains(currentLocation)) {
                 continue;
               }
 
@@ -100,7 +98,7 @@ public class BlockUtil {
                 if (mechanic != null && mechanic.getDecay() != null) {
                   Decay decay = mechanic.getDecay();
 
-                  processedChoruses.add(currentLocation);
+                  processedCustomBlocks.add(currentLocation);
                   startDecayTimer(block, decay);
                 }
               }
@@ -117,7 +115,7 @@ public class BlockUtil {
       @Override
       public void run() {
         if (block.getType() == Material.AIR && !NexoBlocks.isCustomBlock(block)) {
-          processedChoruses.remove(block.getLocation());
+          processedCustomBlocks.remove(block.getLocation());
           cancel();
           return;
         }
@@ -146,10 +144,79 @@ public class BlockUtil {
               NexoBlocks.remove(block.getLocation());
             }
           }.runTask(NexoAddon.getInstance());
-          processedChoruses.remove(block.getLocation());
+          processedCustomBlocks.remove(block.getLocation());
           cancel();
         }
       }
     }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0, decay.time() * 20L);
+  }
+
+  public static void startBlockAura(Particle particle, Location location, String xOffsetRange, String yOffsetRange, String zOffsetRange, int amount, double deltaX, double deltaY, double deltaZ, double speed, boolean force) {
+    BukkitTask task = new BukkitRunnable() {
+      @Override
+      public void run() {
+        World world = location.getWorld();
+        if (!NexoBlocks.isCustomBlock(location.getBlock())) {
+          cancel();
+          stopBlockAura(location);
+          return;
+        }
+        if (world != null) {
+          double xOffset = RandomRangeUtil.parseAndGetRandomValue(xOffsetRange);
+          double yOffset = RandomRangeUtil.parseAndGetRandomValue(yOffsetRange);
+          double zOffset = RandomRangeUtil.parseAndGetRandomValue(zOffsetRange);
+
+          world.spawnParticle(
+                  particle,
+                  location.clone().add(xOffset, yOffset, zOffset),
+                  amount,
+                  deltaX, deltaY, deltaZ,
+                  speed,
+                  null,
+                  force
+          );
+        }
+      }
+    }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0L, NexoAddon.getInstance().getGlobalConfig().getLong("aura_mechanic_delay", 10));
+
+    NexoAddon.getInstance().getParticleTasks().put(location, task);
+  }
+
+  public static void stopBlockAura(Location location) {
+    BukkitTask task = NexoAddon.getInstance().getParticleTasks().remove(location);
+    CustomBlockData customBlockData =  new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
+    customBlockData.remove(new NamespacedKey(NexoAddon.getInstance(), "blockAura"));
+    if (task != null && task.isCancelled()) {
+      task.cancel();
+    }
+  }
+
+  public static void restartBlockAura(Chunk chunk){
+    for(Block block : CustomBlockData.getBlocksWithCustomData(NexoAddon.getInstance(), chunk)){
+      CustomBlockData customBlockData = new CustomBlockData(block, (NexoAddon.getInstance()));
+      if(!customBlockData.has(new NamespacedKey(NexoAddon.getInstance(), "blockAura"), PersistentDataType.STRING)) continue;
+      if(!NexoBlocks.isCustomBlock(block)){
+        customBlockData.clear();
+        continue;
+      }
+
+      if(NexoAddon.getInstance().getMechanics().isEmpty()) continue;
+
+      if(NexoAddon.getInstance().getParticleTasks().containsKey(block.getLocation())) continue;
+      Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(NexoBlocks.customBlockMechanic(block.getLocation()).getItemID());
+      if (mechanics == null || mechanics.getBlockAura() == null) return;
+      Particle particle = mechanics.getBlockAura().particle();
+      Location location = block.getLocation();
+      String xOffsetRange = mechanics.getBlockAura().xOffset();
+      String yOffsetRange = mechanics.getBlockAura().yOffset();
+      String zOffsetRange = mechanics.getBlockAura().zOffset();
+      int amount = mechanics.getBlockAura().amount();
+      double deltaX = mechanics.getBlockAura().deltaX();
+      double deltaY = mechanics.getBlockAura().deltaY();
+      double deltaZ = mechanics.getBlockAura().deltaZ();
+      double speed = mechanics.getBlockAura().speed();
+      boolean force = mechanics.getBlockAura().force();
+      BlockUtil.startBlockAura(particle, location, xOffsetRange, yOffsetRange, zOffsetRange, amount, deltaX, deltaY, deltaZ, speed, force);
+    }
   }
 }
