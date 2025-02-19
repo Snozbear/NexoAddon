@@ -90,9 +90,9 @@ public final class NexoAddon extends JavaPlugin {
       packeteventsLoaded = true;
       PacketEventsHook.registerListener();
     }else{
-      getLogger().warning(System.lineSeparator());
+      getLogger().warning("");
       getLogger().warning("PacketEvents not found. Some features remain disabled!");
-      getLogger().warning(System.lineSeparator());
+      getLogger().warning("");
     }
   }
 
