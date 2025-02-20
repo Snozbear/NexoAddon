@@ -67,6 +67,7 @@ public class PrepareRecipesListener implements Listener {
     }
 
     boolean copyTrim = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_trim", false);
+    boolean copyPdc = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_pdc", false);
     boolean copyEnchants = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_enchantments", true);
     boolean keepDurability = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".keep_durability", true);
 
@@ -78,6 +79,10 @@ public class PrepareRecipesListener implements Listener {
       if (baseArmorMeta.hasTrim()) {
         ((ArmorMeta) resultMeta).setTrim(baseArmorMeta.getTrim());
       }
+    }
+
+    if(copyPdc){
+      baseMeta.getPersistentDataContainer().copyTo(resultMeta.getPersistentDataContainer(), false);
     }
 
     if(keepDurability && resultMeta instanceof Damageable damageable) {
