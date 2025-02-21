@@ -6,7 +6,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.populators.orePopulator.CustomOrePopulator;
+import zone.vao.nexoAddon.populators.orePopulator.CustomOrePopulator;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.classes.populators.orePopulator;
+package zone.vao.nexoAddon.populators.orePopulator;
 
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;

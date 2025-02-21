@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.classes.populators.treePopulator;
+package zone.vao.nexoAddon.populators.treePopulator;
 
 import org.bukkit.Material;
 import org.bukkit.generator.BlockPopulator;

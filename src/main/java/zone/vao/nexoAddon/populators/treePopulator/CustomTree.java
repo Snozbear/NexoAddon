@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.classes.populators.treePopulator;
+package zone.vao.nexoAddon.populators.treePopulator;
 
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import lombok.Getter;

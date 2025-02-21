@@ -14,11 +14,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
-import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTree;
+import zone.vao.nexoAddon.populators.orePopulator.Ore;
+import zone.vao.nexoAddon.populators.treePopulator.CustomTree;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 

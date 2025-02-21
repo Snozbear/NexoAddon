@@ -1,24 +1,23 @@
-package zone.vao.nexoAddon.classes.populators.orePopulator;
+package zone.vao.nexoAddon.populators.orePopulator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Biome;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
-import zone.vao.nexoAddon.NexoAddon;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class CustomOrePopulator extends BlockPopulator {
 
   private final OrePopulator orePopulator;
 
+  private final Map<String, BlockData> cachedBlocks = new HashMap<>();
   public CustomOrePopulator(OrePopulator orePopulator) {
     this.orePopulator = orePopulator;
   }
@@ -26,7 +25,7 @@ public class CustomOrePopulator extends BlockPopulator {
   @Override
   public void populate(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull LimitedRegion limitedRegion) {
     for (Ore ore : orePopulator.getOres()) {
-      if(ore.getNexoFurniture() != null) continue;
+      if(ore.getNexoFurniture() != null || !ore.worldNames.contains(worldInfo.getName())) continue;
       generateOre(worldInfo, random, chunkX, chunkZ, limitedRegion, ore);
     }
   }

@@ -1,11 +1,11 @@
-package zone.vao.nexoAddon.classes.populators;
+package zone.vao.nexoAddon.populators;
 
 import org.bukkit.World;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.NotNull;
-import zone.vao.nexoAddon.classes.populators.orePopulator.CustomOrePopulator;
-import zone.vao.nexoAddon.classes.populators.orePopulator.OrePopulator;
+import zone.vao.nexoAddon.populators.orePopulator.CustomOrePopulator;
+import zone.vao.nexoAddon.populators.orePopulator.OrePopulator;
 
 import java.util.List;
 
