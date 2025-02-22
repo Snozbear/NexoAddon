@@ -3,9 +3,12 @@ package zone.vao.nexoAddon.utils;
 import com.google.common.collect.Sets;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.nexomc.nexo.api.NexoBlocks;
+import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
+import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -66,6 +69,62 @@ public class BlockUtil {
         }.runTaskLater(NexoAddon.getInstance(), 1);
         processedShiftblocks.remove(finalLocation);
         pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+      }
+    }.runTaskLaterAsynchronously(NexoAddon.getInstance(), time*20L);
+  }
+
+  public static void startShiftBlock(Location location, FurnitureMechanic to, FurnitureMechanic target, int time) {
+    World world = location.getWorld();
+    if(world == null || processedShiftblocks.contains(location)) return;
+
+    Location finalLocation = location.clone();
+
+    processedShiftblocks.add(location);
+    PersistentDataContainer pdc = new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
+    pdc.set(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"), PersistentDataType.STRING, target.getItemID());
+    FurnitureMechanic previous = NexoFurniture.furnitureMechanic(location);
+    ItemDisplay baseEntity = NexoFurniture.baseEntity(location);
+    if(previous == null || baseEntity == null) return;
+    previous.removeBaseEntity(baseEntity);
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        to.place(finalLocation, baseEntity.getYaw(), baseEntity.getFacing(), false);
+      }
+    }.runTaskLater(NexoAddon.getInstance(), 1);
+
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        new BukkitRunnable() {
+          @Override
+          public void run() {
+            if(!NexoFurniture.isFurniture(finalLocation) ||
+                !NexoFurniture.furnitureMechanic(finalLocation).getItemID().equalsIgnoreCase(to.getItemID())
+            ) {
+              cancel();
+              processedShiftblocks.remove(finalLocation);
+              pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+              return;
+            }
+
+            new BukkitRunnable() {
+              @Override
+              public void run() {
+                NexoFurniture.remove(finalLocation);
+              }
+            }.runTask(NexoAddon.getInstance());
+            new BukkitRunnable() {
+              @Override
+              public void run() {
+                target.place(finalLocation, baseEntity.getYaw(), baseEntity.getFacing(), false);
+              }
+            }.runTaskLater(NexoAddon.getInstance(), 1);
+            processedShiftblocks.remove(finalLocation);
+            pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+          }
+        }.runTask(NexoAddon.getInstance());
+
       }
     }.runTaskLaterAsynchronously(NexoAddon.getInstance(), time*20L);
   }

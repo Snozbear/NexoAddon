@@ -286,13 +286,13 @@ public class ItemConfigUtil {
   }
 
   private static void loadShiftBlockMechanic(ConfigurationSection section, Mechanics mechanic) {
-    if (section.contains("Mechanics.custom_block.shiftblock.time")
-        && section.contains("Mechanics.custom_block.shiftblock.replace_to")
+    if (section.contains("Mechanics.shiftblock.time")
+        && section.contains("Mechanics.shiftblock.replace_to")
     ) {
       List<Material> materials = new ArrayList<>();
       List<String> nexoIds = new ArrayList<>();
-      if(section.contains("Mechanics.custom_block.shiftblock.items")){
-        for (String s : section.getStringList("Mechanics.custom_block.shiftblock.items")) {
+      if(section.contains("Mechanics.shiftblock.items")){
+        for (String s : section.getStringList("Mechanics.shiftblock.items")) {
           if(NexoItems.itemFromId(s) != null){
             nexoIds.add(s);
           }else if(Material.matchMaterial(s) != null){
@@ -301,7 +301,7 @@ public class ItemConfigUtil {
         }
       }
 
-      mechanic.setShiftBlock(section.getString("Mechanics.custom_block.shiftblock.replace_to"), section.getInt("Mechanics.custom_block.shiftblock.time",200), materials, nexoIds, section.getBoolean("Mechanics.custom_block.shiftblock.on_interact",true), section.getBoolean("Mechanics.custom_block.shiftblock.on_break",false), section.getBoolean("Mechanics.custom_block.shiftblock.on_place",false));
+      mechanic.setShiftBlock(section.getString("Mechanics.shiftblock.replace_to"), section.getInt("Mechanics.shiftblock.time",200), materials, nexoIds, section.getBoolean("Mechanics.shiftblock.on_interact",true), section.getBoolean("Mechanics.shiftblock.on_break",false), section.getBoolean("Mechanics.shiftblock.on_place",false));
     }
   }
 

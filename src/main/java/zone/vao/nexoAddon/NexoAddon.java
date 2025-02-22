@@ -23,6 +23,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import zone.vao.nexoAddon.classes.Components;
 import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurniturePlaceListener;
 import zone.vao.nexoAddon.populators.CustomChunkGenerator;
 import zone.vao.nexoAddon.populators.orePopulator.CustomOrePopulator;
 import zone.vao.nexoAddon.populators.orePopulator.Ore;
@@ -236,6 +237,7 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new NexoStringBlockInteractListener());
     registerEvent(new NexoBlockInteractListener());
     registerEvent(new NexoBlockPlaceListener());
+    registerEvent(new NexoFurniturePlaceListener());
   }
 
   private void initializeMetrics() {

@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.events.nexo.furnitures.interacts.DisplayCropsHologram;
 import zone.vao.nexoAddon.events.nexo.furnitures.interacts.Fertilize;
+import zone.vao.nexoAddon.events.nexo.furnitures.interacts.ShiftBlockListener;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +30,7 @@ public class NexoFurnitureInteractListener implements Listener {
 
     Fertilize.onFertilize(event);
     DisplayCropsHologram.onInteract(event);
+    ShiftBlockListener.onShiftBlockInteract(event);
   }
 
 }
