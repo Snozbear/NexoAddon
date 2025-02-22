@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.events.nexo.furnitures.playerFurnitureInteracts;
+package zone.vao.nexoAddon.events.nexo.furnitures.interacts;
 
 import com.nexomc.nexo.NexoPlugin;
 import com.nexomc.nexo.api.NexoFurniture;

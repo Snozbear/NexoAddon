@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.events.nexo.furnitures.furnitureBreaks;
+package zone.vao.nexoAddon.events.nexo.furnitures.breaks;
 
 import com.nexomc.nexo.api.events.furniture.NexoFurnitureBreakEvent;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.events.nexo.furnitures.playerFurnitureInteracts;
+package zone.vao.nexoAddon.events.nexo.furnitures.interacts;
 
 import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.api.events.furniture.NexoFurnitureInteractEvent;
@@ -7,7 +7,7 @@ import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.utils.HologramUtil;
 
-import static zone.vao.nexoAddon.events.nexo.furnitures.playerFurnitureInteracts.Fertilize.EVOLUTION_KEY;
+import static zone.vao.nexoAddon.events.nexo.furnitures.interacts.Fertilize.EVOLUTION_KEY;
 
 public class DisplayCropsHologram {
 
