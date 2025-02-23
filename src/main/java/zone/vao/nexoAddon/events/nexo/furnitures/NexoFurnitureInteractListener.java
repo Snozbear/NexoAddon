@@ -1,6 +1,7 @@
 package zone.vao.nexoAddon.events.nexo.furnitures;
 
 import com.nexomc.nexo.api.events.furniture.NexoFurnitureInteractEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

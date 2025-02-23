@@ -30,6 +30,7 @@ public class ShiftBlockListener {
       return;
     }
 
+    event.setCancelled(true);
     startShiftBlock(event.getBaseEntity().getLocation(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
   }
 }

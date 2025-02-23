@@ -15,10 +15,15 @@ import org.jetbrains.annotations.NotNull;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
 import static zone.vao.nexoAddon.utils.BlockUtil.startShiftBlock;
 
 public class ShiftBlockListener {
-
+  public static List<UUID> toCancelation = Collections.synchronizedList(new ArrayList<>());
   public static void onShiftBlockInteract(final NexoFurnitureInteractEvent event) {
 
     if(event.getHand() != EquipmentSlot.HAND) return;
@@ -35,6 +40,9 @@ public class ShiftBlockListener {
     ) {
       return;
     }
+
+    event.setCancelled(true);
+    toCancelation.add(event.getPlayer().getUniqueId());
 
     startShiftBlock(event.getBaseEntity().getLocation(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
   }

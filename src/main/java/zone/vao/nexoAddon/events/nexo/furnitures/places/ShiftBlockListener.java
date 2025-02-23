@@ -31,11 +31,7 @@ public class ShiftBlockListener {
       return;
     }
 
-    new BukkitRunnable() {
-      @Override
-      public void run(){
-        startShiftBlock(event.getBaseEntity().getLocation(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
-      }
-    }.runTaskLater(NexoAddon.getInstance(), 2L);
+    event.setCancelled(true);
+    startShiftBlock(event.getBaseEntity().getLocation(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
   }
 }

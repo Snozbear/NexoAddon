@@ -85,13 +85,8 @@ public class BlockUtil {
     FurnitureMechanic previous = NexoFurniture.furnitureMechanic(location);
     ItemDisplay baseEntity = NexoFurniture.baseEntity(location);
     if(previous == null || baseEntity == null) return;
+    to.place(finalLocation, baseEntity.getYaw(), baseEntity.getFacing(), false);
     previous.removeBaseEntity(baseEntity);
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        to.place(finalLocation, baseEntity.getYaw(), baseEntity.getFacing(), false);
-      }
-    }.runTaskLater(NexoAddon.getInstance(), 1);
 
     new BukkitRunnable() {
       @Override
@@ -108,18 +103,8 @@ public class BlockUtil {
               return;
             }
 
-            new BukkitRunnable() {
-              @Override
-              public void run() {
-                NexoFurniture.remove(finalLocation);
-              }
-            }.runTask(NexoAddon.getInstance());
-            new BukkitRunnable() {
-              @Override
-              public void run() {
-                target.place(finalLocation, baseEntity.getYaw(), baseEntity.getFacing(), false);
-              }
-            }.runTaskLater(NexoAddon.getInstance(), 1);
+            target.place(finalLocation, baseEntity.getYaw(), baseEntity.getFacing(), false);
+            NexoFurniture.remove(finalLocation);
             processedShiftblocks.remove(finalLocation);
             pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
           }
