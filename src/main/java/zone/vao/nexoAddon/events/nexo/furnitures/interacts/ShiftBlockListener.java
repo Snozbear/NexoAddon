@@ -1,17 +1,11 @@
 package zone.vao.nexoAddon.events.nexo.furnitures.interacts;
 
-import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.api.NexoItems;
-import com.nexomc.nexo.api.events.custom_block.NexoBlockInteractEvent;
 import com.nexomc.nexo.api.events.furniture.NexoFurnitureInteractEvent;
-import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 

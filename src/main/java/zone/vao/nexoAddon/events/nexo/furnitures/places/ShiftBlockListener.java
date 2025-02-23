@@ -1,15 +1,10 @@
 package zone.vao.nexoAddon.events.nexo.furnitures.places;
 
-import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.api.NexoItems;
-import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockPlaceEvent;
 import com.nexomc.nexo.api.events.furniture.NexoFurniturePlaceEvent;
-import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.classes.Mechanics;
 

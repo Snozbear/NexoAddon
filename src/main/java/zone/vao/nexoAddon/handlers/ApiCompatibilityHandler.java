@@ -1,6 +1,5 @@
 package zone.vao.nexoAddon.handlers;
 
-import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 
 import java.lang.reflect.Method;

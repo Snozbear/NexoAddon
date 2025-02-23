@@ -1,6 +1,5 @@
 package zone.vao.nexoAddon.events.nexo.blocks;
 
-import com.nexomc.nexo.api.events.custom_block.NexoBlockBreakEvent;
 import com.nexomc.nexo.api.events.custom_block.chorusblock.NexoChorusBlockBreakEvent;
 import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent;
 import com.nexomc.nexo.api.events.custom_block.stringblock.NexoStringBlockBreakEvent;

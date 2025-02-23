@@ -1,7 +1,6 @@
 package zone.vao.nexoAddon.events.nexo.furnitures;
 
 import com.nexomc.nexo.api.events.furniture.NexoFurniturePlaceEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.events.nexo.furnitures.places.ShiftBlockListener;

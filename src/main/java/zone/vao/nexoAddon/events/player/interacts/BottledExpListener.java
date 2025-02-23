@@ -1,7 +1,6 @@
 package zone.vao.nexoAddon.events.player.interacts;
 
 import com.nexomc.nexo.api.NexoItems;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
