@@ -36,7 +36,8 @@ public class ShiftBlockListener {
     }
 
     event.setCancelled(true);
-    toCancelation.add(event.getPlayer().getUniqueId());
+    if(!toCancelation.contains((event.getPlayer().getUniqueId())))
+      toCancelation.add(event.getPlayer().getUniqueId());
 
     startShiftBlock(event.getBaseEntity().getLocation(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
   }
