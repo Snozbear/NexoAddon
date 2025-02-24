@@ -3,7 +3,7 @@ package zone.vao.nexoAddon.utils.hooks;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.handlers.BlockHardnessHandler;
+import zone.vao.nexoAddon.utils.handlers.BlockHardnessHandler;
 
 public class PacketEventsHook {
 

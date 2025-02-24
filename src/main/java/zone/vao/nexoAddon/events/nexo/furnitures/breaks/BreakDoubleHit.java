@@ -3,7 +3,7 @@ package zone.vao.nexoAddon.events.nexo.furnitures.breaks;
 import com.nexomc.nexo.api.events.furniture.NexoFurnitureBreakEvent;
 import lombok.Getter;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.handlers.ApiCompatibilityHandler;
+import zone.vao.nexoAddon.utils.handlers.ApiCompatibilityHandler;
 
 import java.util.HashMap;
 import java.util.Map;

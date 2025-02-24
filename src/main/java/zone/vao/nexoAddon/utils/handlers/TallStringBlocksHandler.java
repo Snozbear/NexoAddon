@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.handlers;
+package zone.vao.nexoAddon.utils.handlers;
 
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.utils.drops.Drop;

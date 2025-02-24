@@ -6,7 +6,7 @@ import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.handlers.TallStringBlocksHandler;
+import zone.vao.nexoAddon.utils.handlers.TallStringBlocksHandler;
 
 public class ShearsBreak {
 

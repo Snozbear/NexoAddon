@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.handlers;
+package zone.vao.nexoAddon.utils.handlers;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListener;

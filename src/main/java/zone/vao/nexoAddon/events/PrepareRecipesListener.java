@@ -16,7 +16,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.handlers.RecipeManager;
+import zone.vao.nexoAddon.utils.handlers.RecipeManager;
 import zone.vao.nexoAddon.utils.VersionUtil;
 
 import java.util.HashMap;
