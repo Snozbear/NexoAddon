@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.mechanics.Mechanics;
 
 import java.util.ArrayList;
 import java.util.List;

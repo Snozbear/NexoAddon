@@ -6,7 +6,7 @@ import com.nexomc.nexo.api.events.furniture.NexoFurnitureBreakEvent;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.inventory.ItemStack;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.mechanics.Mechanics;
 
 import static zone.vao.nexoAddon.utils.BlockUtil.startShiftBlock;
 

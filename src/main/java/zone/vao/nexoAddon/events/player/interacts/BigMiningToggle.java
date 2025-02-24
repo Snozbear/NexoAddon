@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.mechanic.BigMining;
+import zone.vao.nexoAddon.mechanics.BigMining;
 
 public class BigMiningToggle {
 

@@ -7,8 +7,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
-import zone.vao.nexoAddon.classes.mechanic.Repair;
+import zone.vao.nexoAddon.mechanics.Mechanics;
+import zone.vao.nexoAddon.mechanics.Repair;
 
 public class RepairListener {
 

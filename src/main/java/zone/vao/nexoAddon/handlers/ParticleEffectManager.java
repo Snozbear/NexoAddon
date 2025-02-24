@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.mechanic.Aura;
+import zone.vao.nexoAddon.mechanics.Aura;
 
 import java.util.ArrayList;
 import java.util.List;

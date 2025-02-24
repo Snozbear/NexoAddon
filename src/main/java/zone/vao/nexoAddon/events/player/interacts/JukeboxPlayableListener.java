@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Components;
+import zone.vao.nexoAddon.components.Components;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 import zone.vao.nexoAddon.utils.VersionUtil;
 

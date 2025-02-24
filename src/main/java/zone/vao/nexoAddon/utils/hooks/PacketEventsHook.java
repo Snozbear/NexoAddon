@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.hooks;
+package zone.vao.nexoAddon.utils.hooks;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;

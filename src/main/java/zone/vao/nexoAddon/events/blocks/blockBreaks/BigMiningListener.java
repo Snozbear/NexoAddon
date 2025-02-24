@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.mechanic.BigMining;
+import zone.vao.nexoAddon.mechanics.BigMining;
 import zone.vao.nexoAddon.utils.BlockUtil;
 import zone.vao.nexoAddon.utils.EventUtil;
 

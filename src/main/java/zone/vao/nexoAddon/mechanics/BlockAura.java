@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.classes.mechanic;
+package zone.vao.nexoAddon.mechanics;
 
 import org.bukkit.Particle;
 

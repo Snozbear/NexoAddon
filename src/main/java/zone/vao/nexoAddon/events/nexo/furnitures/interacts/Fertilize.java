@@ -15,8 +15,8 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Components;
-import zone.vao.nexoAddon.classes.component.Fertilizer;
+import zone.vao.nexoAddon.components.Components;
+import zone.vao.nexoAddon.components.Fertilizer;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 import zone.vao.nexoAddon.utils.ParticleUtil;
 

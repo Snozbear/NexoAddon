@@ -6,7 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ExperienceOrb;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.mechanics.Mechanics;
 
 public class DropExperienceListener {
 

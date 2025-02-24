@@ -26,7 +26,32 @@ public class CustomOrePopulator extends BlockPopulator {
   public void populate(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull LimitedRegion limitedRegion) {
     for (Ore ore : orePopulator.getOres()) {
       if(ore.getNexoFurniture() != null || !ore.worldNames.contains(worldInfo.getName())) continue;
-      generateOre(worldInfo, random, chunkX, chunkZ, limitedRegion, ore);
+      if(ore.getIterations() instanceof Integer iterations && iterations < 0)
+        replaceBlocks(worldInfo, random, chunkX, chunkZ, limitedRegion, ore);
+      else
+        generateOre(worldInfo, random, chunkX, chunkZ, limitedRegion, ore);
+    }
+  }
+
+  private void replaceBlocks(WorldInfo worldInfo, Random random, int chunkX, int chunkZ, LimitedRegion limitedRegion, Ore ore){
+    List<Material> toReplace = ore.getReplace();
+    int startX = chunkX << 4;
+    int startZ = chunkZ << 4;
+
+    for (int x = startX; x < startX + 16; x++) {
+      for (int z = startZ; z < startZ + 16; z++) {
+        for (int y = worldInfo.getMinHeight(); y <= worldInfo.getMaxHeight(); y++) {
+          if (!limitedRegion.isInRegion(x, y, z)) continue;
+          if (!ore.biomes.isEmpty() && !ore.biomes.contains(limitedRegion.getBiome(x, y, z))) continue;
+
+          Material currentMaterial = limitedRegion.getType(x, y, z);
+
+          if (toReplace.contains(currentMaterial)) {
+            PlacementPosition position = new PlacementPosition(worldInfo, x, y, z, currentMaterial, limitedRegion.getBiome(x, y, z), limitedRegion);
+            placeBlock(position, ore, worldInfo, limitedRegion);
+          }
+        }
+      }
     }
   }
 

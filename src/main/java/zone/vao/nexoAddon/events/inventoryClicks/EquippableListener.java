@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Components;
+import zone.vao.nexoAddon.components.Components;
 import zone.vao.nexoAddon.utils.VersionUtil;
 
 public class EquippableListener {

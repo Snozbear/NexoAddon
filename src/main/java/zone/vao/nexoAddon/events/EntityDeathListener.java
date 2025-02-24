@@ -8,7 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.mechanics.Mechanics;
 
 public class EntityDeathListener implements Listener {
     @EventHandler

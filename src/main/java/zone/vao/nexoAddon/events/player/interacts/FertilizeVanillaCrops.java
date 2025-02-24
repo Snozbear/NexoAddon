@@ -9,8 +9,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.meta.Damageable;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Components;
-import zone.vao.nexoAddon.classes.component.Fertilizer;
+import zone.vao.nexoAddon.components.Components;
+import zone.vao.nexoAddon.components.Fertilizer;
 import zone.vao.nexoAddon.utils.EventUtil;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 

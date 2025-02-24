@@ -8,7 +8,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.mechanics.Mechanics;
 import zone.vao.nexoAddon.utils.BlockUtil;
 
 public class BlockAuraListener {

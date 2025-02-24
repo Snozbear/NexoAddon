@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.classes.component;
+package zone.vao.nexoAddon.components;
 
 import org.bukkit.inventory.EquipmentSlot;
 

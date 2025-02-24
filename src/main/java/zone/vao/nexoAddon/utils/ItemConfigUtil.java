@@ -8,8 +8,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Components;
-import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.components.Components;
+import zone.vao.nexoAddon.mechanics.Mechanics;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -6,7 +6,7 @@ import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import org.bukkit.inventory.ItemStack;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.mechanics.Mechanics;
 
 import static zone.vao.nexoAddon.utils.BlockUtil.startShiftBlock;
 

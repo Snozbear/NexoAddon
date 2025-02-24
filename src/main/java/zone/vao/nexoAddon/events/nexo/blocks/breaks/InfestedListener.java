@@ -11,8 +11,8 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
-import zone.vao.nexoAddon.classes.mechanic.Infested;
+import zone.vao.nexoAddon.mechanics.Mechanics;
+import zone.vao.nexoAddon.mechanics.Infested;
 
 import java.util.*;
 

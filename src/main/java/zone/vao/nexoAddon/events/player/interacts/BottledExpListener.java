@@ -13,7 +13,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.mechanic.BottledExp;
+import zone.vao.nexoAddon.mechanics.BottledExp;
 import zone.vao.nexoAddon.utils.EventUtil;
 
 public class BottledExpListener implements Listener {

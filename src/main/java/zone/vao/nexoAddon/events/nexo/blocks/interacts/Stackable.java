@@ -9,7 +9,7 @@ import com.nexomc.nexo.utils.drops.Loot;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.GameMode;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.mechanics.Mechanics;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 
 import java.util.ArrayList;

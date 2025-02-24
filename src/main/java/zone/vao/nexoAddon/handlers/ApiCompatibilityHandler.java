@@ -18,7 +18,7 @@ public class ApiCompatibilityHandler {
         throw new RuntimeException("Neither 'hasEvolution()' nor 'getHasEvolution()' are available!", ex);
       }
     } catch (Exception e) {
-      throw new RuntimeException("Error invoking method on mechanic", e);
+      throw new RuntimeException("Error invoking method on mechanics", e);
     }
   }
 }
