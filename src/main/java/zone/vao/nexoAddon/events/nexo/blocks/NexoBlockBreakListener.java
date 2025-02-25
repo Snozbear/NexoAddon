@@ -6,6 +6,7 @@ import com.nexomc.nexo.api.events.custom_block.stringblock.NexoStringBlockBreakE
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.events.nexo.blocks.breaks.*;
+import zone.vao.nexoAddon.mechanics.BlockAura;
 import zone.vao.nexoAddon.utils.BlockUtil;
 
 public class NexoBlockBreakListener implements Listener {
@@ -18,17 +19,17 @@ public class NexoBlockBreakListener implements Listener {
     DropExperienceListener.onBreak(event);
     InfestedListener.onBreak(event);
     ShiftBlockListener.onShiftBlockBreak(event);
-    BlockAuraListener.onBlockBreak(event);
+    BlockAura.BlockAuraListener.onBlockBreak(event);
   }
 
   @EventHandler
   public void onChorusBreak(NexoChorusBlockBreakEvent event) {
     MiningToolsListener.onBreak(event);
-    BlockAuraListener.onBlockBreak(event);
+    BlockAura.BlockAuraListener.onBlockBreak(event);
   }
 
   @EventHandler
   public void onStringBreak(NexoStringBlockBreakEvent event) {
-    BlockAuraListener.onBlockBreak(event);
+    BlockAura.BlockAuraListener.onBlockBreak(event);
   }
 }

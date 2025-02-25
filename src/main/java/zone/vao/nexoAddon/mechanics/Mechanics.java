@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
+import org.bukkit.event.Listener;
+import zone.vao.nexoAddon.NexoAddon;
 
 import java.util.List;
 
@@ -81,5 +83,16 @@ public class Mechanics {
 
   public void setBlockAura(Particle particle, String xOffset, String yOffset, String zOffset, int amount, double deltaX, double deltaY, double deltaZ, double speed, boolean force) {
     this.blockAura = new BlockAura(particle, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed, force);
+  }
+
+  public static void registerListeners(NexoAddon plugin){
+
+    registerListener(new BigMining.BigMiningListener(), plugin);
+    registerListener(new BlockAura.BlockAuraListener(), plugin);
+  }
+
+  private static void registerListener(Listener listener, NexoAddon plugin){
+
+    plugin.getServer().getPluginManager().registerEvents(listener, plugin);
   }
 }
