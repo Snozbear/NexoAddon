@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.components;
+package zone.vao.nexoAddon.items.components;
 
 import com.nexomc.nexo.NexoPlugin;
 import com.nexomc.nexo.api.NexoFurniture;
@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.items.Components;
 import zone.vao.nexoAddon.utils.EventUtil;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 import zone.vao.nexoAddon.utils.ParticleUtil;

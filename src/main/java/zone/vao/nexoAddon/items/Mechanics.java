@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.mechanics;
+package zone.vao.nexoAddon.items;
 
 import lombok.Getter;
 import org.bukkit.Material;
@@ -6,6 +6,7 @@ import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.items.mechanics.*;
 
 import java.util.List;
 

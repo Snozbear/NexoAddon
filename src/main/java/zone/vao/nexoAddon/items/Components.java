@@ -1,9 +1,13 @@
-package zone.vao.nexoAddon.components;
+package zone.vao.nexoAddon.items;
 
 import lombok.Getter;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.items.components.Equippable;
+import zone.vao.nexoAddon.items.components.Fertilizer;
+import zone.vao.nexoAddon.items.components.JukeboxPlayable;
+import zone.vao.nexoAddon.items.components.SkullValue;
 
 import java.util.List;
 

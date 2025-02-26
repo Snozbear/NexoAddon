@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.mechanics;
+package zone.vao.nexoAddon.items.mechanics;
 
 import com.nexomc.nexo.api.NexoItems;
 import io.th0rgal.protectionlib.ProtectionLib;

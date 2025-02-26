@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.mechanics;
+package zone.vao.nexoAddon.items.mechanics;
 
 import com.nexomc.nexo.api.NexoItems;
 import io.th0rgal.protectionlib.ProtectionLib;
@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.items.Mechanics;
 
 public record SpawnerBreak(double probability, boolean dropExperience) {
 

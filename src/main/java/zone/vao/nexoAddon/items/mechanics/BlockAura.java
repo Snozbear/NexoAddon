@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.mechanics;
+package zone.vao.nexoAddon.items.mechanics;
 
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.nexomc.nexo.api.NexoBlocks;
@@ -7,7 +7,6 @@ import com.nexomc.nexo.api.events.custom_block.NexoBlockPlaceEvent;
 import com.nexomc.nexo.api.events.custom_block.chorusblock.NexoChorusBlockPlaceEvent;
 import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockPlaceEvent;
 import com.nexomc.nexo.api.events.custom_block.stringblock.NexoStringBlockPlaceEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -16,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.items.Mechanics;
 import zone.vao.nexoAddon.utils.BlockUtil;
 
 public record BlockAura(Particle particle, String xOffset, String yOffset, String zOffset, int amount, double deltaX, double deltaY, double deltaZ, double speed, boolean force) {

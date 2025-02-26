@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.mechanics;
+package zone.vao.nexoAddon.items.mechanics;
 
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent;
@@ -13,6 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.items.Mechanics;
 
 import java.util.*;
 

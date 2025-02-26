@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerTextures;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.components.Components;
+import zone.vao.nexoAddon.items.Components;
 
 import java.net.MalformedURLException;
 import java.net.URI;

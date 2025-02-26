@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.mechanics;
+package zone.vao.nexoAddon.items.mechanics;
 
 import com.nexomc.nexo.api.NexoItems;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.items.Mechanics;
 
 public record KillMessage(String deathMessage) {
 

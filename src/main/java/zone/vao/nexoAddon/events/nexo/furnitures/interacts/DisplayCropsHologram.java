@@ -5,7 +5,7 @@ import com.nexomc.nexo.api.events.furniture.NexoFurnitureInteractEvent;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.components.Fertilizer;
+import zone.vao.nexoAddon.items.components.Fertilizer;
 import zone.vao.nexoAddon.utils.HologramUtil;
 
 public class DisplayCropsHologram {

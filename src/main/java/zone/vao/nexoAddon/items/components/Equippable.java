@@ -1,4 +1,4 @@
-package zone.vao.nexoAddon.components;
+package zone.vao.nexoAddon.items.components;
 
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
@@ -14,6 +14,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
+import zone.vao.nexoAddon.items.Components;
 import zone.vao.nexoAddon.utils.InventoryUtil;
 import zone.vao.nexoAddon.utils.VersionUtil;
 

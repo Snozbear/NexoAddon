@@ -14,8 +14,8 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.mechanics.Mechanics;
-import zone.vao.nexoAddon.mechanics.Decay;
+import zone.vao.nexoAddon.items.Mechanics;
+import zone.vao.nexoAddon.items.mechanics.Decay;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

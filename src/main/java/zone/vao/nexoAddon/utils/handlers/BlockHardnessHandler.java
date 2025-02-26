@@ -19,7 +19,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.mechanics.BedrockBreak;
+import zone.vao.nexoAddon.items.mechanics.BedrockBreak;
 import zone.vao.nexoAddon.utils.EventUtil;
 
 import java.util.HashMap;
