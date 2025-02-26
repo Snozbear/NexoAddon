@@ -24,24 +24,15 @@ import org.jetbrains.annotations.NotNull;
 import zone.vao.nexoAddon.components.Components;
 import zone.vao.nexoAddon.mechanics.Mechanics;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
-import zone.vao.nexoAddon.events.EntityDeathListener;
 import zone.vao.nexoAddon.events.PlayerCommandPreprocessListener;
 import zone.vao.nexoAddon.events.PrepareRecipesListener;
 import zone.vao.nexoAddon.events.WorldLoadListener;
 import zone.vao.nexoAddon.events.blocks.BlockBreakListener;
-import zone.vao.nexoAddon.events.blocks.BlockPlaceListener;
 import zone.vao.nexoAddon.events.chunk.ChunkLoadListener;
-import zone.vao.nexoAddon.events.inventoryClicks.InventoryClickListener;
 import zone.vao.nexoAddon.events.nexo.NexoItemsLoadedListener;
 import zone.vao.nexoAddon.events.nexo.NexoPackUploadListener;
-import zone.vao.nexoAddon.events.nexo.blocks.NexoBlockBreakListener;
-import zone.vao.nexoAddon.events.nexo.blocks.NexoBlockInteractListener;
-import zone.vao.nexoAddon.events.nexo.blocks.NexoBlockPlaceListener;
-import zone.vao.nexoAddon.events.nexo.blocks.NexoStringBlockInteractListener;
 import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureBreakListener;
 import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureInteractListener;
-import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurniturePlaceListener;
-import zone.vao.nexoAddon.events.player.PlayerInteractListener;
 import zone.vao.nexoAddon.events.player.PlayerMovementListener;
 import zone.vao.nexoAddon.utils.handlers.BlockHardnessHandler;
 import zone.vao.nexoAddon.utils.handlers.ParticleEffectManager;
@@ -223,24 +214,18 @@ public final class NexoAddon extends JavaPlugin {
 
   private void registerEvents() {
     registerEvent(new NexoItemsLoadedListener());
-    registerEvent(new PlayerInteractListener());
     registerEvent(new PlayerMovementListener());
     registerEvent(new NexoFurnitureBreakListener());
     registerEvent(new BlockBreakListener());
-    registerEvent(new BlockPlaceListener());
     registerEvent(new NexoFurnitureInteractListener());
     registerEvent(new ChunkLoadListener());
-    registerEvent(new InventoryClickListener());
     registerEvent(new PrepareRecipesListener());
     registerEvent(new PlayerCommandPreprocessListener());
     registerEvent(new WorldLoadListener());
     registerEvent(new NexoPackUploadListener());
-    registerEvent(new NexoBlockBreakListener());
-    registerEvent(new EntityDeathListener());
-    registerEvent(new NexoStringBlockInteractListener());
-    registerEvent(new NexoBlockInteractListener());
-    registerEvent(new NexoBlockPlaceListener());
-    registerEvent(new NexoFurniturePlaceListener());
+
+    Mechanics.registerListeners(this);
+    Components.registerListeners(this);
   }
 
   private void initializeMetrics() {

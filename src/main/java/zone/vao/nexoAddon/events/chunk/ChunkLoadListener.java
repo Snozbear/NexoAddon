@@ -9,7 +9,6 @@ public class ChunkLoadListener implements Listener {
   @EventHandler
   public void onChunkLoad(ChunkLoadEvent event) {
 
-    BlockAura.onLoad(event);
     FurniturePopulator.onLoad(event);
   }
 }

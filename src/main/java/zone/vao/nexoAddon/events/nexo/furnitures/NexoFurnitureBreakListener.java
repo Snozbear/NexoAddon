@@ -6,7 +6,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.events.nexo.furnitures.breaks.BreakDoubleHit;
 import zone.vao.nexoAddon.events.nexo.furnitures.breaks.BreakWithToolsListener;
-import zone.vao.nexoAddon.events.nexo.furnitures.breaks.ShiftBlockListener;
 
 
 public class NexoFurnitureBreakListener implements Listener {
@@ -16,6 +15,5 @@ public class NexoFurnitureBreakListener implements Listener {
 
     BreakWithToolsListener.onBreakWithTools(event);
     BreakDoubleHit.onDoubleHitMechanic(event);
-    ShiftBlockListener.onShiftBlockBreak(event);
   }
 }
