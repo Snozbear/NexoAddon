@@ -6,6 +6,7 @@ import com.nexomc.nexo.api.events.custom_block.stringblock.NexoStringBlockBreakE
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import zone.vao.nexoAddon.utils.BlockUtil;
 
 import java.util.List;
@@ -29,6 +30,12 @@ public record Decay(int time, double chance, List<Material> base, List<String> n
     public void onStringBreak(NexoStringBlockBreakEvent event) {
 
       BlockAura.BlockAuraListener.onBlockBreak(event);
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+
+      BlockUtil.startDecay(event.getBlock().getLocation());
     }
   }
 }

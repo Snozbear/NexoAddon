@@ -34,7 +34,6 @@ import zone.vao.nexoAddon.events.nexo.NexoItemsLoadedListener;
 import zone.vao.nexoAddon.events.nexo.NexoPackUploadListener;
 import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureBreakListener;
 import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureInteractListener;
-import zone.vao.nexoAddon.events.player.PlayerInteractListener;
 import zone.vao.nexoAddon.events.player.PlayerMovementListener;
 import zone.vao.nexoAddon.utils.handlers.BlockHardnessHandler;
 import zone.vao.nexoAddon.utils.handlers.ParticleEffectManager;
@@ -227,7 +226,9 @@ public final class NexoAddon extends JavaPlugin {
     registerEvent(new PlayerCommandPreprocessListener());
     registerEvent(new WorldLoadListener());
     registerEvent(new NexoPackUploadListener());
+
     Mechanics.registerListeners(this);
+    Components.registerListeners(this);
   }
 
   private void initializeMetrics() {
