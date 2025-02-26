@@ -4,6 +4,10 @@ import com.jeff_media.customblockdata.CustomBlockData;
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.events.custom_block.NexoBlockBreakEvent;
 import com.nexomc.nexo.api.events.custom_block.NexoBlockPlaceEvent;
+import com.nexomc.nexo.api.events.custom_block.chorusblock.NexoChorusBlockPlaceEvent;
+import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockPlaceEvent;
+import com.nexomc.nexo.api.events.custom_block.stringblock.NexoStringBlockPlaceEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -31,7 +35,24 @@ public record BlockAura(Particle particle, String xOffset, String yOffset, Strin
     }
 
     @EventHandler
-    public static void onBlockPlace(NexoBlockPlaceEvent event) {
+    public static void onBlockPlace(NexoNoteBlockPlaceEvent event) {
+
+      handle(event);
+    }
+
+    @EventHandler
+    public static void onBlockPlace(NexoStringBlockPlaceEvent event) {
+
+      handle(event);
+    }
+
+    @EventHandler
+    public static void onBlockPlace(NexoChorusBlockPlaceEvent event) {
+
+      handle(event);
+    }
+
+    private static void handle(final NexoBlockPlaceEvent event) {
       if(NexoAddon.getInstance().getMechanics().isEmpty()) return;
 
       Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(event.getMechanic().getItemID());
