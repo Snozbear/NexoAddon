@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public record Fertilizer(int growthSpeedup, List<String> usableOn, int cooldown) {
   public static final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
-  static final NamespacedKey EVOLUTION_KEY = new NamespacedKey(NexoPlugin.instance(), "evolution");
+  public static final NamespacedKey EVOLUTION_KEY = new NamespacedKey(NexoPlugin.instance(), "evolution");
 
   public static class FertilizerListener implements Listener {
 

@@ -29,7 +29,6 @@ import zone.vao.nexoAddon.events.PrepareRecipesListener;
 import zone.vao.nexoAddon.events.WorldLoadListener;
 import zone.vao.nexoAddon.events.blocks.BlockBreakListener;
 import zone.vao.nexoAddon.events.chunk.ChunkLoadListener;
-import zone.vao.nexoAddon.events.inventoryClicks.InventoryClickListener;
 import zone.vao.nexoAddon.events.nexo.NexoItemsLoadedListener;
 import zone.vao.nexoAddon.events.nexo.NexoPackUploadListener;
 import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureBreakListener;
@@ -215,13 +214,11 @@ public final class NexoAddon extends JavaPlugin {
 
   private void registerEvents() {
     registerEvent(new NexoItemsLoadedListener());
-    registerEvent(new PlayerInteractListener());
     registerEvent(new PlayerMovementListener());
     registerEvent(new NexoFurnitureBreakListener());
     registerEvent(new BlockBreakListener());
     registerEvent(new NexoFurnitureInteractListener());
     registerEvent(new ChunkLoadListener());
-    registerEvent(new InventoryClickListener());
     registerEvent(new PrepareRecipesListener());
     registerEvent(new PlayerCommandPreprocessListener());
     registerEvent(new WorldLoadListener());
