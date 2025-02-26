@@ -9,6 +9,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.utils.BlockUtil;
@@ -52,6 +53,12 @@ public record BlockAura(Particle particle, String xOffset, String yOffset, Strin
         CustomBlockData customBlockData = new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
         customBlockData.set(new NamespacedKey(NexoAddon.getInstance(), "blockAura"), PersistentDataType.STRING, NexoBlocks.customBlockMechanic(location).getItemID());
       }
+    }
+
+    @EventHandler
+    public static void onLoad(ChunkLoadEvent event){
+
+      BlockUtil.restartBlockAura(event.getChunk());
     }
   }
 

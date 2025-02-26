@@ -8,7 +8,6 @@ public class InventoryClickListener implements Listener {
 
   @EventHandler
   public void onInventoryClick(InventoryClickEvent event) {
-    RepairListener.onInventoryClick(event);
     EquippableListener.onInventoryClick(event);
   }
 }

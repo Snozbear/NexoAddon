@@ -89,6 +89,24 @@ public class Mechanics {
 
     registerListener(new BigMining.BigMiningListener(), plugin);
     registerListener(new BlockAura.BlockAuraListener(), plugin);
+    registerListener(new BottledExp.BottledExpListener(), plugin);
+
+    registerListener(new Decay.DecayListener(), plugin);
+    registerListener(new DropExperience.DropExperienceListener(), plugin);
+
+    registerListener(new Infested.InfestedListener(), plugin);
+
+    registerListener(new KillMessage.KillMessageListener(), plugin);
+
+    registerListener(new MiningTools.MiningToolsListener(), plugin);
+
+    registerListener(new Repair.RepairListener(), plugin);
+
+    registerListener(new ShiftBlock.ShiftBlockListener(), plugin);
+    registerListener(new SpawnerBreak.SpawnerBreakListener(), plugin);
+    registerListener(new Stackable.StackableListener(), plugin);
+
+    registerListener(new Unstackable.UnstackableListener(), plugin);
   }
 
   private static void registerListener(Listener listener, NexoAddon plugin){

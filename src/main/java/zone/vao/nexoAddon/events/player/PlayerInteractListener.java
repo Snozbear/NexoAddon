@@ -15,6 +15,5 @@ public class PlayerInteractListener implements Listener {
     EquippableListener.onEquippable(event);
     JukeboxPlayableListener.onJukeboxPlayable(event);
     FertilizeVanillaCrops.fertilizeVanillaCrops(event);
-    BottledExpListener.onBottledExp(event);
   }
 }
