@@ -97,7 +97,7 @@ public class BlockUtil {
         previous.removeBaseEntity(itemDisplay);
         NexoFurniture.furnitureMechanic(finalLocation).getHitbox().refreshHitboxes(newOne, to);
       }
-    }.runTaskLater(NexoAddon.getInstance(), 2L);
+    }.runTaskLater(NexoAddon.getInstance(), 3L);
 
     if(time <= 0)
       return;
