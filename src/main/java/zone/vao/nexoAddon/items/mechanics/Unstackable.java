@@ -64,14 +64,20 @@ public record Unstackable(String next, String give, List<Material> materials, Li
       }
     }
 
-    private static boolean checkIfAllowed(Mechanics mechanic, Player player){
+    private static boolean checkIfAllowed(Mechanics mechanic, Player player) {
+      boolean bothListsEmpty = mechanic.getUnstackable().materials().isEmpty()
+              && mechanic.getUnstackable().nexoIds().isEmpty();
+
+      if (bothListsEmpty) {
+        return true;
+      }
 
       boolean haveMaterial = !mechanic.getUnstackable().materials().isEmpty()
-          && mechanic.getUnstackable().materials().contains(player.getInventory().getItemInMainHand().getType());
-      if(haveMaterial) return true;
+              && mechanic.getUnstackable().materials().contains(player.getInventory().getItemInMainHand().getType());
+      if (haveMaterial) return true;
 
       return !mechanic.getUnstackable().nexoIds().isEmpty()
-          && mechanic.getUnstackable().nexoIds().contains(NexoItems.idFromItem(player.getInventory().getItemInMainHand()));
+              && mechanic.getUnstackable().nexoIds().contains(NexoItems.idFromItem(player.getInventory().getItemInMainHand()));
     }
   }
 }
