@@ -74,6 +74,8 @@ public record ShiftBlock(String replaceTo, int time, List<Material> materials, L
       event.setCancelled(true);
       if (!toCancelation.contains(event.getPlayer().getUniqueId()))
         toCancelation.add(event.getPlayer().getUniqueId());
+
+      event.getPlayer().swingMainHand();
       startShiftBlock(event.getBaseEntity(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
     }
 
@@ -145,6 +147,8 @@ public record ShiftBlock(String replaceTo, int time, List<Material> materials, L
           !mechanics.getShiftBlock().nexoIds().isEmpty() &&
           (itemStack == null || !mechanics.getShiftBlock().nexoIds().contains(NexoItems.idFromItem(itemStack))))
         return;
+
+      event.getPlayer().swingMainHand();
       startShiftBlock(event.getBlock().getLocation(), customBlockMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
     }
   }
