@@ -110,6 +110,7 @@ public class ItemConfigUtil {
         loadBottledExpMechanic(itemSection, mechanic);
         loadUnstackableStringblockMechanic(itemSection, mechanic);
         loadBlockAuraMechanic(itemSection, mechanic);
+        loadSignalMechanic(itemSection, mechanic);
       });
     }
   }
@@ -346,6 +347,17 @@ public class ItemConfigUtil {
       double speed = section.getDouble("Mechanics.custom_block.block_aura.speed", 0.05);
       boolean force = section.getBoolean("Mechanics.custom_block.block_aura.force", true);
       mechanic.setBlockAura(particle, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed, force);
+    }
+  }
+
+  private static void loadSignalMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.furniture.signal.role")
+        && section.contains("Mechanics.furniture.signal.channel")
+    ) {
+      int radius = section.getInt("Mechanics.furniture.signal.radius", 16);
+      double channel = section.getDouble("Mechanics.furniture.signal.channel");
+      String role = section.getString("Mechanics.furniture.signal.role");
+      mechanic.setSignal(radius, channel, role);
     }
   }
 }
