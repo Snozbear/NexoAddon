@@ -14,6 +14,7 @@ import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -55,7 +56,7 @@ public record ShiftBlock(String replaceTo, int time, List<Material> materials, L
       startShiftBlock(event.getBaseEntity(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public static void onShiftBlockInteract(NexoFurnitureInteractEvent event) {
       if (event.getHand() != EquipmentSlot.HAND)
         return;

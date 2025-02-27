@@ -7,10 +7,12 @@ import com.nexomc.nexo.mechanics.furniture.FurnitureHelpers;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import com.nexomc.nexo.mechanics.furniture.IFurniturePacketManager;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
@@ -22,7 +24,7 @@ public record Signal(int radius, double channel, String role) {
 
     public static class SignalListener implements Listener {
 
-        @EventHandler
+        @EventHandler(priority = EventPriority.NORMAL)
         public static void on(NexoFurnitureInteractEvent event) {
             if (NexoAddon.getInstance().getMechanics().isEmpty()) return;
             if (event.getHand() != EquipmentSlot.HAND) return;
@@ -45,6 +47,7 @@ public record Signal(int radius, double channel, String role) {
                     for (int z = -radius; z <= radius; z++) {
                         Location loc = center.clone().add(x, y, z);
                         Block block = world.getBlockAt(loc);
+                        if (block.getType() != Material.AIR) continue;
                         processReceiver(block, channel);
                     }
                 }
