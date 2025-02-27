@@ -11,6 +11,7 @@ import com.nexomc.nexo.api.events.furniture.NexoFurnitureInteractEvent;
 import com.nexomc.nexo.api.events.furniture.NexoFurniturePlaceEvent;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,7 +52,7 @@ public record ShiftBlock(String replaceTo, int time, List<Material> materials, L
           !mechanics.getShiftBlock().nexoIds().contains(NexoItems.idFromItem(itemStack)))
         return;
       event.setCancelled(true);
-      startShiftBlock(event.getBaseEntity().getLocation(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
+      startShiftBlock(event.getBaseEntity(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
     }
 
     @EventHandler
@@ -73,7 +74,7 @@ public record ShiftBlock(String replaceTo, int time, List<Material> materials, L
       event.setCancelled(true);
       if (!toCancelation.contains(event.getPlayer().getUniqueId()))
         toCancelation.add(event.getPlayer().getUniqueId());
-      startShiftBlock(event.getBaseEntity().getLocation(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
+      startShiftBlock(event.getBaseEntity(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
     }
 
     @EventHandler
@@ -91,7 +92,7 @@ public record ShiftBlock(String replaceTo, int time, List<Material> materials, L
           !mechanics.getShiftBlock().nexoIds().contains(NexoItems.idFromItem(itemStack)))
         return;
       event.setCancelled(true);
-      startShiftBlock(event.getBaseEntity().getLocation(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
+      startShiftBlock(event.getBaseEntity(), furnitureMechanic, event.getMechanic(), mechanics.getShiftBlock().time());
     }
 
     @EventHandler
