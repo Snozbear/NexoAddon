@@ -29,6 +29,7 @@ public class Mechanics {
   private BottledExp bottledExp;
   private Unstackable unstackable;
   private BlockAura blockAura;
+  private Signal signal;
 
   public Mechanics(String id) {
     this.id = id;
@@ -86,6 +87,10 @@ public class Mechanics {
     this.blockAura = new BlockAura(particle, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed, force);
   }
 
+  public void setSignal(int radius, double channel, String role) {
+    this.signal = new Signal(radius, channel, role);
+  }
+
   public static void registerListeners(NexoAddon plugin){
 
     registerListener(new BigMining.BigMiningListener(), plugin);
@@ -108,6 +113,8 @@ public class Mechanics {
     registerListener(new Stackable.StackableListener(), plugin);
 
     registerListener(new Unstackable.UnstackableListener(), plugin);
+
+    registerListener(new Signal.SignalListener(), plugin);
   }
 
   private static void registerListener(Listener listener, NexoAddon plugin){
