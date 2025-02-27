@@ -79,6 +79,8 @@ public class BlockUtil {
   public static void startShiftBlock(ItemDisplay itemDisplay, FurnitureMechanic to, FurnitureMechanic target, int time) {
     if(processedShiftblocks.contains(itemDisplay.getLocation())) return;
 
+    ItemDisplay templateEntity = (ItemDisplay) itemDisplay.copy();
+
     Location finalLocation = itemDisplay.getLocation().clone();
 
     if(time > 0)
@@ -87,8 +89,15 @@ public class BlockUtil {
     pdc.set(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"), PersistentDataType.STRING, target.getItemID());
     FurnitureMechanic previous = NexoFurniture.furnitureMechanic(finalLocation);
     if(previous == null) return;
-    previous.removeBaseEntity(itemDisplay);
-    to.place(finalLocation, itemDisplay.getYaw(), itemDisplay.getFacing(), true);
+    ItemDisplay newOne = to.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
+    new BukkitRunnable() {
+
+      @Override
+      public void run() {
+        previous.removeBaseEntity(itemDisplay);
+        NexoFurniture.furnitureMechanic(finalLocation).getHitbox().refreshHitboxes(newOne, to);
+      }
+    }.runTaskLater(NexoAddon.getInstance(), 2L);
 
     if(time <= 0)
       return;
@@ -107,8 +116,10 @@ public class BlockUtil {
               return;
             }
 
-            NexoFurniture.remove(finalLocation);
-            target.place(finalLocation, itemDisplay.getYaw(), itemDisplay.getFacing(), true);
+            ItemDisplay oldFurniture = NexoFurniture.baseEntity(finalLocation);
+            target.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
+            if(oldFurniture != null)
+              NexoFurniture.remove(oldFurniture);
             processedShiftblocks.remove(finalLocation);
             pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
           }
