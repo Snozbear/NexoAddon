@@ -35,6 +35,7 @@ public record Signal(int radius, double channel, String role) {
             Signal signal = mechanics.getSignal();
             if (signal == null || !Objects.equals(signal.role(), "TRANSMITTER")) return;
 
+            event.getPlayer().swingMainHand();
             scanForReceivers(event.getBaseEntity().getWorld(), event.getBaseEntity().getLocation(), signal);
         }
 
