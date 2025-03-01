@@ -3,18 +3,21 @@ package zone.vao.nexoAddon.utils;
 import com.google.common.collect.Sets;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.nexomc.nexo.api.NexoBlocks;
+import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
+import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Mechanics;
-import zone.vao.nexoAddon.classes.mechanic.Decay;
+import zone.vao.nexoAddon.items.Mechanics;
+import zone.vao.nexoAddon.items.mechanics.Decay;
 
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BlockUtil {
@@ -29,7 +32,8 @@ public class BlockUtil {
 
     Location finalLocation = location.clone();
 
-    processedShiftblocks.add(location);
+    if(time > 0)
+      processedShiftblocks.add(location);
     PersistentDataContainer pdc = new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
     pdc.set(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"), PersistentDataType.STRING, target.getItemID());
     finalLocation.getBlock().setType(Material.AIR);
@@ -40,6 +44,8 @@ public class BlockUtil {
       }
     }.runTaskLater(NexoAddon.getInstance(), 1);
 
+    if(time <= 0)
+      return;
     new BukkitRunnable() {
       @Override
       public void run() {
@@ -66,6 +72,59 @@ public class BlockUtil {
         }.runTaskLater(NexoAddon.getInstance(), 1);
         processedShiftblocks.remove(finalLocation);
         pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+      }
+    }.runTaskLaterAsynchronously(NexoAddon.getInstance(), time*20L);
+  }
+
+  public static void startShiftBlock(ItemDisplay itemDisplay, FurnitureMechanic to, FurnitureMechanic target, int time) {
+    if(processedShiftblocks.contains(itemDisplay.getLocation())) return;
+
+    ItemDisplay templateEntity = (ItemDisplay) itemDisplay.copy();
+
+    Location finalLocation = itemDisplay.getLocation().clone();
+
+    if(time > 0)
+      processedShiftblocks.add(finalLocation);
+    PersistentDataContainer pdc = new CustomBlockData(finalLocation.getBlock(), NexoAddon.getInstance());
+    pdc.set(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"), PersistentDataType.STRING, target.getItemID());
+    FurnitureMechanic previous = NexoFurniture.furnitureMechanic(finalLocation);
+    if(previous == null) return;
+    ItemDisplay newOne = to.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
+    new BukkitRunnable() {
+
+      @Override
+      public void run() {
+        previous.removeBaseEntity(itemDisplay);
+        NexoFurniture.furnitureMechanic(finalLocation).getHitbox().refreshHitboxes(newOne, to);
+      }
+    }.runTaskLater(NexoAddon.getInstance(), 3L);
+
+    if(time <= 0)
+      return;
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        new BukkitRunnable() {
+          @Override
+          public void run() {
+            if(!NexoFurniture.isFurniture(finalLocation) ||
+                !NexoFurniture.furnitureMechanic(finalLocation).getItemID().equalsIgnoreCase(to.getItemID())
+            ) {
+              cancel();
+              processedShiftblocks.remove(finalLocation);
+              pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+              return;
+            }
+
+            ItemDisplay oldFurniture = NexoFurniture.baseEntity(finalLocation);
+            target.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
+            if(oldFurniture != null)
+              NexoFurniture.remove(oldFurniture);
+            processedShiftblocks.remove(finalLocation);
+            pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+          }
+        }.runTask(NexoAddon.getInstance());
+
       }
     }.runTaskLaterAsynchronously(NexoAddon.getInstance(), time*20L);
   }

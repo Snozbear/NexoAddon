@@ -3,7 +3,7 @@ package zone.vao.nexoAddon.events.chunk;
 import org.bukkit.*;
 import org.bukkit.event.world.ChunkLoadEvent;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
+import zone.vao.nexoAddon.populators.orePopulator.Ore;
 
 import java.util.List;
 import java.util.Random;
@@ -21,7 +21,7 @@ public class FurniturePopulator {
         .filter(ore -> ore.getNexoFurniture() != null)
         .toList();
 
-    if (furniturePopulators.isEmpty() || !event.isNewChunk()) return;
+    if (furniturePopulators.isEmpty() || ((!event.isNewChunk()) && event.getChunk().isGenerated())) return;
 
     furniturePopulators.forEach(ore -> processOre(world, chunk, ore));
   }

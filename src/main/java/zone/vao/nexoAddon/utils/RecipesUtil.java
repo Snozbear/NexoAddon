@@ -3,7 +3,7 @@ package zone.vao.nexoAddon.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.handlers.RecipeManager;
+import zone.vao.nexoAddon.utils.handlers.RecipeManager;
 
 import java.io.File;
 import java.io.IOException;

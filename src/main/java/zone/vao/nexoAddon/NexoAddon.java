@@ -21,36 +21,31 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import zone.vao.nexoAddon.classes.Components;
-import zone.vao.nexoAddon.classes.Mechanics;
-import zone.vao.nexoAddon.classes.populators.CustomChunkGenerator;
-import zone.vao.nexoAddon.classes.populators.orePopulator.CustomOrePopulator;
-import zone.vao.nexoAddon.classes.populators.orePopulator.Ore;
-import zone.vao.nexoAddon.classes.populators.orePopulator.OrePopulator;
-import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTree;
-import zone.vao.nexoAddon.classes.populators.treePopulator.CustomTreePopulator;
-import zone.vao.nexoAddon.classes.populators.treePopulator.TreePopulator;
+import zone.vao.nexoAddon.items.Components;
+import zone.vao.nexoAddon.items.Mechanics;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
-import zone.vao.nexoAddon.events.*;
+import zone.vao.nexoAddon.events.PlayerCommandPreprocessListener;
+import zone.vao.nexoAddon.events.PrepareRecipesListener;
+import zone.vao.nexoAddon.events.WorldLoadListener;
 import zone.vao.nexoAddon.events.blocks.BlockBreakListener;
-import zone.vao.nexoAddon.events.blocks.BlockPlaceListener;
 import zone.vao.nexoAddon.events.chunk.ChunkLoadListener;
-import zone.vao.nexoAddon.events.nexo.blocks.NexoStringBlockInteractListener;
-import zone.vao.nexoAddon.events.inventoryClicks.InventoryClickListener;
 import zone.vao.nexoAddon.events.nexo.NexoItemsLoadedListener;
 import zone.vao.nexoAddon.events.nexo.NexoPackUploadListener;
-import zone.vao.nexoAddon.events.nexo.blocks.NexoBlockBreakListener;
-import zone.vao.nexoAddon.events.nexo.blocks.NexoBlockInteractListener;
-import zone.vao.nexoAddon.events.nexo.blocks.NexoBlockPlaceListener;
 import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureBreakListener;
 import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureInteractListener;
-import zone.vao.nexoAddon.events.player.PlayerInteractListener;
 import zone.vao.nexoAddon.events.player.PlayerMovementListener;
-import zone.vao.nexoAddon.handlers.BlockHardnessHandler;
-import zone.vao.nexoAddon.handlers.ParticleEffectManager;
-import zone.vao.nexoAddon.handlers.RecipeManager;
-import zone.vao.nexoAddon.hooks.PacketEventsHook;
-import zone.vao.nexoAddon.metrics.Metrics;
+import zone.vao.nexoAddon.utils.handlers.BlockHardnessHandler;
+import zone.vao.nexoAddon.utils.handlers.ParticleEffectManager;
+import zone.vao.nexoAddon.utils.handlers.RecipeManager;
+import zone.vao.nexoAddon.utils.hooks.PacketEventsHook;
+import zone.vao.nexoAddon.utils.metrics.Metrics;
+import zone.vao.nexoAddon.populators.CustomChunkGenerator;
+import zone.vao.nexoAddon.populators.orePopulator.CustomOrePopulator;
+import zone.vao.nexoAddon.populators.orePopulator.Ore;
+import zone.vao.nexoAddon.populators.orePopulator.OrePopulator;
+import zone.vao.nexoAddon.populators.treePopulator.CustomTree;
+import zone.vao.nexoAddon.populators.treePopulator.CustomTreePopulator;
+import zone.vao.nexoAddon.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.utils.*;
 
 import java.io.File;
@@ -219,23 +214,18 @@ public final class NexoAddon extends JavaPlugin {
 
   private void registerEvents() {
     registerEvent(new NexoItemsLoadedListener());
-    registerEvent(new PlayerInteractListener());
     registerEvent(new PlayerMovementListener());
     registerEvent(new NexoFurnitureBreakListener());
     registerEvent(new BlockBreakListener());
-    registerEvent(new BlockPlaceListener());
     registerEvent(new NexoFurnitureInteractListener());
     registerEvent(new ChunkLoadListener());
-    registerEvent(new InventoryClickListener());
     registerEvent(new PrepareRecipesListener());
     registerEvent(new PlayerCommandPreprocessListener());
     registerEvent(new WorldLoadListener());
     registerEvent(new NexoPackUploadListener());
-    registerEvent(new NexoBlockBreakListener());
-    registerEvent(new EntityDeathListener());
-    registerEvent(new NexoStringBlockInteractListener());
-    registerEvent(new NexoBlockInteractListener());
-    registerEvent(new NexoBlockPlaceListener());
+
+    Mechanics.registerListeners(this);
+    Components.registerListeners(this);
   }
 
   private void initializeMetrics() {

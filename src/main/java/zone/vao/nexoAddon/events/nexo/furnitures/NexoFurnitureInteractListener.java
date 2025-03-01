@@ -4,8 +4,7 @@ import com.nexomc.nexo.api.events.furniture.NexoFurnitureInteractEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import zone.vao.nexoAddon.events.nexo.furnitures.playerFurnitureInteracts.DisplayCropsHologram;
-import zone.vao.nexoAddon.events.nexo.furnitures.playerFurnitureInteracts.Fertilize;
+import zone.vao.nexoAddon.events.nexo.furnitures.interacts.DisplayCropsHologram;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +26,6 @@ public class NexoFurnitureInteractListener implements Listener {
 
     recentEvents.put(playerUUID, currentTime);
 
-    Fertilize.onFertilize(event);
     DisplayCropsHologram.onInteract(event);
   }
 

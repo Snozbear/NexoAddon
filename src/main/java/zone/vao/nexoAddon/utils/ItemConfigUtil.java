@@ -8,8 +8,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
-import zone.vao.nexoAddon.classes.Components;
-import zone.vao.nexoAddon.classes.Mechanics;
+import zone.vao.nexoAddon.items.Components;
+import zone.vao.nexoAddon.items.Mechanics;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -110,6 +110,7 @@ public class ItemConfigUtil {
         loadBottledExpMechanic(itemSection, mechanic);
         loadUnstackableStringblockMechanic(itemSection, mechanic);
         loadBlockAuraMechanic(itemSection, mechanic);
+        loadSignalMechanic(itemSection, mechanic);
       });
     }
   }
@@ -286,13 +287,13 @@ public class ItemConfigUtil {
   }
 
   private static void loadShiftBlockMechanic(ConfigurationSection section, Mechanics mechanic) {
-    if (section.contains("Mechanics.custom_block.shiftblock.time")
-        && section.contains("Mechanics.custom_block.shiftblock.replace_to")
+    if (section.contains("Mechanics.shiftblock.time")
+        && section.contains("Mechanics.shiftblock.replace_to")
     ) {
       List<Material> materials = new ArrayList<>();
       List<String> nexoIds = new ArrayList<>();
-      if(section.contains("Mechanics.custom_block.shiftblock.items")){
-        for (String s : section.getStringList("Mechanics.custom_block.shiftblock.items")) {
+      if(section.contains("Mechanics.shiftblock.items")){
+        for (String s : section.getStringList("Mechanics.shiftblock.items")) {
           if(NexoItems.itemFromId(s) != null){
             nexoIds.add(s);
           }else if(Material.matchMaterial(s) != null){
@@ -301,7 +302,7 @@ public class ItemConfigUtil {
         }
       }
 
-      mechanic.setShiftBlock(section.getString("Mechanics.custom_block.shiftblock.replace_to"), section.getInt("Mechanics.custom_block.shiftblock.time",200), materials, nexoIds, section.getBoolean("Mechanics.custom_block.shiftblock.on_interact",true), section.getBoolean("Mechanics.custom_block.shiftblock.on_break",false), section.getBoolean("Mechanics.custom_block.shiftblock.on_place",false));
+      mechanic.setShiftBlock(section.getString("Mechanics.shiftblock.replace_to"), section.getInt("Mechanics.shiftblock.time",200), materials, nexoIds, section.getBoolean("Mechanics.shiftblock.on_interact",true), section.getBoolean("Mechanics.shiftblock.on_break",false), section.getBoolean("Mechanics.shiftblock.on_place",false));
     }
   }
 
@@ -346,6 +347,17 @@ public class ItemConfigUtil {
       double speed = section.getDouble("Mechanics.custom_block.block_aura.speed", 0.05);
       boolean force = section.getBoolean("Mechanics.custom_block.block_aura.force", true);
       mechanic.setBlockAura(particle, xOffset, yOffset, zOffset, amount, deltaX, deltaY, deltaZ, speed, force);
+    }
+  }
+
+  private static void loadSignalMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.furniture.signal.role")
+        && section.contains("Mechanics.furniture.signal.channel")
+    ) {
+      int radius = section.getInt("Mechanics.furniture.signal.radius", 16);
+      double channel = section.getDouble("Mechanics.furniture.signal.channel");
+      String role = section.getString("Mechanics.furniture.signal.role");
+      mechanic.setSignal(radius, channel, role);
     }
   }
 }
