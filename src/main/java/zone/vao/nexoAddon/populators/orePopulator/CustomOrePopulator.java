@@ -37,10 +37,12 @@ public class CustomOrePopulator extends BlockPopulator {
     List<Material> toReplace = ore.getReplace();
     int startX = chunkX << 4;
     int startZ = chunkZ << 4;
+    boolean replaceAir = !toReplace.contains(Material.AIR);
 
     for (int x = startX; x < startX + 16; x++) {
       for (int z = startZ; z < startZ + 16; z++) {
-        for (int y = worldInfo.getMinHeight(); y <= worldInfo.getMaxHeight(); y++) {
+
+        for (int y = worldInfo.getMinHeight(); y <= (replaceAir ? limitedRegion.getHighestBlockYAt(x,z) : worldInfo.getMaxHeight()); y++) {
           if (!limitedRegion.isInRegion(x, y, z)) continue;
           if (!ore.biomes.isEmpty() && !ore.biomes.contains(limitedRegion.getBiome(x, y, z))) continue;
 
