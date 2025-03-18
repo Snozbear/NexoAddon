@@ -24,10 +24,14 @@ import java.util.stream.Collectors;
 public class PopulatorsConfigUtil {
 
   private final File populatorsDir;
+  private final File blocksDir;
+  private final File treesDir;
   private final ClassLoader pluginClassLoader;
 
   public PopulatorsConfigUtil(File pluginDirectory, ClassLoader pluginClassLoader) {
     this.populatorsDir = new File(pluginDirectory, "populators");
+    this.blocksDir = new File(populatorsDir, "blocks");
+    this.treesDir = new File(populatorsDir, "trees");
     this.pluginClassLoader = pluginClassLoader;
     createPopulatorFiles();
   }
@@ -38,12 +42,22 @@ public class PopulatorsConfigUtil {
       return;
     }
 
-    copyResourceIfAbsent("block_populator.yml");
-    copyResourceIfAbsent("tree_populator.yml");
+    if (!blocksDir.exists() && !blocksDir.mkdirs()) {
+      NexoAddon.getInstance().getLogger().severe("Failed to create blocks directory.");
+      return;
+    }
+
+    if (!treesDir.exists() && !treesDir.mkdirs()) {
+      NexoAddon.getInstance().getLogger().severe("Failed to create trees directory.");
+      return;
+    }
+
+    copyResourceIfAbsent("block_populator.yml", populatorsDir);
+    copyResourceIfAbsent("tree_populator.yml", populatorsDir);
   }
 
-  private void copyResourceIfAbsent(String fileName) {
-    File file = new File(populatorsDir, fileName);
+  private void copyResourceIfAbsent(String fileName, File targetDir) {
+    File file = new File(targetDir, fileName);
     if (file.exists()) return;
 
     try (InputStream inputStream = pluginClassLoader.getResourceAsStream(fileName);
@@ -61,40 +75,66 @@ public class PopulatorsConfigUtil {
   }
 
   public List<FileConfiguration> loadPopulatorConfigs() {
-    if (!populatorsDir.exists()) {
-      logError("Populators directory does not exist.");
+    List<FileConfiguration> configs = new ArrayList<>();
+
+    configs.addAll(loadConfigsFromDirectory(populatorsDir));
+
+    configs.addAll(loadConfigsFromDirectory(blocksDir));
+
+    configs.addAll(loadConfigsFromDirectory(treesDir));
+
+    return configs;
+  }
+
+  private List<FileConfiguration> loadConfigsFromDirectory(File directory) {
+    if (!directory.exists()) {
+      logError("Directory does not exist: " + directory.getName());
       return Collections.emptyList();
     }
 
-    File[] files = populatorsDir.listFiles((dir, name) -> name.endsWith(".yml"));
+    File[] files = directory.listFiles((dir, name) -> name.endsWith(".yml"));
     if (files == null) {
-      logError("Failed to list files in the populators directory.");
+      logError("Failed to list files in the directory: " + directory.getName());
       return Collections.emptyList();
     }
 
     return Arrays.stream(files)
-        .map(YamlConfiguration::loadConfiguration)
-        .collect(Collectors.toList());
+            .map(YamlConfiguration::loadConfiguration)
+            .collect(Collectors.toList());
   }
 
   public List<Ore> loadOresFromConfig() {
-    return loadConfigFile("block_populator.yml").getKeys(false).stream()
-        .map(this::parseOre)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    List<Ore> ores = new ArrayList<>();
+
+    FileConfiguration rootConfig = loadConfigFile("block_populator.yml", populatorsDir);
+    if (rootConfig != null) {
+      ores.addAll(loadOresFromConfig(rootConfig));
+    }
+
+    for (FileConfiguration config : loadConfigsFromDirectory(blocksDir)) {
+      ores.addAll(loadOresFromConfig(config));
+    }
+
+    return ores;
   }
 
-  private Ore parseOre(String key) {
-    FileConfiguration config = loadConfigFile("block_populator.yml");
+  private List<Ore> loadOresFromConfig(FileConfiguration config) {
+    return config.getKeys(false).stream()
+            .map(key -> parseOre(key, config))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+  }
+
+  private Ore parseOre(String key, FileConfiguration config) {
     ConfigurationSection section = config.getConfigurationSection(key);
 
     Material material = Material.matchMaterial(key);
 
     if (section == null
-        || (!NexoBlocks.isCustomBlock(key)
-        && !NexoFurniture.isFurniture(key)
-        && (material == null || !material.isBlock()))) {
-      NexoAddon.getInstance().getLogger().warning("Incorrect key value! "+key);
+            || (!NexoBlocks.isCustomBlock(key)
+            && !NexoFurniture.isFurniture(key)
+            && (material == null || !material.isBlock()))) {
+      NexoAddon.getInstance().getLogger().warning("Incorrect key value! " + key);
       return null;
     }
 
@@ -106,7 +146,7 @@ public class PopulatorsConfigUtil {
     double clusterChance = section.getDouble("cluster_chance", 0.0);
 
     List<String> worldNames = section.getStringList("worlds");
-    NexoAddon.getInstance().getLogger().info(key+" worlds: "+worldNames);
+    NexoAddon.getInstance().getLogger().info(key + " worlds: " + worldNames);
     List<World> worlds = parseWorlds(worldNames);
     if (worlds.isEmpty()) return null;
     List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
@@ -126,11 +166,9 @@ public class PopulatorsConfigUtil {
           isTall = stringMechanic.isTall();
         }
         return new Ore(key, block, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, worldNames, biomes, iterations, isTall, veinSize, clusterChance, airOnly);
-      }
-      else if (furniture != null) {
+      } else if (furniture != null) {
         return new Ore(key, furniture, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, worldNames, biomes, iterations, false, veinSize, clusterChance, airOnly);
-      }
-      else {
+      } else {
         return new Ore(key, material, minY, maxY, chance, replaceMaterials, placeOnMaterials, placeBelowMaterials, worlds, worldNames, biomes, iterations, false, veinSize, clusterChance, airOnly);
       }
     } catch (IllegalArgumentException e) {
@@ -140,14 +178,28 @@ public class PopulatorsConfigUtil {
   }
 
   public List<CustomTree> loadTreesFromConfig() {
-    return loadConfigFile("tree_populator.yml").getKeys(false).stream()
-        .map(this::parseTree)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    List<CustomTree> trees = new ArrayList<>();
+
+    FileConfiguration rootConfig = loadConfigFile("tree_populator.yml", populatorsDir);
+    if (rootConfig != null) {
+      trees.addAll(loadTreesFromConfig(rootConfig));
+    }
+
+    for (FileConfiguration config : loadConfigsFromDirectory(treesDir)) {
+      trees.addAll(loadTreesFromConfig(config));
+    }
+
+    return trees;
   }
 
-  private CustomTree parseTree(String key) {
-    FileConfiguration config = loadConfigFile("tree_populator.yml");
+  private List<CustomTree> loadTreesFromConfig(FileConfiguration config) {
+    return config.getKeys(false).stream()
+            .map(key -> parseTree(key, config))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+  }
+
+  private CustomTree parseTree(String key, FileConfiguration config) {
     ConfigurationSection section = config.getConfigurationSection(key);
 
     if (section == null || !section.contains("logs") || !section.contains("leaves")) return null;
@@ -164,38 +216,40 @@ public class PopulatorsConfigUtil {
     List<World> worlds = parseWorlds(section.getStringList("worlds"));
     List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
     if (worlds.isEmpty()) return null;
-    if(biomes.isEmpty())
+    if (biomes.isEmpty())
       biomes = worlds.get(0).getBiomeProvider().getBiomes(worlds.get(0)).stream().toList();
 
     try {
       return new CustomTree(
-          key,
-          NexoBlocks.customBlockMechanic(logs),
-          NexoBlocks.customBlockMechanic(leaves),
-          minY, maxY, chance, worlds, biomes);
+              key,
+              NexoBlocks.customBlockMechanic(logs),
+              NexoBlocks.customBlockMechanic(leaves),
+              minY, maxY, chance, worlds, biomes);
     } catch (IllegalArgumentException e) {
       logError("Invalid custom block ID: " + key);
       return null;
     }
   }
 
-  private FileConfiguration loadConfigFile(String fileName) {
-    return YamlConfiguration.loadConfiguration(new File(populatorsDir, fileName));
+  private FileConfiguration loadConfigFile(String fileName, File directory) {
+    File file = new File(directory, fileName);
+    if (!file.exists()) return null;
+    return YamlConfiguration.loadConfiguration(file);
   }
 
   private List<World> parseWorlds(List<String> worldNames) {
     return worldNames.stream()
-        .map(name -> {
-          World world = NexoAddon.getInstance().getServer().getWorld(name);
-          NexoAddon.getInstance().getLogger().warning(name+" found: "+(world != null));
-          if (world == null) {
-            NexoAddon.getInstance().getLogger().info("Loading world:" + name);
-            world = loadWorld(name);
-          }
-          return world;
-        })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+            .map(name -> {
+              World world = NexoAddon.getInstance().getServer().getWorld(name);
+              NexoAddon.getInstance().getLogger().warning(name + " found: " + (world != null));
+              if (world == null) {
+                NexoAddon.getInstance().getLogger().info("Loading world:" + name);
+                world = loadWorld(name);
+              }
+              return world;
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
   }
 
   private World loadWorld(String worldName) {
@@ -213,10 +267,10 @@ public class PopulatorsConfigUtil {
   private List<Biome> parseBiomes(List<World> worlds, List<String> biomeNames) {
     List<Biome> availableBiomes = new ArrayList<>();
 
-      for (Biome biome : getAllBiomes()) {
-        if (biomeNames.contains(biome.name().toUpperCase().replace(" ", "_"))) {
-          availableBiomes.add(biome);
-        }
+    for (Biome biome : getAllBiomes()) {
+      if (biomeNames.contains(biome.name().toUpperCase().replace(" ", "_"))) {
+        availableBiomes.add(biome);
+      }
     }
 
     return availableBiomes.isEmpty() ? getAllBiomes() : availableBiomes;
@@ -228,9 +282,9 @@ public class PopulatorsConfigUtil {
 
   private List<Material> parseMaterials(List<String> materialNames) {
     return materialNames.stream()
-        .map(Material::getMaterial)
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+            .map(Material::getMaterial)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
   }
 
   private Object parseIterationValue(ConfigurationSection section, String key, int defaultValue) {
@@ -246,7 +300,7 @@ public class PopulatorsConfigUtil {
             min = max;
             max = temp;
           }
-          return min+"-"+max;
+          return min + "-" + max;
         } catch (NumberFormatException e) {
           return defaultValue;
         }
@@ -262,7 +316,6 @@ public class PopulatorsConfigUtil {
     }
     return defaultValue;
   }
-
 
   private void logError(String message) {
     NexoAddon.getInstance().getLogger().severe(message);
