@@ -5,10 +5,12 @@ import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.api.events.custom_block.stringblock.NexoStringBlockInteractEvent;
 import com.nexomc.nexo.items.ItemBuilder;
 import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
+import com.nexomc.nexo.utils.blocksounds.BlockSounds;
 import com.nexomc.nexo.utils.drops.Drop;
 import com.nexomc.nexo.utils.drops.Loot;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.Material;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -47,6 +49,11 @@ public record Unstackable(String next, String give, List<Material> materials, Li
       List<Loot> loots = new ArrayList<>();
       Drop drop = new Drop(loots, false, false, newBlock != null ? newBlock.getItemID() : event.getMechanic().getItemID());
       NexoBlocks.remove(event.getBlock().getLocation(), null, drop);
+
+      BlockSounds blockSounds = newBlock.getBlockSounds();
+      if(blockSounds != null && blockSounds.hasBreakSound()){
+        event.getBlock().getWorld().playSound(event.getBlock().getLocation(), blockSounds.getBreakSound(), SoundCategory.BLOCKS, blockSounds.getBreakVolume(), blockSounds.getBreakPitch());
+      }
       if(!nextStage.equalsIgnoreCase("stop")) {
         NexoBlocks.place(nextStage, event.getBlock().getLocation());
       }

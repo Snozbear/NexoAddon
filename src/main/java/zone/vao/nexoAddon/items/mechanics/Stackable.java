@@ -4,10 +4,12 @@ import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.api.events.custom_block.stringblock.NexoStringBlockInteractEvent;
 import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
+import com.nexomc.nexo.utils.blocksounds.BlockSounds;
 import com.nexomc.nexo.utils.drops.Drop;
 import com.nexomc.nexo.utils.drops.Loot;
 import io.th0rgal.protectionlib.ProtectionLib;
 import org.bukkit.GameMode;
+import org.bukkit.SoundCategory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.NexoAddon;
@@ -48,6 +50,12 @@ public record Stackable(String next, String group) {
       Drop drop = new Drop(loots, false, false, newBlock.getItemID());
       NexoBlocks.remove(event.getBlock().getLocation(), null, drop);
       NexoBlocks.place(nextStage, event.getBlock().getLocation());
+
+      BlockSounds blockSounds = newBlock.getBlockSounds();
+      if(blockSounds != null && blockSounds.hasPlaceSound()){
+        event.getBlock().getWorld().playSound(event.getBlock().getLocation(), blockSounds.getPlaceSound(), SoundCategory.BLOCKS, blockSounds.getPlaceVolume(), blockSounds.getPlacePitch());
+      }
+
       event.getPlayer().swingMainHand();
       if(!event.getPlayer().getGameMode().equals(GameMode.CREATIVE))
         InventoryUtil.removePartialStack(event.getPlayer(), event.getItemInHand(), 1);
