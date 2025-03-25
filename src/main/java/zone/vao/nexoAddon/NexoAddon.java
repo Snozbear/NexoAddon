@@ -179,18 +179,17 @@ public final class NexoAddon extends JavaPlugin {
       ores = populatorsConfig.loadOresFromConfig();
       orePopulator.clearOres();
       ores.forEach(orePopulator::addOre);
+      Set<World> worldsToAddPopulator = new HashSet<>();
       orePopulator.getOres().forEach(ore -> {
         if(ore.getNexoFurniture() != null) return;
-        for (World world : ore.getWorlds()) {
+        worldsToAddPopulator.addAll(ore.getWorlds());
+      });
 
-          CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
-          if(!worldPopulators.containsKey(world.getName())) {
-            worldPopulators.put(world.getName(), new ArrayList<>());
-          }
-          addPopulatorToWorld(world, customOrePopulator);
-          worldPopulators.get(world.getName()).add(customOrePopulator);
-          logPopulatorAdded("BlockPopulator", ore.getId(), world);
-        }
+      worldsToAddPopulator.forEach(world -> {
+        CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
+        addPopulatorToWorld(world, customOrePopulator);
+        worldPopulators.computeIfAbsent(world.getName(), k -> new ArrayList<>()).add(customOrePopulator);
+        logPopulatorAdded("BlockPopulator", "all_ores", world);
       });
     });
   }

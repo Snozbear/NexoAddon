@@ -113,6 +113,9 @@ public class CustomOrePopulator extends BlockPopulator {
 
       if (nextPosition == null) break;
 
+//      Bukkit.broadcastMessage(ore.id+" "+limitedRegion.getCenterChunkX()+","+limitedRegion.getCenterChunkZ()+" "+placedBlocks+1);
+//      Bukkit.broadcastMessage("  "+nextPosition.x+" "+nextPosition.y+" "+nextPosition.z);
+
       if (canReplaceBlock(nextPosition, ore)) {
         if(!limitedRegion.isInRegion(new Location(Bukkit.getWorld(worldInfo.getUID()), nextPosition.x(), nextPosition.y(), nextPosition.z())))
           continue;
@@ -139,11 +142,11 @@ public class CustomOrePopulator extends BlockPopulator {
   }
 
   private PlacementPosition getAdjacentPlacementPosition(PlacementPosition start, Random random, LimitedRegion limitedRegion, Ore ore, boolean below) {
-    List<int[]> checkedLocations = new ArrayList<>();
+    Set<String> checkedLocations = new HashSet<>();
     int attempts = 0;
 
     try {
-      for (int i = 0; i < 10 || attempts >= 100; i++) {
+      for (int i = 0; i < 10 && attempts < 100; i++) {
         attempts++;
         int xOffset = random.nextInt(3) - 1;
         int yOffset = below ? -1 : (random.nextInt(3) - 1);
@@ -153,11 +156,9 @@ public class CustomOrePopulator extends BlockPopulator {
         int y = start.y() + yOffset;
         int z = start.z() + zOffset;
 
-        if (checkedLocations.contains(new int[]{x, y, z})) {
-          i--;
-          continue;
-        }
-        checkedLocations.add(new int[]{x, y, z});
+        String key = x + "," + y + "," + z;
+        if (checkedLocations.contains(key)) continue;
+        checkedLocations.add(key);
         if (!limitedRegion.isInRegion(x, y, z))
           continue;
 
