@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.utils.TotemUtil;
 
-
 @CommandAlias("nexoaddon")
 @CommandPermission("nexoaddon.admin")
 public class NexoAddonCommand extends BaseCommand {
@@ -30,6 +29,11 @@ public class NexoAddonCommand extends BaseCommand {
     Player target = Bukkit.getPlayer(playerName);
     if (target == null) {
       sender.sendMessage("§cPlayer not found.");
+      return;
+    }
+
+    if (!NexoAddon.getInstance().isPacketEventsPresent()) {
+      sender.sendMessage("§cPacketEvents is required for this command!");
       return;
     }
 
