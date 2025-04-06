@@ -7,6 +7,7 @@ import com.jeff_media.customblockdata.CustomBlockData;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.nexomc.nexo.api.NexoBlocks;
+import com.nexomc.nexo.api.NexoItems;
 import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
 import org.bukkit.*;
@@ -166,6 +167,11 @@ public final class NexoAddon extends JavaPlugin {
   private void initializeCommandManager() {
     PaperCommandManager manager = new PaperCommandManager(this);
     manager.registerCommand(new NexoAddonCommand());
+
+    manager.getCommandCompletions().registerCompletion("nexoItems", c -> {
+      Set<String> itemNames = NexoItems.itemNames();
+      return new ArrayList<>(itemNames);
+    });
   }
 
   public void initializePopulators() {
