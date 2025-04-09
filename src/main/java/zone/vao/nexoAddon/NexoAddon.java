@@ -7,6 +7,7 @@ import com.jeff_media.customblockdata.CustomBlockData;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.nexomc.nexo.api.NexoBlocks;
+import com.tcoded.folialib.FoliaLib;
 import io.th0rgal.protectionlib.ProtectionLib;
 import lombok.Getter;
 import org.bukkit.*;
@@ -18,7 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import zone.vao.nexoAddon.items.Components;
@@ -72,6 +72,7 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, Integer> customBlockLights = new HashMap<>();
   public BlockHardnessHandler blockHardnessHandler;
   public PacketListenerCommon packetListenerCommon;
+  public FoliaLib foliaLib;
   private boolean packeteventsLoaded = false;
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
@@ -97,6 +98,7 @@ public final class NexoAddon extends JavaPlugin {
     ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
+    foliaLib = new FoliaLib(this);
     initializeCommandManager();
     if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null &&
         Bukkit.getPluginManager().getPlugin("MythicMobs").isEnabled())
@@ -139,7 +141,7 @@ public final class NexoAddon extends JavaPlugin {
   public void reload() {
     reloadConfig();
     globalConfig = getConfig();
-    Bukkit.getScheduler().runTask(this, () -> {
+    foliaLib.getScheduler().runNextTick(task -> {
       clearPopulators();
       initializePopulators();
     });
@@ -150,12 +152,7 @@ public final class NexoAddon extends JavaPlugin {
     RecipesUtil.loadRecipes();
     SkullUtil.applyTextures();
     particleEffectManager.stopAuraEffectTask();
-    new BukkitRunnable() {
-      @Override
-      public void run(){
-        particleEffectManager.startAuraEffectTask();
-      }
-    }.runTaskLater(this, 2L);
+    foliaLib.getScheduler().runLater( () -> particleEffectManager.startAuraEffectTask(), 2L);
     for (World world : Bukkit.getWorlds()) {
       for (Chunk chunk : world.getLoadedChunks()) {
         BlockUtil.restartBlockAura(chunk);
@@ -175,7 +172,7 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void initializeOres() {
-    Bukkit.getScheduler().runTask(this, () -> {
+    foliaLib.getScheduler().runNextTick(task -> {
       ores = populatorsConfig.loadOresFromConfig();
       orePopulator.clearOres();
       ores.forEach(orePopulator::addOre);
