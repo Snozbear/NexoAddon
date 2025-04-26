@@ -8,7 +8,7 @@ import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
 import com.nexomc.nexo.utils.blocksounds.BlockSounds;
 import com.nexomc.nexo.utils.drops.Drop;
 import com.nexomc.nexo.utils.drops.Loot;
-import io.th0rgal.protectionlib.ProtectionLib;
+import com.nexomc.protectionlib.ProtectionLib;
 import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -37,7 +37,7 @@ public record Unstackable(String next, String give, List<Material> materials, Li
       if(mechanic == null
           || mechanic.getUnstackable() == null
           || !checkIfAllowed(mechanic, event.getPlayer())
-          || !ProtectionLib.canInteract(event.getPlayer(), event.getBlock().getLocation())
+          || !ProtectionLib.INSTANCE.canInteract(event.getPlayer(), event.getBlock().getLocation())
       ) return;
 
       String nextStage = mechanic.getUnstackable().next();

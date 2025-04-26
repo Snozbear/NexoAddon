@@ -8,7 +8,7 @@ import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
-import io.th0rgal.protectionlib.ProtectionLib;
+import com.nexomc.protectionlib.ProtectionLib;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -95,7 +95,7 @@ public final class NexoAddon extends JavaPlugin {
   @Override
   public void onEnable() {
 
-    ProtectionLib.init(this);
+    ProtectionLib.INSTANCE.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
     initializeCommandManager();
