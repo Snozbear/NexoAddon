@@ -9,6 +9,8 @@ import com.jeff_media.updatechecker.UpdateChecker;
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.protectionlib.ProtectionLib;
+import com.tcoded.folialib.FoliaLib;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -19,8 +21,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import zone.vao.nexoAddon.items.Components;
 import zone.vao.nexoAddon.items.Mechanics;
@@ -73,10 +73,11 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, Integer> customBlockLights = new HashMap<>();
   public BlockHardnessHandler blockHardnessHandler;
   public PacketListenerCommon packetListenerCommon;
+  public FoliaLib foliaLib;
   private boolean packeteventsLoaded = false;
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
-  private final Map<Location, BukkitTask> particleTasks = new HashMap<>();
+  private final Map<Location, WrappedTask> particleTasks = new HashMap<>();
 
 
   @Override
@@ -94,7 +95,7 @@ public final class NexoAddon extends JavaPlugin {
 
   @Override
   public void onEnable() {
-
+    foliaLib = new FoliaLib(this);
     ProtectionLib.INSTANCE.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
@@ -128,7 +129,7 @@ public final class NexoAddon extends JavaPlugin {
 
       pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
     }
-    particleTasks.values().forEach(BukkitTask::cancel);
+    particleTasks.values().forEach(WrappedTask::cancel);
     particleTasks.clear();
   }
 
@@ -140,7 +141,7 @@ public final class NexoAddon extends JavaPlugin {
   public void reload() {
     reloadConfig();
     globalConfig = getConfig();
-    Bukkit.getScheduler().runTask(this, () -> {
+    foliaLib.getScheduler().runNextTick(init -> {
       clearPopulators();
       initializePopulators();
     });
@@ -151,17 +152,18 @@ public final class NexoAddon extends JavaPlugin {
     RecipesUtil.loadRecipes();
     SkullUtil.applyTextures();
     particleEffectManager.stopAuraEffectTask();
-    new BukkitRunnable() {
-      @Override
-      public void run(){
-        particleEffectManager.startAuraEffectTask();
+
+    foliaLib.getScheduler().runLater(() -> {
+      particleEffectManager.startAuraEffectTask();
+    }, 2L);
+
+    foliaLib.getScheduler().runLater(() -> {
+      for (World world : Bukkit.getWorlds()) {
+        for (Chunk chunk : world.getLoadedChunks()) {
+          BlockUtil.restartBlockAura(chunk);
+        }
       }
-    }.runTaskLater(this, 2L);
-    for (World world : Bukkit.getWorlds()) {
-      for (Chunk chunk : world.getLoadedChunks()) {
-        BlockUtil.restartBlockAura(chunk);
-      }
-    }
+    }, 10L);
   }
 
   private void initializeCommandManager() {
@@ -181,7 +183,7 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void initializeOres() {
-    Bukkit.getScheduler().runTask(this, () -> {
+    foliaLib.getScheduler().runNextTick(initOres -> {
       ores = populatorsConfig.loadOresFromConfig();
       orePopulator.clearOres();
       ores.forEach(orePopulator::addOre);

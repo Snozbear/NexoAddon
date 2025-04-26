@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.items.Components;
 import zone.vao.nexoAddon.utils.InventoryUtil;
@@ -122,28 +121,19 @@ public record JukeboxPlayable(String songKey) {
       ItemMeta meta = is.getItemMeta();
       meta.setDisplayName(itemId);
       is.setItemMeta(meta);
-      new BukkitRunnable(){
+      NexoAddon.instance.foliaLib.getScheduler().runLater(() -> {
 
-        @Override
-        public void run() {
-          jukebox.setRecord(is);
-          jukebox.update();
-          if(item.getItemMeta() != null && item.getItemMeta().getLore() != null)
-            Audience.audience(player)
-                .sendActionBar(MiniMessage.miniMessage().deserialize("Now Playing: "+item.getItemMeta().getLore().getFirst()));
-          else
-            Audience.audience(player)
-                .sendActionBar(MiniMessage.miniMessage().deserialize("§r"));
-        }
-      }.runTaskLater(NexoAddon.getInstance(), 1L);
+        jukebox.setRecord(is);
+        jukebox.update();
+        if(item.getItemMeta() != null && item.getItemMeta().getLore() != null)
+          Audience.audience(player)
+              .sendActionBar(MiniMessage.miniMessage().deserialize("Now Playing: "+item.getItemMeta().getLore().getFirst()));
+        else
+          Audience.audience(player)
+              .sendActionBar(MiniMessage.miniMessage().deserialize("§r"));
+      }, 1L);
 
-      new BukkitRunnable(){
-
-        @Override
-        public void run() {
-          jukebox.stopPlaying();
-        }
-      }.runTaskLater(NexoAddon.getInstance(), 2L);
+      NexoAddon.instance.foliaLib.getScheduler().runLater(jukebox::stopPlaying, 2L);
 
       jukebox.getWorld().playSound(
           jukebox.getLocation(),

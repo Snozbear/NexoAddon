@@ -29,7 +29,7 @@ public class FurniturePopulator {
   private static void processOre(World world, Chunk chunk, Ore ore) {
     if (!ore.getWorlds().contains(world)) return;
 
-    Bukkit.getScheduler().runTaskAsynchronously(NexoAddon.getInstance(), () -> {
+    NexoAddon.instance.foliaLib.getScheduler().runAsync(populate -> {
       Random random = new Random();
       if (random.nextDouble() > ore.getChance()) return;
 
@@ -95,7 +95,7 @@ public class FurniturePopulator {
       Ore ore,
       int placementIndex
   ) {
-    Bukkit.getScheduler().runTaskLater(NexoAddon.getInstance(), () -> {
+    NexoAddon.instance.foliaLib.getScheduler().runLater(() -> {
       if (ore.getReplace() != null && ore.getReplace().contains(loc.getBlock().getType())) {
         loc.getBlock().setType(Material.AIR);
       }

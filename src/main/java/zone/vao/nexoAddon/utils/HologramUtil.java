@@ -7,7 +7,6 @@ import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 
 import java.util.HashMap;
@@ -21,52 +20,43 @@ public class HologramUtil {
   public static void displayProgressBar(Entity entity, double progress, Player player) {
     if (entity == null || progress < 0.0 || progress > 1.0) return;
 
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        World world = entity.getWorld();
-        Location entityLocation = entity.getLocation().clone();
-        Location hologramLocation = entityLocation.add(0, 0.5, 0);
+    NexoAddon.instance.foliaLib.getScheduler().runAsync(startDisplay -> {
+      World world = entity.getWorld();
+      Location entityLocation = entity.getLocation().clone();
+      Location hologramLocation = entityLocation.add(0, 0.5, 0);
 
-        Component progressBar = getProgressBar(progress, 10);
+      Component progressBar = getProgressBar(progress, 10);
 
-        new BukkitRunnable() {
-          @Override
-          public void run() {
-            if (player != null && holograms.containsKey(player.getUniqueId())) {
-              ArmorStand existingHologram = holograms.get(player.getUniqueId());
-              existingHologram.remove();
-              holograms.remove(player.getUniqueId());
-            }
+      NexoAddon.instance.foliaLib.getScheduler().runNextTick(nextTick -> {
+        if (player != null && holograms.containsKey(player.getUniqueId())) {
+          ArmorStand existingHologram = holograms.get(player.getUniqueId());
+          existingHologram.remove();
+          holograms.remove(player.getUniqueId());
+        }
 
-            ArmorStand hologram = world.spawn(hologramLocation, ArmorStand.class, stand -> {
-              stand.customName(progressBar);
-              stand.setCustomNameVisible(true);
-              stand.setGravity(false);
-              stand.setInvisible(true);
-              stand.setMarker(true);
-              stand.setSmall(true);
-              if (player != null) {
-                stand.setVisibleByDefault(false);
-                player.showEntity(NexoAddon.getInstance(), stand);
-              }
-            });
-
-            if (player != null)
-              holograms.put(player.getUniqueId(), hologram);
-
-            new BukkitRunnable() {
-              @Override
-              public void run() {
-                hologram.remove();
-                if (player != null)
-                  holograms.remove(player.getUniqueId());
-              }
-            }.runTaskLater(NexoAddon.getInstance(), 60);
+        ArmorStand hologram = world.spawn(hologramLocation, ArmorStand.class, stand -> {
+          stand.customName(progressBar);
+          stand.setCustomNameVisible(true);
+          stand.setGravity(false);
+          stand.setInvisible(true);
+          stand.setMarker(true);
+          stand.setSmall(true);
+          if (player != null) {
+            stand.setVisibleByDefault(false);
+            player.showEntity(NexoAddon.getInstance(), stand);
           }
-        }.runTask(NexoAddon.getInstance());
-      }
-    }.runTaskAsynchronously(NexoAddon.getInstance());
+        });
+
+        if (player != null)
+          holograms.put(player.getUniqueId(), hologram);
+
+        NexoAddon.instance.foliaLib.getScheduler().runLater(() -> {
+          hologram.remove();
+          if (player != null)
+            holograms.remove(player.getUniqueId());
+        }, 60);
+      });
+    });
   }
 
   private static Component getProgressBar(double progress, int length) {
