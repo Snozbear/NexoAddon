@@ -1,6 +1,9 @@
 package zone.vao.nexoAddon.events.chunk;
 
-import org.bukkit.*;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.event.world.ChunkLoadEvent;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.populators.orePopulator.Ore;
