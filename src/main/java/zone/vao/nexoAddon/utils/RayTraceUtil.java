@@ -8,7 +8,6 @@ import org.bukkit.util.RayTraceResult;
 
 
 public class RayTraceUtil {
-
   public static FurnitureMechanic ray(Player player){
 
     RayTraceResult result = player.getWorld().rayTrace(

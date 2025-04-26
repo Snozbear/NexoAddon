@@ -9,7 +9,7 @@ import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockBreakAnimation;
 import com.nexomc.nexo.api.NexoItems;
-import io.th0rgal.protectionlib.ProtectionLib;
+import com.nexomc.protectionlib.ProtectionLib;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -92,7 +92,7 @@ public class BlockHardnessHandler implements PacketListener {
 
         if (progress >= hardness) {
           stopBreaking(location, digging);
-          if (EventUtil.callEvent(new BlockBreakEvent(block, player)) && ProtectionLib.canBreak(player, location)) {
+          if (EventUtil.callEvent(new BlockBreakEvent(block, player)) && ProtectionLib.INSTANCE.canBreak(player, location)) {
             Bukkit.getScheduler().runTask(NexoAddon.getInstance(), () -> {
               if(Math.random() <= probability)
                 block.getWorld().dropItemNaturally(location, new ItemStack(Material.BEDROCK));

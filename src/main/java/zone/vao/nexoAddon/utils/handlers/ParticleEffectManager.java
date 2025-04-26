@@ -1,12 +1,12 @@
 package zone.vao.nexoAddon.utils.handlers;
 
 import com.nexomc.nexo.api.NexoItems;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.items.mechanics.Aura;
 
@@ -17,11 +17,11 @@ public class ParticleEffectManager {
 
   private final NexoAddon plugin = NexoAddon.getInstance();
   private final double MATH_PI = Math.PI;
-  private BukkitTask task;
+  private WrappedTask task;
 
   public void startAuraEffectTask() {
     if(task != null && !task.isCancelled()) return;
-    task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+    task = NexoAddon.instance.foliaLib.getScheduler().runTimerAsync(() -> {
       for (Player player : Bukkit.getOnlinePlayers()) {
         applyAuraEffects(player);
       }

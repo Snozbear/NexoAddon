@@ -4,7 +4,7 @@ import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.events.custom_block.noteblock.NexoNoteBlockBreakEvent;
 import com.nexomc.nexo.utils.drops.Drop;
 import io.lumine.mythic.bukkit.MythicBukkit;
-import io.th0rgal.protectionlib.ProtectionLib;
+import com.nexomc.protectionlib.ProtectionLib;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -43,7 +43,7 @@ public record Infested(List<EntityType> entities, List<String> mythicMobs, doubl
     private static boolean shouldCancelEvent(NexoNoteBlockBreakEvent event, Mechanics mechanics) {
       return event.isCancelled()
           || mechanics.getInfested() == null
-          || !ProtectionLib.canBreak(event.getPlayer(), event.getBlock().getLocation())
+          || !ProtectionLib.INSTANCE.canBreak(event.getPlayer(), event.getBlock().getLocation())
           || event.getPlayer().getGameMode() == GameMode.CREATIVE;
     }
 

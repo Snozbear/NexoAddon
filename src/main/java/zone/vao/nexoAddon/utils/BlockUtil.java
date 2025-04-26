@@ -6,6 +6,8 @@ import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
+import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ItemDisplay;
@@ -175,7 +177,7 @@ public class BlockUtil {
   }
 
   public static void startBlockAura(Particle particle, Location location, String xOffsetRange, String yOffsetRange, String zOffsetRange, int amount, double deltaX, double deltaY, double deltaZ, double speed, boolean force) {
-    BukkitTask task = new BukkitRunnable() {
+    WrappedTask task = new WrappedBukkitTask(new BukkitRunnable() {
       @Override
       public void run() {
         World world = location.getWorld();
@@ -190,23 +192,23 @@ public class BlockUtil {
           double zOffset = RandomRangeUtil.parseAndGetRandomValue(zOffsetRange);
 
           world.spawnParticle(
-                  particle,
-                  location.clone().add(xOffset, yOffset, zOffset),
-                  amount,
-                  deltaX, deltaY, deltaZ,
-                  speed,
-                  null,
-                  force
+              particle,
+              location.clone().add(xOffset, yOffset, zOffset),
+              amount,
+              deltaX, deltaY, deltaZ,
+              speed,
+              null,
+              force
           );
         }
       }
-    }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0L, NexoAddon.getInstance().getGlobalConfig().getLong("aura_mechanic_delay", 10));
+    }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0L, NexoAddon.getInstance().getGlobalConfig().getLong("aura_mechanic_delay", 10)));
 
     NexoAddon.getInstance().getParticleTasks().put(location, task);
   }
 
   public static void stopBlockAura(Location location) {
-    BukkitTask task = NexoAddon.getInstance().getParticleTasks().remove(location);
+    WrappedTask task = NexoAddon.getInstance().getParticleTasks().remove(location);
     CustomBlockData customBlockData =  new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
     customBlockData.remove(new NamespacedKey(NexoAddon.getInstance(), "blockAura"));
     if (task != null && task.isCancelled()) {

@@ -7,7 +7,7 @@ import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
 import com.nexomc.nexo.utils.blocksounds.BlockSounds;
 import com.nexomc.nexo.utils.drops.Drop;
 import com.nexomc.nexo.utils.drops.Loot;
-import io.th0rgal.protectionlib.ProtectionLib;
+import com.nexomc.protectionlib.ProtectionLib;
 import org.bukkit.GameMode;
 import org.bukkit.SoundCategory;
 import org.bukkit.event.EventHandler;
@@ -38,7 +38,7 @@ public record Stackable(String next, String group) {
       ) return;
 
       if(!mechanicsStringBlock.getStackable().group().equalsIgnoreCase(mechanicsItem.getStackable().group())
-          || !ProtectionLib.canBuild(event.getPlayer(), event.getBlock().getLocation())
+          || !ProtectionLib.INSTANCE.canBuild(event.getPlayer(), event.getBlock().getLocation())
       ) return;
 
       String nextStage = mechanicsStringBlock.getStackable().next();
