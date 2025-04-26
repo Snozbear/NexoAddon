@@ -99,6 +99,7 @@ public final class NexoAddon extends JavaPlugin {
     ProtectionLib.INSTANCE.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
+    foliaLib = new FoliaLib(this);
     initializeCommandManager();
     if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null &&
         Bukkit.getPluginManager().getPlugin("MythicMobs").isEnabled())
@@ -152,7 +153,6 @@ public final class NexoAddon extends JavaPlugin {
     RecipesUtil.loadRecipes();
     SkullUtil.applyTextures();
     particleEffectManager.stopAuraEffectTask();
-
     foliaLib.getScheduler().runLater(() -> {
       particleEffectManager.startAuraEffectTask();
     }, 2L);
