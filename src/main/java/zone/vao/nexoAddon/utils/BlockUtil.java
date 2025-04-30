@@ -6,18 +6,19 @@ import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
+import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.items.Mechanics;
 import zone.vao.nexoAddon.items.mechanics.Decay;
 
-import java.util.*;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BlockUtil {
@@ -37,43 +38,28 @@ public class BlockUtil {
     PersistentDataContainer pdc = new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
     pdc.set(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"), PersistentDataType.STRING, target.getItemID());
     finalLocation.getBlock().setType(Material.AIR);
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        NexoBlocks.place(to.getItemID(), finalLocation);
-      }
-    }.runTaskLater(NexoAddon.getInstance(), 1);
+    NexoAddon.instance.foliaLib.getScheduler().runLater(() -> NexoBlocks.place(to.getItemID(), finalLocation), 1);
 
     if(time <= 0)
       return;
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        if(!NexoBlocks.isCustomBlock(finalLocation.getBlock()) ||
-            !NexoBlocks.customBlockMechanic(finalLocation).getItemID().equalsIgnoreCase(to.getItemID())
-        ) {
-          cancel();
-          processedShiftblocks.remove(finalLocation);
-          pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
-          return;
-        }
-
-        new BukkitRunnable() {
-          @Override
-          public void run() {
-            finalLocation.getBlock().setType(Material.AIR);
-          }
-        }.runTask(NexoAddon.getInstance());
-        new BukkitRunnable() {
-          @Override
-          public void run() {
-            NexoBlocks.place(target.getItemID(), finalLocation);
-          }
-        }.runTaskLater(NexoAddon.getInstance(), 1);
+    NexoAddon.instance.foliaLib.getScheduler().runLaterAsync( laterAsync -> {
+      if(!NexoBlocks.isCustomBlock(finalLocation.getBlock()) ||
+          !NexoBlocks.customBlockMechanic(finalLocation).getItemID().equalsIgnoreCase(to.getItemID())
+      ) {
+        laterAsync.cancel();
         processedShiftblocks.remove(finalLocation);
         pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+        return;
       }
-    }.runTaskLaterAsynchronously(NexoAddon.getInstance(), time*20L);
+      NexoAddon.instance.foliaLib.getScheduler().runNextTick(replaceToAir -> {
+        finalLocation.getBlock().setType(Material.AIR);
+      });
+
+      NexoAddon.instance.foliaLib.getScheduler().runLater(() -> NexoBlocks.place(target.getItemID(), finalLocation), 1L);
+
+      processedShiftblocks.remove(finalLocation);
+      pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+    },time*20L);
   }
 
   public static void startShiftBlock(ItemDisplay itemDisplay, FurnitureMechanic to, FurnitureMechanic target, int time) {
@@ -90,43 +76,32 @@ public class BlockUtil {
     FurnitureMechanic previous = NexoFurniture.furnitureMechanic(finalLocation);
     if(previous == null) return;
     ItemDisplay newOne = to.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
-    new BukkitRunnable() {
-
-      @Override
-      public void run() {
-        previous.removeBaseEntity(itemDisplay);
-        NexoFurniture.furnitureMechanic(finalLocation).getHitbox().refreshHitboxes(newOne, to);
-      }
-    }.runTaskLater(NexoAddon.getInstance(), 3L);
+    NexoAddon.instance.foliaLib.getScheduler().runLater(() -> {
+      previous.removeBaseEntity(itemDisplay);
+      NexoFurniture.furnitureMechanic(finalLocation).getHitbox().refreshHitboxes(newOne, to);
+    }, 3L);
 
     if(time <= 0)
       return;
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        new BukkitRunnable() {
-          @Override
-          public void run() {
-            if(!NexoFurniture.isFurniture(finalLocation) ||
-                !NexoFurniture.furnitureMechanic(finalLocation).getItemID().equalsIgnoreCase(to.getItemID())
-            ) {
-              cancel();
-              processedShiftblocks.remove(finalLocation);
-              pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
-              return;
-            }
+    NexoAddon.instance.foliaLib.getScheduler().runLaterAsync(() -> {
+      NexoAddon.instance.foliaLib.getScheduler().runNextTick(shiftBlock -> {
+        if(!NexoFurniture.isFurniture(finalLocation) ||
+            !NexoFurniture.furnitureMechanic(finalLocation).getItemID().equalsIgnoreCase(to.getItemID())
+        ) {
+          shiftBlock.cancel();
+          processedShiftblocks.remove(finalLocation);
+          pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+          return;
+        }
 
-            ItemDisplay oldFurniture = NexoFurniture.baseEntity(finalLocation);
-            target.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
-            if(oldFurniture != null)
-              NexoFurniture.remove(oldFurniture);
-            processedShiftblocks.remove(finalLocation);
-            pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
-          }
-        }.runTask(NexoAddon.getInstance());
-
-      }
-    }.runTaskLaterAsynchronously(NexoAddon.getInstance(), time*20L);
+        ItemDisplay oldFurniture = NexoFurniture.baseEntity(finalLocation);
+        target.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
+        if(oldFurniture != null)
+          NexoFurniture.remove(oldFurniture);
+        processedShiftblocks.remove(finalLocation);
+        pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
+      });
+    }, time*20L);
   }
 
   public static void startDecay(Location location) {
@@ -137,81 +112,71 @@ public class BlockUtil {
       return;
     }
 
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        for (int x = -radius; x <= radius; x++) {
-          for (int y = -radius; y <= radius; y++) {
-            for (int z = -radius; z <= radius; z++) {
-              Location currentLocation = location.clone().add(x, y, z);
-              Block block = currentLocation.getBlock();
+    NexoAddon.instance.foliaLib.getScheduler().runAsync(startDecay -> {
+      for (int x = -radius; x <= radius; x++) {
+        for (int y = -radius; y <= radius; y++) {
+          for (int z = -radius; z <= radius; z++) {
+            Location currentLocation = location.clone().add(x, y, z);
+            Block block = currentLocation.getBlock();
 
-              if (processedCustomBlocks.contains(currentLocation)) {
-                continue;
-              }
+            if (processedCustomBlocks.contains(currentLocation)) {
+              continue;
+            }
 
-              if (NexoBlocks.isCustomBlock(block)) {
-                String itemId = NexoBlocks.customBlockMechanic(block.getLocation()).getItemID();
-                Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(itemId);
+            if (NexoBlocks.isCustomBlock(block)) {
+              String itemId = NexoBlocks.customBlockMechanic(block.getLocation()).getItemID();
+              Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(itemId);
 
-                if (mechanic != null && mechanic.getDecay() != null) {
-                  Decay decay = mechanic.getDecay();
+              if (mechanic != null && mechanic.getDecay() != null) {
+                Decay decay = mechanic.getDecay();
 
-                  processedCustomBlocks.add(currentLocation);
-                  startDecayTimer(block, decay);
-                }
+                processedCustomBlocks.add(currentLocation);
+                startDecayTimer(block, decay);
               }
             }
           }
         }
       }
-    }.runTaskAsynchronously(NexoAddon.getInstance());
+    });
   }
 
   private static void startDecayTimer(Block block, Decay decay) {
 
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        if (block.getType() == Material.AIR && !NexoBlocks.isCustomBlock(block)) {
-          processedCustomBlocks.remove(block.getLocation());
-          cancel();
-          return;
-        }
+    NexoAddon.instance.foliaLib.getScheduler().runTimerAsync(decayTimer -> {
+      if (block.getType() == Material.AIR && !NexoBlocks.isCustomBlock(block)) {
+        processedCustomBlocks.remove(block.getLocation());
+        decayTimer.cancel();
+        return;
+      }
 
-        boolean hasBaseNearby = false;
-        for (int x = -decay.radius(); x <= decay.radius(); x++) {
-          for (int y = -decay.radius(); y <= decay.radius(); y++) {
-            for (int z = -decay.radius(); z <= decay.radius(); z++) {
-              Block nearbyBlock = block.getLocation().add(x, y, z).getBlock();
-              if (decay.base().contains(nearbyBlock.getType())
-                  || NexoBlocks.customBlockMechanic(nearbyBlock.getLocation()) != null
-                  && decay.nexoBase().contains(NexoBlocks.customBlockMechanic(nearbyBlock.getLocation()).getItemID())
-              ) {
-                hasBaseNearby = true;
-                break;
-              }
+      boolean hasBaseNearby = false;
+      for (int x = -decay.radius(); x <= decay.radius(); x++) {
+        for (int y = -decay.radius(); y <= decay.radius(); y++) {
+          for (int z = -decay.radius(); z <= decay.radius(); z++) {
+            Block nearbyBlock = block.getLocation().add(x, y, z).getBlock();
+            if (decay.base().contains(nearbyBlock.getType())
+                || NexoBlocks.customBlockMechanic(nearbyBlock.getLocation()) != null
+                && decay.nexoBase().contains(NexoBlocks.customBlockMechanic(nearbyBlock.getLocation()).getItemID())
+            ) {
+              hasBaseNearby = true;
+              break;
             }
           }
-          if (hasBaseNearby) break;
         }
-
-        if (!hasBaseNearby && Math.random() <= decay.chance()) {
-          new BukkitRunnable() {
-            @Override
-            public void run(){
-              NexoBlocks.remove(block.getLocation());
-            }
-          }.runTask(NexoAddon.getInstance());
-          processedCustomBlocks.remove(block.getLocation());
-          cancel();
-        }
+        if (hasBaseNearby) break;
       }
-    }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0, decay.time() * 20L);
+
+      if (!hasBaseNearby && Math.random() <= decay.chance()) {
+        NexoAddon.instance.foliaLib.getScheduler().runNextTick(removeBlock -> NexoBlocks.remove(block.getLocation()));
+
+        processedCustomBlocks.remove(block.getLocation());
+        decayTimer.cancel();
+      }
+    }, 0, decay.time() * 20L);
   }
 
   public static void startBlockAura(Particle particle, Location location, String xOffsetRange, String yOffsetRange, String zOffsetRange, int amount, double deltaX, double deltaY, double deltaZ, double speed, boolean force) {
-    BukkitTask task = new BukkitRunnable() {
+    WrappedTask task = new WrappedBukkitTask(new BukkitRunnable() {
       @Override
       public void run() {
         World world = location.getWorld();
@@ -226,23 +191,23 @@ public class BlockUtil {
           double zOffset = RandomRangeUtil.parseAndGetRandomValue(zOffsetRange);
 
           world.spawnParticle(
-                  particle,
-                  location.clone().add(xOffset, yOffset, zOffset),
-                  amount,
-                  deltaX, deltaY, deltaZ,
-                  speed,
-                  null,
-                  force
+              particle,
+              location.clone().add(xOffset, yOffset, zOffset),
+              amount,
+              deltaX, deltaY, deltaZ,
+              speed,
+              null,
+              force
           );
         }
       }
-    }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0L, NexoAddon.getInstance().getGlobalConfig().getLong("aura_mechanic_delay", 10));
+    }.runTaskTimerAsynchronously(NexoAddon.getInstance(), 0L, NexoAddon.getInstance().getGlobalConfig().getLong("aura_mechanic_delay", 10)));
 
     NexoAddon.getInstance().getParticleTasks().put(location, task);
   }
 
   public static void stopBlockAura(Location location) {
-    BukkitTask task = NexoAddon.getInstance().getParticleTasks().remove(location);
+    WrappedTask task = NexoAddon.getInstance().getParticleTasks().remove(location);
     CustomBlockData customBlockData =  new CustomBlockData(location.getBlock(), NexoAddon.getInstance());
     customBlockData.remove(new NamespacedKey(NexoAddon.getInstance(), "blockAura"));
     if (task != null && task.isCancelled()) {

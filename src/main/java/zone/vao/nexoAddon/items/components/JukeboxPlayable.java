@@ -2,7 +2,7 @@ package zone.vao.nexoAddon.items.components;
 
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.items.ItemBuilder;
-import io.th0rgal.protectionlib.ProtectionLib;
+import com.nexomc.protectionlib.ProtectionLib;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.items.Components;
 import zone.vao.nexoAddon.utils.InventoryUtil;
@@ -32,7 +31,7 @@ public record JukeboxPlayable(String songKey) {
       if(event.getBlock().getType() == Material.JUKEBOX){
 
         String soundKey = NexoAddon.getInstance().jukeboxLocations.get(event.getBlock().getLocation().toString());
-        if(soundKey == null || !ProtectionLib.canBreak(event.getPlayer(), event.getBlock().getLocation())) return;
+        if(soundKey == null || !ProtectionLib.INSTANCE.canBreak(event.getPlayer(), event.getBlock().getLocation())) return;
 
         Jukebox jukebox = (Jukebox) event.getBlock().getState();
 
@@ -79,8 +78,8 @@ public record JukeboxPlayable(String songKey) {
           && event.getClickedBlock() != null
           && event.getClickedBlock().getType() == Material.JUKEBOX
           && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-          && ProtectionLib.canInteract(event.getPlayer(), event.getClickedBlock().getLocation())
-          && ProtectionLib.canUse(event.getPlayer(), event.getClickedBlock().getLocation())
+          && ProtectionLib.INSTANCE.canInteract(event.getPlayer(), event.getClickedBlock().getLocation())
+          && ProtectionLib.INSTANCE.canUse(event.getPlayer(), event.getClickedBlock().getLocation())
           && event.getClickedBlock().getState() instanceof Jukebox;
     }
 
@@ -122,28 +121,19 @@ public record JukeboxPlayable(String songKey) {
       ItemMeta meta = is.getItemMeta();
       meta.setDisplayName(itemId);
       is.setItemMeta(meta);
-      new BukkitRunnable(){
+      NexoAddon.instance.foliaLib.getScheduler().runLater(() -> {
 
-        @Override
-        public void run() {
-          jukebox.setRecord(is);
-          jukebox.update();
-          if(item.getItemMeta() != null && item.getItemMeta().getLore() != null)
-            Audience.audience(player)
-                .sendActionBar(MiniMessage.miniMessage().deserialize("Now Playing: "+item.getItemMeta().getLore().getFirst()));
-          else
-            Audience.audience(player)
-                .sendActionBar(MiniMessage.miniMessage().deserialize("§r"));
-        }
-      }.runTaskLater(NexoAddon.getInstance(), 1L);
+        jukebox.setRecord(is);
+        jukebox.update();
+        if(item.getItemMeta() != null && item.getItemMeta().getLore() != null)
+          Audience.audience(player)
+              .sendActionBar(MiniMessage.miniMessage().deserialize("Now Playing: "+item.getItemMeta().getLore().getFirst()));
+        else
+          Audience.audience(player)
+              .sendActionBar(MiniMessage.miniMessage().deserialize("§r"));
+      }, 1L);
 
-      new BukkitRunnable(){
-
-        @Override
-        public void run() {
-          jukebox.stopPlaying();
-        }
-      }.runTaskLater(NexoAddon.getInstance(), 2L);
+      NexoAddon.instance.foliaLib.getScheduler().runLater(jukebox::stopPlaying, 2L);
 
       jukebox.getWorld().playSound(
           jukebox.getLocation(),

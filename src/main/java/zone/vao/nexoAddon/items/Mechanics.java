@@ -30,6 +30,7 @@ public class Mechanics {
   private Unstackable unstackable;
   private BlockAura blockAura;
   private Signal signal;
+  private Remember remember;
 
   public Mechanics(String id) {
     this.id = id;
@@ -91,6 +92,10 @@ public class Mechanics {
     this.signal = new Signal(radius, channel, role);
   }
 
+  public void setRemember(boolean isForRemember) {
+    this.remember = new Remember(isForRemember);
+  }
+
   public static void registerListeners(NexoAddon plugin){
 
     registerListener(new BigMining.BigMiningListener(), plugin);
@@ -106,6 +111,7 @@ public class Mechanics {
 
     registerListener(new MiningTools.MiningToolsListener(), plugin);
 
+    registerListener(new Remember.RememberListener(), plugin);
     registerListener(new Repair.RepairListener(), plugin);
 
     registerListener(new ShiftBlock.ShiftBlockListener(), plugin);

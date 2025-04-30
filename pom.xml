@@ -6,7 +6,7 @@
 
     <groupId>zone.vao</groupId>
     <artifactId>NexoAddon</artifactId>
-    <version>1.11.0</version>
+    <version>1.12.0</version>
     <packaging>jar</packaging>
 
     <name>NexoAddon</name>
@@ -54,11 +54,15 @@
                         </relocation>
                         <relocation>
                             <pattern>co.aikar.commands</pattern>
-                            <shadedPattern>zone.vao.thirdparties.aikar.commands</shadedPattern>
+                            <shadedPattern>zone.vao.nexoAddon.thirdparties.aikar.commands</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>co.aikar.locales</pattern>
-                            <shadedPattern>zone.vao.thirdparties.aikar.locales</shadedPattern>
+                            <shadedPattern>zone.vao.nexoAddon.thirdparties.aikar.locales</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.tcoded.folialib</pattern>
+                            <shadedPattern>zone.vao.nexoAddon.thirdparties.lib.folialib</shadedPattern>
                         </relocation>
                     </relocations>
                     <artifactSet>
@@ -68,6 +72,12 @@
                         </excludes>
                     </artifactSet>
                     <filters>
+                        <filter>
+                            <artifact>com.github.technicallycoded:FoliaLib</artifact>
+                            <includes>
+                                <include>**</include>
+                            </includes>
+                        </filter>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
@@ -101,13 +111,13 @@
         </repository>
         <repository>
             <id>nexo-snapshots</id>
-            <name>Nexo Repository</name>
+            <name>Nexo Snapshots Repository</name>
             <url>https://repo.nexomc.com/snapshots</url>
         </repository>
         <repository>
-            <id>oraxen-releases</id>
-            <name>Oraxen Repository</name>
-            <url>https://repo.oraxen.com/releases</url>
+            <id>nexomc-releases</id>
+            <name>>Nexo Releases Repository</name>
+            <url>https://repo.nexomc.com/releases</url>
         </repository>
         <repository>
             <id>jeff-media-public</id>
@@ -122,6 +132,10 @@
             <id>codemc-releases</id>
             <url>https://repo.codemc.io/repository/maven-releases/</url>
         </repository>
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -134,7 +148,7 @@
         <dependency>
             <groupId>com.nexomc</groupId>
             <artifactId>nexo</artifactId>
-            <version>1.1.0-dev.8</version>
+            <version>1.5.0-dev.12</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -155,9 +169,9 @@
             <version>0.5.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>io.th0rgal</groupId>
+            <groupId>com.nexomc</groupId>
             <artifactId>protectionlib</artifactId>
-            <version>1.8.0</version>
+            <version>1.0.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -187,6 +201,12 @@
             <groupId>com.jeff-media</groupId>
             <artifactId>custom-block-data</artifactId>
             <version>2.2.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.technicallycoded</groupId>
+            <artifactId>FoliaLib</artifactId>
+            <version>0.4.4</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

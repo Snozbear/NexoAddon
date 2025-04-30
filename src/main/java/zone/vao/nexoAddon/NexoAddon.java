@@ -7,7 +7,10 @@ import com.jeff_media.customblockdata.CustomBlockData;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import com.nexomc.nexo.api.NexoBlocks;
-import io.th0rgal.protectionlib.ProtectionLib;
+import com.nexomc.nexo.api.NexoItems;
+import com.nexomc.protectionlib.ProtectionLib;
+import com.tcoded.folialib.FoliaLib;
+import com.tcoded.folialib.wrapper.task.WrappedTask;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,11 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import zone.vao.nexoAddon.items.Components;
-import zone.vao.nexoAddon.items.Mechanics;
 import zone.vao.nexoAddon.commands.NexoAddonCommand;
 import zone.vao.nexoAddon.events.PlayerCommandPreprocessListener;
 import zone.vao.nexoAddon.events.PrepareRecipesListener;
@@ -34,11 +33,8 @@ import zone.vao.nexoAddon.events.nexo.NexoPackUploadListener;
 import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureBreakListener;
 import zone.vao.nexoAddon.events.nexo.furnitures.NexoFurnitureInteractListener;
 import zone.vao.nexoAddon.events.player.PlayerMovementListener;
-import zone.vao.nexoAddon.utils.handlers.BlockHardnessHandler;
-import zone.vao.nexoAddon.utils.handlers.ParticleEffectManager;
-import zone.vao.nexoAddon.utils.handlers.RecipeManager;
-import zone.vao.nexoAddon.utils.hooks.PacketEventsHook;
-import zone.vao.nexoAddon.utils.metrics.Metrics;
+import zone.vao.nexoAddon.items.Components;
+import zone.vao.nexoAddon.items.Mechanics;
 import zone.vao.nexoAddon.populators.CustomChunkGenerator;
 import zone.vao.nexoAddon.populators.orePopulator.CustomOrePopulator;
 import zone.vao.nexoAddon.populators.orePopulator.Ore;
@@ -47,6 +43,11 @@ import zone.vao.nexoAddon.populators.treePopulator.CustomTree;
 import zone.vao.nexoAddon.populators.treePopulator.CustomTreePopulator;
 import zone.vao.nexoAddon.populators.treePopulator.TreePopulator;
 import zone.vao.nexoAddon.utils.*;
+import zone.vao.nexoAddon.utils.handlers.BlockHardnessHandler;
+import zone.vao.nexoAddon.utils.handlers.ParticleEffectManager;
+import zone.vao.nexoAddon.utils.handlers.RecipeManager;
+import zone.vao.nexoAddon.utils.hooks.PacketEventsHook;
+import zone.vao.nexoAddon.utils.metrics.Metrics;
 
 import java.io.File;
 import java.util.*;
@@ -72,10 +73,11 @@ public final class NexoAddon extends JavaPlugin {
   public Map<String, Integer> customBlockLights = new HashMap<>();
   public BlockHardnessHandler blockHardnessHandler;
   public PacketListenerCommon packetListenerCommon;
+  public FoliaLib foliaLib;
   private boolean packeteventsLoaded = false;
   private boolean mythicMobsLoaded = false;
   private ParticleEffectManager particleEffectManager;
-  private final Map<Location, BukkitTask> particleTasks = new HashMap<>();
+  private final Map<Location, WrappedTask> particleTasks = new HashMap<>();
 
 
   @Override
@@ -93,10 +95,11 @@ public final class NexoAddon extends JavaPlugin {
 
   @Override
   public void onEnable() {
-
-    ProtectionLib.init(this);
+    foliaLib = new FoliaLib(this);
+    ProtectionLib.INSTANCE.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
+    foliaLib = new FoliaLib(this);
     initializeCommandManager();
     if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null &&
         Bukkit.getPluginManager().getPlugin("MythicMobs").isEnabled())
@@ -127,7 +130,7 @@ public final class NexoAddon extends JavaPlugin {
 
       pdc.remove(new NamespacedKey(NexoAddon.getInstance(), "shiftblock_target"));
     }
-    particleTasks.values().forEach(BukkitTask::cancel);
+    particleTasks.values().forEach(WrappedTask::cancel);
     particleTasks.clear();
   }
 
@@ -139,7 +142,7 @@ public final class NexoAddon extends JavaPlugin {
   public void reload() {
     reloadConfig();
     globalConfig = getConfig();
-    Bukkit.getScheduler().runTask(this, () -> {
+    foliaLib.getScheduler().runNextTick(init -> {
       clearPopulators();
       initializePopulators();
     });
@@ -150,22 +153,27 @@ public final class NexoAddon extends JavaPlugin {
     RecipesUtil.loadRecipes();
     SkullUtil.applyTextures();
     particleEffectManager.stopAuraEffectTask();
-    new BukkitRunnable() {
-      @Override
-      public void run(){
-        particleEffectManager.startAuraEffectTask();
+    foliaLib.getScheduler().runLater(() -> {
+      particleEffectManager.startAuraEffectTask();
+    }, 2L);
+
+    foliaLib.getScheduler().runLater(() -> {
+      for (World world : Bukkit.getWorlds()) {
+        for (Chunk chunk : world.getLoadedChunks()) {
+          BlockUtil.restartBlockAura(chunk);
+        }
       }
-    }.runTaskLater(this, 2L);
-    for (World world : Bukkit.getWorlds()) {
-      for (Chunk chunk : world.getLoadedChunks()) {
-        BlockUtil.restartBlockAura(chunk);
-      }
-    }
+    }, 10L);
   }
 
   private void initializeCommandManager() {
     PaperCommandManager manager = new PaperCommandManager(this);
     manager.registerCommand(new NexoAddonCommand());
+
+    manager.getCommandCompletions().registerCompletion("nexoItems", c -> {
+      Set<String> itemNames = NexoItems.itemNames();
+      return new ArrayList<>(itemNames);
+    });
   }
 
   public void initializePopulators() {
@@ -175,22 +183,21 @@ public final class NexoAddon extends JavaPlugin {
   }
 
   private void initializeOres() {
-    Bukkit.getScheduler().runTask(this, () -> {
+    foliaLib.getScheduler().runNextTick(initOres -> {
       ores = populatorsConfig.loadOresFromConfig();
       orePopulator.clearOres();
       ores.forEach(orePopulator::addOre);
+      Set<World> worldsToAddPopulator = new HashSet<>();
       orePopulator.getOres().forEach(ore -> {
         if(ore.getNexoFurniture() != null) return;
-        for (World world : ore.getWorlds()) {
+        worldsToAddPopulator.addAll(ore.getWorlds());
+      });
 
-          CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
-          if(!worldPopulators.containsKey(world.getName())) {
-            worldPopulators.put(world.getName(), new ArrayList<>());
-          }
-          addPopulatorToWorld(world, customOrePopulator);
-          worldPopulators.get(world.getName()).add(customOrePopulator);
-          logPopulatorAdded("BlockPopulator", ore.getId(), world);
-        }
+      worldsToAddPopulator.forEach(world -> {
+        CustomOrePopulator customOrePopulator = new CustomOrePopulator(orePopulator);
+        addPopulatorToWorld(world, customOrePopulator);
+        worldPopulators.computeIfAbsent(world.getName(), k -> new ArrayList<>()).add(customOrePopulator);
+        logPopulatorAdded("BlockPopulator", "all_ores", world);
       });
     });
   }

@@ -111,6 +111,7 @@ public class ItemConfigUtil {
         loadUnstackableStringblockMechanic(itemSection, mechanic);
         loadBlockAuraMechanic(itemSection, mechanic);
         loadSignalMechanic(itemSection, mechanic);
+        loadRememberMechanic(itemSection, mechanic);
       });
     }
   }
@@ -358,6 +359,13 @@ public class ItemConfigUtil {
       double channel = section.getDouble("Mechanics.furniture.signal.channel");
       String role = section.getString("Mechanics.furniture.signal.role");
       mechanic.setSignal(radius, channel, role);
+    }
+  }
+
+  private static void loadRememberMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.furniture.remember")) {
+
+      mechanic.setRemember(section.getBoolean("Mechanics.furniture.remember", true));
     }
   }
 }
