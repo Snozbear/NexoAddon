@@ -5,10 +5,7 @@ import com.nexomc.nexo.api.NexoFurniture;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
 import com.nexomc.nexo.mechanics.custom_block.stringblock.StringBlockMechanic;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
-import org.bukkit.Material;
-import org.bukkit.Registry;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -147,7 +144,7 @@ public class PopulatorsConfigUtil {
 
     List<String> worldNames = section.getStringList("worlds");
     NexoAddon.getInstance().getLogger().info(key + " worlds: " + worldNames);
-    List<World> worlds = parseWorlds(worldNames);
+    List<World> worlds = worldNames.size() == 1 && worldNames.getFirst().equalsIgnoreCase("world")? Bukkit.getWorlds() : parseWorlds(worldNames);
     if (worlds.isEmpty()) return null;
     List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
 
@@ -242,10 +239,8 @@ public class PopulatorsConfigUtil {
             .map(name -> {
               World world = NexoAddon.getInstance().getServer().getWorld(name);
               NexoAddon.getInstance().getLogger().warning(name + " found: " + (world != null));
-              if (world == null) {
-                NexoAddon.getInstance().getLogger().info("Loading world:" + name);
-                world = loadWorld(name);
-              }
+              //                NexoAddon.getInstance().getLogger().info("Loading world:" + name);
+              //                world = loadWorld(name);
               return world;
             })
             .filter(Objects::nonNull)
