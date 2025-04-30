@@ -42,7 +42,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <minimizeJar>false</minimizeJar>
+                    <minimizeJar>true</minimizeJar>
                     <relocations>
                         <relocation>
                             <pattern>com.jeff_media.updatechecker</pattern>
@@ -64,10 +64,6 @@
                             <pattern>com.tcoded.folialib</pattern>
                             <shadedPattern>zone.vao.nexoAddon.thirdparties.lib.folialib</shadedPattern>
                         </relocation>
-                        <relocation>
-                            <pattern>com.tcoded.folialib</pattern>
-                            <shadedPattern>zone.vao.nexoAddon.thirdparties.lib.folialib</shadedPattern>
-                        </relocation>
                     </relocations>
                     <artifactSet>
                         <excludes>
@@ -76,6 +72,12 @@
                         </excludes>
                     </artifactSet>
                     <filters>
+                        <filter>
+                            <artifact>com.github.technicallycoded:FoliaLib</artifact>
+                            <includes>
+                                <include>**</include>
+                            </includes>
+                        </filter>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
