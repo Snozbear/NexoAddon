@@ -33,7 +33,7 @@ public class SaplingPopulator {
   }
 
   private static void processOre(World world, Chunk chunk, Ore ore) {
-    if (!ore.getWorlds().contains(world)) return;
+    if (!ore.getWorlds().contains(world) && !ore.getWorldNames().contains("all")) return;
 
     NexoAddon.instance.foliaLib.getScheduler().runAsync(populate -> {
       Random random = new Random();
