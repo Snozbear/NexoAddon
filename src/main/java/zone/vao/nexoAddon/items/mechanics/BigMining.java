@@ -123,7 +123,7 @@ public record BigMining(int radius, int depth, boolean switchable, List<Material
     private static boolean isUnbreakableBlock(Player player, Block block) {
       return block.isLiquid()
           || BlockUtil.UNBREAKABLE_BLOCKS.contains(block.getType())
-          || !ProtectionLib.INSTANCE.canBreak(player, block.getLocation());
+          || !ProtectionLib.canBreak(player, block.getLocation());
     }
 
     private final static NamespacedKey key = new NamespacedKey(NexoAddon.getInstance(), "bigMiningSwitchable");

@@ -38,7 +38,7 @@ public record Stackable(String next, String group) {
       ) return;
 
       if(!mechanicsStringBlock.getStackable().group().equalsIgnoreCase(mechanicsItem.getStackable().group())
-          || !ProtectionLib.INSTANCE.canBuild(event.getPlayer(), event.getBlock().getLocation())
+          || !ProtectionLib.canBuild(event.getPlayer(), event.getBlock().getLocation())
       ) return;
 
       String nextStage = mechanicsStringBlock.getStackable().next();

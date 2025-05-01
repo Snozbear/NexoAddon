@@ -96,7 +96,7 @@ public final class NexoAddon extends JavaPlugin {
   @Override
   public void onEnable() {
     foliaLib = new FoliaLib(this);
-    ProtectionLib.INSTANCE.init(this);
+    ProtectionLib.init(this);
     saveDefaultConfig();
     globalConfig = getConfig();
     foliaLib = new FoliaLib(this);

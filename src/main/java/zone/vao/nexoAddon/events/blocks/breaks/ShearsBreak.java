@@ -20,7 +20,7 @@ public class ShearsBreak {
     if(!TallStringBlocksHandler.isStringBlock(event.getBlock())
         || !event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.SHEARS)
         || !NexoAddon.getInstance().getGlobalConfig().getStringList("count_shears_as_silktouch").contains(TallStringBlocksHandler.getStringBlockId(event.getBlock()))
-        || !ProtectionLib.INSTANCE.canBreak(event.getPlayer(), event.getBlock().getLocation())
+        || !ProtectionLib.canBreak(event.getPlayer(), event.getBlock().getLocation())
     ) {
       return;
     }
@@ -36,7 +36,7 @@ public class ShearsBreak {
     if(!NexoBlocks.isNexoChorusBlock(event.getBlock())
         || !event.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.SHEARS)
         || !NexoAddon.getInstance().getGlobalConfig().getStringList("count_shears_as_silktouch").contains(NexoBlocks.chorusBlockMechanic(event.getBlock()).getItemID())
-        || !ProtectionLib.INSTANCE.canBreak(event.getPlayer(), event.getBlock().getLocation())
+        || !ProtectionLib.canBreak(event.getPlayer(), event.getBlock().getLocation())
     ) {
       return;
     }

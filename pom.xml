@@ -171,7 +171,7 @@
         <dependency>
             <groupId>com.nexomc</groupId>
             <artifactId>protectionlib</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

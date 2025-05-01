@@ -57,7 +57,7 @@ public record MiningTools(List<Material> materials, List<String> nexoIds, String
 
         List<Loot> loots = new ArrayList<>();
         Drop drop = new Drop(loots, false, false, NexoBlocks.customBlockMechanic(location).getItemID());
-        if(ProtectionLib.INSTANCE.canBreak(player, location)) {
+        if(ProtectionLib.canBreak(player, location)) {
 
           NexoBlocks.remove(location, null, drop);
           if(tool.getItemMeta() instanceof Damageable damageable){
