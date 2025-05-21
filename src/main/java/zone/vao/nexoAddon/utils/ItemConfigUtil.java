@@ -1,10 +1,10 @@
 package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
@@ -12,10 +12,7 @@ import zone.vao.nexoAddon.items.Components;
 import zone.vao.nexoAddon.items.Mechanics;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ItemConfigUtil {
 
@@ -112,6 +109,7 @@ public class ItemConfigUtil {
         loadBlockAuraMechanic(itemSection, mechanic);
         loadSignalMechanic(itemSection, mechanic);
         loadRememberMechanic(itemSection, mechanic);
+        loadEnchantifyMechanic(itemSection, mechanic);
       });
     }
   }
@@ -366,6 +364,57 @@ public class ItemConfigUtil {
     if (section.contains("Mechanics.furniture.remember")) {
 
       mechanic.setRemember(section.getBoolean("Mechanics.furniture.remember", true));
+    }
+  }
+
+  private static void loadEnchantifyMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.enchantify.enchants")) {
+      Map<Enchantment, Integer> enchants = new HashMap<>();
+
+      List<Map<?, ?>> enchantList = section.getMapList("Mechanics.enchantify.enchants");
+      for (Map<?, ?> map : enchantList) {
+        String enchantName = String.valueOf(map.get("enchant")).toLowerCase();
+        int level = (map.get("level") instanceof Number number) ? number.intValue() : 0;
+
+        if (enchantName == null || enchantName.isEmpty()) continue;
+        if (!enchantName.contains(":")) enchantName = "minecraft:" + enchantName;
+
+        Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.fromString(enchantName));
+        if (enchantment != null && level > 0) {
+          enchants.put(enchantment, level);
+        }
+      }
+
+      List<String> rawItems = section.getStringList("Mechanics.enchantify.whitelist");
+      List<String> rawItemsBlacklist = section.getStringList("Mechanics.enchantify.blacklist");
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+      List<Material> materialsBlacklist = new ArrayList<>();
+      List<String> nexoIdsBlacklist = new ArrayList<>();
+      if(!rawItems.isEmpty()){
+        for (String rawItem : rawItems) {
+          if(Material.matchMaterial(rawItem) != null) {
+            materials.add(Material.matchMaterial(rawItem));
+            continue;
+          }
+          if(NexoItems.itemFromId(rawItem) != null) {
+            nexoIds.add(rawItem);
+          }
+        }
+      }
+      if(!rawItemsBlacklist.isEmpty()){
+        for (String rawItem : rawItemsBlacklist) {
+          if(Material.matchMaterial(rawItem) != null) {
+            materialsBlacklist.add(Material.matchMaterial(rawItem));
+            continue;
+          }
+          if(NexoItems.itemFromId(rawItem) != null) {
+            nexoIdsBlacklist.add(rawItem);
+          }
+        }
+      }
+
+      mechanic.setEnchantify(enchants, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
     }
   }
 }

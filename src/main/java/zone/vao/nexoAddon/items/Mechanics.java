@@ -3,12 +3,14 @@ package zone.vao.nexoAddon.items;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.items.mechanics.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class Mechanics {
@@ -31,6 +33,7 @@ public class Mechanics {
   private BlockAura blockAura;
   private Signal signal;
   private Remember remember;
+  private Enchantify enchantify;
 
   public Mechanics(String id) {
     this.id = id;
@@ -96,6 +99,10 @@ public class Mechanics {
     this.remember = new Remember(isForRemember);
   }
 
+  public void setEnchantify(Map<Enchantment, Integer> enchants, List<Material> materials, List<String> nexoIds, List<Material> materialsBlacklist, List<String> nexoIdsBlacklist) {
+    this.enchantify = new Enchantify(enchants, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
+  }
+
   public static void registerListeners(NexoAddon plugin){
 
     registerListener(new BigMining.BigMiningListener(), plugin);
@@ -104,6 +111,8 @@ public class Mechanics {
 
     registerListener(new Decay.DecayListener(), plugin);
     registerListener(new DropExperience.DropExperienceListener(), plugin);
+
+    registerListener(new Enchantify.EnchantifyListener(), plugin);
 
     registerListener(new Infested.InfestedListener(), plugin);
 
