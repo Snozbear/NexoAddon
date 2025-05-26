@@ -99,8 +99,8 @@ public class Mechanics {
     this.remember = new Remember(isForRemember);
   }
 
-  public void setEnchantify(Map<Enchantment, Integer> enchants, List<Material> materials, List<String> nexoIds, List<Material> materialsBlacklist, List<String> nexoIdsBlacklist) {
-    this.enchantify = new Enchantify(enchants, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
+  public void setEnchantify(Map<Enchantment, Integer> enchants, Map<Enchantment, Integer> limits, List<Material> materials, List<String> nexoIds, List<Material> materialsBlacklist, List<String> nexoIdsBlacklist) {
+    this.enchantify = new Enchantify(enchants, limits, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
   }
 
   public static void registerListeners(NexoAddon plugin){

@@ -370,11 +370,13 @@ public class ItemConfigUtil {
   private static void loadEnchantifyMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.enchantify.enchants")) {
       Map<Enchantment, Integer> enchants = new HashMap<>();
+      Map<Enchantment, Integer> limits = new HashMap<>();
 
       List<Map<?, ?>> enchantList = section.getMapList("Mechanics.enchantify.enchants");
       for (Map<?, ?> map : enchantList) {
         String enchantName = String.valueOf(map.get("enchant")).toLowerCase();
         int level = (map.get("level") instanceof Number number) ? number.intValue() : 0;
+        int limit = (map.get("limit") instanceof Number l) ? l.intValue() : 0;
 
         if (enchantName == null || enchantName.isEmpty()) continue;
         if (!enchantName.contains(":")) enchantName = "minecraft:" + enchantName;
@@ -382,6 +384,7 @@ public class ItemConfigUtil {
         Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.fromString(enchantName));
         if (enchantment != null && level > 0) {
           enchants.put(enchantment, level);
+          if (limit > 0) limits.put(enchantment, limit);
         }
       }
 
@@ -414,7 +417,7 @@ public class ItemConfigUtil {
         }
       }
 
-      mechanic.setEnchantify(enchants, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
+      mechanic.setEnchantify(enchants, limits, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
     }
   }
 }

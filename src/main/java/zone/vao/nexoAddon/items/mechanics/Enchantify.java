@@ -15,7 +15,7 @@ import zone.vao.nexoAddon.items.Mechanics;
 import java.util.List;
 import java.util.Map;
 
-public record Enchantify(Map<Enchantment, Integer> enchants, List<Material> materials, List<String> nexoIds, List<Material> materialsBlacklist, List<String> nexoIdsBlacklist) {
+public record Enchantify(Map<Enchantment, Integer> enchants, Map<Enchantment, Integer> limits, List<Material> materials, List<String> nexoIds, List<Material> materialsBlacklist, List<String> nexoIdsBlacklist) {
 
   public static class EnchantifyListener implements Listener {
 
@@ -39,10 +39,22 @@ public record Enchantify(Map<Enchantment, Integer> enchants, List<Material> mate
     private static void enchantItem(Player player, ItemStack cursorItem, ItemStack currentItem, String enchantifyItemId) {
       Mechanics mechanic = NexoAddon.getInstance().getMechanics().get(enchantifyItemId);
       Map<Enchantment, Integer> enchants = mechanic.getEnchantify().enchants();
+      Map<Enchantment, Integer> limits = mechanic.getEnchantify().limits();
 
       ItemMeta meta = currentItem.getItemMeta();
       for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
-        meta.addEnchant(entry.getKey(), entry.getValue(), true);
+        Enchantment enchant = entry.getKey();
+        int addLevel = entry.getValue();
+        int existingLevel = meta.getEnchantLevel(enchant);
+        int newLevel = existingLevel + addLevel;
+
+        if (limits.containsKey(enchant)) {
+          newLevel = Math.min(newLevel, limits.get(enchant));
+        }
+
+        if (newLevel > existingLevel) {
+          meta.addEnchant(enchant, newLevel, true);
+        }
       }
       currentItem.setItemMeta(meta);
 
