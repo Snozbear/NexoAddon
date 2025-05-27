@@ -13,12 +13,7 @@ public class NexoPackUploadListener implements Listener {
   @EventHandler
   public void onPostUpload(NexoPackUploadEvent event) {
 
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        RecipeManager.clearRegisteredRecipes();
-        RecipesUtil.loadRecipes();
-      }
-    }.runTaskLater(NexoAddon.getInstance(), 20L*20);
+    RecipeManager.clearRegisteredRecipes();
+    RecipesUtil.loadRecipes();
   }
 }
