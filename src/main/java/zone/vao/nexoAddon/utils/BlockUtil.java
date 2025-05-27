@@ -18,8 +18,6 @@ import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.items.Mechanics;
 import zone.vao.nexoAddon.items.mechanics.Decay;
 
-import java.util.HashSet;
-import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -143,6 +141,7 @@ public class BlockUtil {
   }
 
   private static void startDecayTimer(Block block, Decay decay) {
+
     NexoAddon.instance.foliaLib.getScheduler().runTimerAsync(decayTimer -> {
       if (block.getType() == Material.AIR && !NexoBlocks.isCustomBlock(block)) {
         processedCustomBlocks.remove(block.getLocation());
@@ -150,104 +149,30 @@ public class BlockUtil {
         return;
       }
 
-      boolean isConnected = isConnectedToBase(block, decay);
+      boolean hasBaseNearby = false;
+      for (int x = -decay.radius(); x <= decay.radius(); x++) {
+        for (int y = -decay.radius(); y <= decay.radius(); y++) {
+          for (int z = -decay.radius(); z <= decay.radius(); z++) {
+            Block nearbyBlock = block.getLocation().add(x, y, z).getBlock();
+            if (decay.base().contains(nearbyBlock.getType())
+                || NexoBlocks.customBlockMechanic(nearbyBlock.getLocation()) != null
+                && decay.nexoBase().contains(NexoBlocks.customBlockMechanic(nearbyBlock.getLocation()).getItemID())
+            ) {
+              hasBaseNearby = true;
+              break;
+            }
+          }
+        }
+        if (hasBaseNearby) break;
+      }
 
-      if (!isConnected && Math.random() <= decay.chance()) {
+      if (!hasBaseNearby && Math.random() <= decay.chance()) {
         NexoAddon.instance.foliaLib.getScheduler().runNextTick(removeBlock -> NexoBlocks.remove(block.getLocation()));
-        processedCustomBlocks.remove(block.getLocation());
-        decayTimer.cancel();
-      }else if (isConnected) {
+
         processedCustomBlocks.remove(block.getLocation());
         decayTimer.cancel();
       }
     }, 0, decay.time() * 20L);
-  }
-
-  private static boolean isConnectedToBase(Block startBlock, Decay decay) {
-    // Check if the block itself is a base
-    if (isBaseBlock(startBlock, decay)) {
-      return true;
-    }
-
-    String originalBlockId = NexoBlocks.isCustomBlock(startBlock) ?
-            NexoBlocks.customBlockMechanic(startBlock.getLocation()).getItemID() : null;
-
-    if (originalBlockId == null) {
-      return false;
-    }
-
-    // A* algorithm implementation
-    Set<Location> visited = new HashSet<>();
-    PriorityQueue<BlockNode> openSet = new PriorityQueue<>();
-
-    // Add starting block to open set
-    openSet.add(new BlockNode(startBlock, 0));
-
-    while (!openSet.isEmpty()) {
-      BlockNode current = openSet.poll();
-
-      if (visited.contains(current.block.getLocation())) {
-        continue;
-      }
-
-      visited.add(current.block.getLocation());
-
-      if (isBaseBlock(current.block, decay)) {
-        return true;
-      }
-
-      if (current.distance >= decay.radius()) {
-        continue;
-      }
-
-      int[][] directions = {{0,1,0}, {0,-1,0}, {1,0,0}, {-1,0,0}, {0,0,1}, {0,0,-1}};
-      for (int[] dir : directions) {
-        Block adjacent = current.block.getWorld().getBlockAt(
-                current.block.getX() + dir[0],
-                current.block.getY() + dir[1],
-                current.block.getZ() + dir[2]
-        );
-
-        if (visited.contains(adjacent.getLocation())) {
-          continue;
-        }
-
-        // Only continue with same type blocks or base blocks
-        if (isBaseBlock(adjacent, decay) ||
-                (NexoBlocks.isCustomBlock(adjacent) &&
-                        NexoBlocks.customBlockMechanic(adjacent.getLocation()) != null &&
-                        originalBlockId.equals(NexoBlocks.customBlockMechanic(adjacent.getLocation()).getItemID()))) {
-
-          int newDistance = current.distance + 1;
-          openSet.add(new BlockNode(adjacent, newDistance));
-        }
-      }
-    }
-
-    return false;
-  }
-
-  // Helper class for A* algorithm
-  private static class BlockNode implements Comparable<BlockNode> {
-    Block block;
-    int distance;
-
-    public BlockNode(Block block, int distance) {
-      this.block = block;
-      this.distance = distance;
-    }
-
-    @Override
-    public int compareTo(BlockNode other) {
-      return Integer.compare(this.distance, other.distance);
-    }
-  }
-
-  private static boolean isBaseBlock(Block block, Decay decay) {
-    return decay.base().contains(block.getType()) ||
-            (NexoBlocks.isCustomBlock(block) &&
-                    NexoBlocks.customBlockMechanic(block.getLocation()) != null &&
-                    decay.nexoBase().contains(NexoBlocks.customBlockMechanic(block.getLocation()).getItemID()));
   }
 
   public static void startBlockAura(Particle particle, Location location, String xOffsetRange, String yOffsetRange, String zOffsetRange, int amount, double deltaX, double deltaY, double deltaZ, double speed, boolean force) {
