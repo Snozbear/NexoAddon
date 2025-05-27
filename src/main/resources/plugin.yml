@@ -1,8 +1,0 @@
-name: NexoAddon
-version: ${project.version}
-main: zone.vao.nexoAddon.NexoAddon
-api-version: '1.20'
-author: "Naimad (discord: 4g0)"
-softdepend: [ WorldGuard, Towny, Factions, Lands, PlotSquared, CrashClaim, HuskTowns, packetevents, MythicMobs ]
-depend:
-  - Nexo

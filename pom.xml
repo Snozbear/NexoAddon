@@ -148,7 +148,7 @@
         <dependency>
             <groupId>com.nexomc</groupId>
             <artifactId>nexo</artifactId>
-            <version>1.5.0-dev.12</version>
+            <version>1.7.0-dev.4</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -172,7 +172,7 @@
             <groupId>com.nexomc</groupId>
             <artifactId>protectionlib</artifactId>
             <version>1.0.7</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.retrooper</groupId>
