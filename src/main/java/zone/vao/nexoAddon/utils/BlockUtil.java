@@ -152,8 +152,6 @@ public class BlockUtil {
 
       boolean isConnected = isConnectedToBase(block, decay);
 
-      System.out.println("Checking decay for block at " + block.getLocation() + " " + block.getType() +  " - Connected to base: " + isConnected);
-
       if (!isConnected && Math.random() <= decay.chance()) {
         NexoAddon.instance.foliaLib.getScheduler().runNextTick(removeBlock -> NexoBlocks.remove(block.getLocation()));
         processedCustomBlocks.remove(block.getLocation());
