@@ -27,7 +27,7 @@ import zone.vao.nexoAddon.utils.EventUtil;
 
 import java.util.*;
 
-public record VeinMiner(int distance, boolean toggleable, boolean sameMaterial, List<Material> materials, List<String> nexoIds) {
+public record VeinMiner(int distance, boolean toggleable, boolean sameMaterial, int limit, List<Material> materials, List<String> nexoIds) {
 
     public static boolean isVeinMinerTool(String toolId) {
         return toolId != null && NexoAddon.getInstance().getMechanics().containsKey(toolId) && NexoAddon.getInstance().getMechanics().get(toolId).getVeinMiner() != null;
@@ -98,10 +98,12 @@ public record VeinMiner(int distance, boolean toggleable, boolean sameMaterial, 
             blocksToCheck.add(origin);
             veinBlocks.add(origin);
 
-            while (!blocksToCheck.isEmpty()) {
+            while (!blocksToCheck.isEmpty() && veinBlocks.size() < mechanic.limit()) {
                 Block current = blocksToCheck.poll();
 
                 for (Block relative : getAdjacentBlocks(current)) {
+                    if (veinBlocks.size() >= mechanic.limit()) break;
+
                     if (relative.getLocation().distanceSquared(originLoc) <= maxDistanceSquared
                             && !veinBlocks.contains(relative)
                             && isValidBlock(mechanic, relative)) {

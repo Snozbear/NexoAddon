@@ -48,8 +48,8 @@ public class Mechanics {
     this.bigMining = new BigMining(radius, depth, switchable, materials);
   }
 
-  public void setVeinMiner(int distance, boolean toggleable, boolean sameMaterial, List<Material> materials, List<String> nexoIds) {
-    this.veinMiner = new VeinMiner(distance, toggleable, sameMaterial, materials, nexoIds);
+  public void setVeinMiner(int distance, boolean toggleable, boolean sameMaterial, int limit, List<Material> materials, List<String> nexoIds) {
+    this.veinMiner = new VeinMiner(distance, toggleable, sameMaterial, limit, materials, nexoIds);
   }
 
   public void setBedrockBreak(int hardness, double probability, int durabilityCost, boolean disableOnFirstLayer) {

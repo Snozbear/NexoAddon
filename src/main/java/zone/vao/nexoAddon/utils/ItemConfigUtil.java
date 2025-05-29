@@ -172,6 +172,7 @@ public class ItemConfigUtil {
       int distance = section.getInt("Mechanics.veinminer.distance", 10);
       boolean toggleable = section.getBoolean("Mechanics.veinminer.toggleable", false);
       boolean sameMaterial = section.getBoolean("Mechanics.veinminer.same_material", true);
+      int limit = section.getInt("Mechanics.veinminer.limit", 10);
 
       List<Material> materials = new ArrayList<>();
       List<String> nexoIds = new ArrayList<>();
@@ -185,7 +186,7 @@ public class ItemConfigUtil {
         }
       }
 
-      mechanic.setVeinMiner(distance, toggleable, sameMaterial, materials, nexoIds);
+      mechanic.setVeinMiner(distance, toggleable, sameMaterial, limit, materials, nexoIds);
     }
   }
 
