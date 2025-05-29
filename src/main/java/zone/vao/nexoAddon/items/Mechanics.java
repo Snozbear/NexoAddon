@@ -18,6 +18,7 @@ public class Mechanics {
   private final String id;
   private Repair repair;
   private BigMining bigMining;
+  private VeinMiner veinMiner;
   private BedrockBreak bedrockBreak;
   private Aura aura;
   private SpawnerBreak spawnerBreak;
@@ -45,6 +46,10 @@ public class Mechanics {
 
   public void setBigMining(int radius, int depth, boolean switchable, List<Material> materials) {
     this.bigMining = new BigMining(radius, depth, switchable, materials);
+  }
+
+  public void setVeinMiner(int distance, boolean toggleable, boolean sameMaterial, int limit, List<Material> materials, List<String> nexoIds) {
+    this.veinMiner = new VeinMiner(distance, toggleable, sameMaterial, limit, materials, nexoIds);
   }
 
   public void setBedrockBreak(int hardness, double probability, int durabilityCost, boolean disableOnFirstLayer) {
@@ -130,10 +135,10 @@ public class Mechanics {
     registerListener(new Unstackable.UnstackableListener(), plugin);
 
     registerListener(new Signal.SignalListener(), plugin);
+    registerListener(new VeinMiner.VeinMinerListener(), plugin);
   }
 
   private static void registerListener(Listener listener, NexoAddon plugin){
-
     plugin.getServer().getPluginManager().registerEvents(listener, plugin);
   }
 }

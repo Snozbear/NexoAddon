@@ -94,6 +94,7 @@ public class ItemConfigUtil {
 
         loadRepairMechanic(itemSection, mechanic);
         loadBigMiningMechanic(itemSection, mechanic);
+        loadVeinMinerMechanic(itemSection, mechanic);
         loadBedrockBreakMechanic(itemSection, mechanic);
         loadAuraMechanic(itemSection, mechanic);
         loadSpawnerBreak(itemSection, mechanic);
@@ -163,6 +164,29 @@ public class ItemConfigUtil {
       }
 
       mechanic.setBigMining(radius, depth, switchable, materials);
+    }
+  }
+
+  private static void loadVeinMinerMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.veinminer.distance")) {
+      int distance = section.getInt("Mechanics.veinminer.distance", 10);
+      boolean toggleable = section.getBoolean("Mechanics.veinminer.toggleable", false);
+      boolean sameMaterial = section.getBoolean("Mechanics.veinminer.same_material", true);
+      int limit = section.getInt("Mechanics.veinminer.limit", 10);
+
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+
+      for (String s : section.getStringList("Mechanics.veinminer.whitelist")) {
+        Material material = Material.matchMaterial(s);
+        if (material != null) {
+          materials.add(material);
+        } else if (NexoItems.itemFromId(s) != null) {
+          nexoIds.add(s);
+        }
+      }
+
+      mechanic.setVeinMiner(distance, toggleable, sameMaterial, limit, materials, nexoIds);
     }
   }
 

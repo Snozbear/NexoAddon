@@ -12,5 +12,8 @@ messages:
   bigmining:
     on: <green>Bigmining on
     off: <red>Bigmining off
+  veinminer:
+    on: <green>VeinMiner on
+    off: <red>VeinMiner off
   bottledexp:
     not_enough_exp: <red>Not enough experience to convert
