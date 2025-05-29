@@ -31,7 +31,7 @@ public class PrepareRecipesListener implements Listener {
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onPrepare(PrepareSmithingEvent event) {
     SmithingInventory inventory = event.getInventory();
-    Player player = (Player) event.getView().getPlayer();
+    Player player = getPlayerSafe(event.getView());
 
     ItemStack template = inventory.getItem(0);
     ItemStack base = inventory.getItem(1);
@@ -181,4 +181,13 @@ public class PrepareRecipesListener implements Listener {
       item.setAmount(item.getAmount() - 1);
     }
   }
+
+  public Player getPlayerSafe(InventoryView view) {
+    try {
+      return (Player) InventoryView.class.getMethod("getPlayer").invoke(view);
+    } catch (Throwable t) {
+      return (Player) view.getPlayer();
+    }
+  }
+
 }
