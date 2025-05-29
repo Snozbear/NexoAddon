@@ -73,16 +73,13 @@ public record VeinMiner(int distance, boolean toggleable, boolean sameMaterial, 
 
         private static boolean isValidBlock(VeinMiner veinMiner, Block block) {
             Material material = block.getType();
+            if (veinMiner.materials().contains(material)) return true;
 
-            if (veinMiner.materials().contains(material)) {
-                return true;
-            }
             CustomBlockMechanic mechanic = NexoBlocks.customBlockMechanic(block);
             if (mechanic != null) {
                 String nexoId = mechanic.getItemID();
                 return nexoId != null && veinMiner.nexoIds().contains(nexoId);
             }
-
             return false;
         }
 
@@ -92,40 +89,51 @@ public record VeinMiner(int distance, boolean toggleable, boolean sameMaterial, 
             Location originLoc = origin.getLocation();
             int maxDistanceSquared = mechanic.distance() * mechanic.distance();
             Material originMaterial = origin.getType();
-            String originNexoId = NexoBlocks.customBlockMechanic(origin) != null ?
-                    NexoBlocks.customBlockMechanic(origin).getItemID() : null;
+            String originNexoId = getNexoId(origin);
 
             blocksToCheck.add(origin);
             veinBlocks.add(origin);
 
             while (!blocksToCheck.isEmpty() && veinBlocks.size() < mechanic.limit()) {
                 Block current = blocksToCheck.poll();
-
-                for (Block relative : getAdjacentBlocks(current)) {
-                    if (veinBlocks.size() >= mechanic.limit()) break;
-
-                    if (relative.getLocation().distanceSquared(originLoc) <= maxDistanceSquared
-                            && !veinBlocks.contains(relative)
-                            && isValidBlock(mechanic, relative)) {
-
-                        if (mechanic.sameMaterial()) {
-                            Material relativeMaterial = relative.getType();
-                            String relativeNexoId = NexoBlocks.customBlockMechanic(relative) != null ?
-                                    NexoBlocks.customBlockMechanic(relative).getItemID() : null;
-
-                            if ((originNexoId != null && originNexoId.equals(relativeNexoId)) ||
-                                    (originMaterial == relativeMaterial && originNexoId == null)) {
-                                veinBlocks.add(relative);
-                                blocksToCheck.add(relative);
-                            }
-                        } else {
-                            veinBlocks.add(relative);
-                            blocksToCheck.add(relative);
-                        }
-                    }
-                }
+                processAdjacentBlocks(current, veinBlocks, blocksToCheck, originLoc, maxDistanceSquared, originMaterial, originNexoId, mechanic);
             }
 
+            breakVeinBlocks(player, origin, veinBlocks, tool);
+        }
+
+        private static String getNexoId(Block block) {
+            CustomBlockMechanic mechanic = NexoBlocks.customBlockMechanic(block);
+            return mechanic != null ? mechanic.getItemID() : null;
+        }
+
+        private static void processAdjacentBlocks(Block current, Set<Block> veinBlocks, Queue<Block> blocksToCheck,
+                                                  Location originLoc, int maxDistanceSquared, Material originMaterial, String originNexoId, VeinMiner mechanic) {
+            for (Block relative : getAdjacentBlocks(current)) {
+                if (veinBlocks.size() >= mechanic.limit()) break;
+                if (shouldAddBlock(relative, veinBlocks, originLoc, maxDistanceSquared, originMaterial, originNexoId, mechanic)) {
+                    veinBlocks.add(relative);
+                    blocksToCheck.add(relative);
+                }
+            }
+        }
+
+        private static boolean shouldAddBlock(Block block, Set<Block> veinBlocks, Location originLoc,
+                                              int maxDistanceSquared, Material originMaterial, String originNexoId, VeinMiner mechanic) {
+            if (veinBlocks.contains(block)) return false;
+            if (block.getLocation().distanceSquared(originLoc) > maxDistanceSquared) return false;
+            if (!isValidBlock(mechanic, block)) return false;
+
+            if (mechanic.sameMaterial()) {
+                Material blockMaterial = block.getType();
+                String blockNexoId = getNexoId(block);
+                return (originNexoId != null && originNexoId.equals(blockNexoId)) ||
+                        (originMaterial == blockMaterial && originNexoId == null);
+            }
+            return true;
+        }
+
+        private static void breakVeinBlocks(Player player, Block origin, Set<Block> veinBlocks, ItemStack tool) {
             for (Block block : veinBlocks) {
                 if (block.equals(origin)) continue;
                 attemptBlockBreak(player, block, tool);
