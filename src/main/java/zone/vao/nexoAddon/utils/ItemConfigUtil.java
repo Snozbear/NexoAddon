@@ -216,7 +216,7 @@ public class ItemConfigUtil {
       mechanic.setSpawnerBreak(probability, dropExperience);
     }
   }
-  
+
   private static void loadMiningToolsMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.custom_block.miningtools.items")) {
       List<String> values = section.getStringList("Mechanics.custom_block.miningtools.items");
@@ -268,14 +268,14 @@ public class ItemConfigUtil {
       mechanic.setInfested(entities, mythicMobs, probability, selector, particles, drop);
     }
   }
-  
+
   private static void loadKillMessage(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.kill_message")) {
       String deathMessage = section.getString("Mechanics.kill_message", null);
       mechanic.setKillMessage(deathMessage);
     }
   }
-  
+
   private static void loadStackableStringblockMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.custom_block.stackable.next")
         && section.contains("Mechanics.custom_block.stackable.group")
@@ -331,7 +331,7 @@ public class ItemConfigUtil {
 
   private static void loadBottledExpMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.bottledexp.ratio")) {
-      mechanic.setBottledExp(section.getDouble("Mechanics.bottledexp.ratio", 0.5), section.getInt("Mechanics.bottledexp.cost", 1));
+      mechanic.setBottledExp((Double) section.getDouble("Mechanics.bottledexp.ratio", 0.5), section.getInt("Mechanics.bottledexp.cost", 1));
     }
   }
 
@@ -392,56 +392,56 @@ public class ItemConfigUtil {
   }
 
   private static void loadEnchantifyMechanic(ConfigurationSection section, Mechanics mechanic) {
-    if (section.contains("Mechanics.enchantify.enchants")) {
-      Map<Enchantment, Integer> enchants = new HashMap<>();
-      Map<Enchantment, Integer> limits = new HashMap<>();
+    if (!section.contains("Mechanics.enchantify.enchants")) return;
 
-      List<Map<?, ?>> enchantList = section.getMapList("Mechanics.enchantify.enchants");
-      for (Map<?, ?> map : enchantList) {
-        String enchantName = String.valueOf(map.get("enchant")).toLowerCase();
-        int level = (map.get("level") instanceof Number number) ? number.intValue() : 0;
-        int limit = (map.get("limit") instanceof Number l) ? l.intValue() : 0;
+    Map<Enchantment, Integer> enchants = new HashMap<>();
+    Map<Enchantment, Integer> limits = new HashMap<>();
+    parseEnchantments(section.getMapList("Mechanics.enchantify.enchants"), enchants, limits);
 
-        if (enchantName == null || enchantName.isEmpty()) continue;
-        if (!enchantName.contains(":")) enchantName = "minecraft:" + enchantName;
+    List<Material> materials = new ArrayList<>();
+    List<String> nexoIds = new ArrayList<>();
+    parseItemList(section.getStringList("Mechanics.enchantify.whitelist"), materials, nexoIds);
 
-        Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.fromString(enchantName));
-        if (enchantment != null && level > 0) {
-          enchants.put(enchantment, level);
-          if (limit > 0) limits.put(enchantment, limit);
-        }
+    List<Material> materialsBlacklist = new ArrayList<>();
+    List<String> nexoIdsBlacklist = new ArrayList<>();
+    parseItemList(section.getStringList("Mechanics.enchantify.blacklist"), materialsBlacklist, nexoIdsBlacklist);
+
+    mechanic.setEnchantify(enchants, limits, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
+  }
+
+  private static void parseEnchantments(List<Map<?, ?>> enchantList, Map<Enchantment, Integer> enchants, Map<Enchantment, Integer> limits) {
+    for (Map<?, ?> map : enchantList) {
+      String enchantName = String.valueOf(map.get("enchant")).toLowerCase();
+      if (enchantName == null || enchantName.isEmpty()) continue;
+
+      if (!enchantName.contains(":")) {
+        enchantName = "minecraft:" + enchantName;
       }
 
-      List<String> rawItems = section.getStringList("Mechanics.enchantify.whitelist");
-      List<String> rawItemsBlacklist = section.getStringList("Mechanics.enchantify.blacklist");
-      List<Material> materials = new ArrayList<>();
-      List<String> nexoIds = new ArrayList<>();
-      List<Material> materialsBlacklist = new ArrayList<>();
-      List<String> nexoIdsBlacklist = new ArrayList<>();
-      if(!rawItems.isEmpty()){
-        for (String rawItem : rawItems) {
-          if(Material.matchMaterial(rawItem) != null) {
-            materials.add(Material.matchMaterial(rawItem));
-            continue;
-          }
-          if(NexoItems.itemFromId(rawItem) != null) {
-            nexoIds.add(rawItem);
-          }
-        }
-      }
-      if(!rawItemsBlacklist.isEmpty()){
-        for (String rawItem : rawItemsBlacklist) {
-          if(Material.matchMaterial(rawItem) != null) {
-            materialsBlacklist.add(Material.matchMaterial(rawItem));
-            continue;
-          }
-          if(NexoItems.itemFromId(rawItem) != null) {
-            nexoIdsBlacklist.add(rawItem);
-          }
-        }
-      }
+      int level = (map.get("level") instanceof Number number) ? number.intValue() : 0;
+      int limit = (map.get("limit") instanceof Number l) ? l.intValue() : 0;
 
-      mechanic.setEnchantify(enchants, limits, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
+      Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.fromString(enchantName));
+      if (enchantment != null && level > 0) {
+        enchants.put(enchantment, Integer.valueOf(level));
+        if (limit > 0) {
+          limits.put(enchantment, Integer.valueOf(limit));
+        }
+      }
     }
   }
+
+  private static void parseItemList(List<String> rawItems, List<Material> materials, List<String> nexoIds) {
+    for (String rawItem : rawItems) {
+      Material material = Material.matchMaterial(rawItem);
+      if (material != null) {
+        materials.add(material);
+        continue;
+      }
+      if (NexoItems.itemFromId(rawItem) != null) {
+        nexoIds.add(rawItem);
+      }
+    }
+  }
+
 }
