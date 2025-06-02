@@ -222,8 +222,6 @@ public class CustomOrePopulator extends BlockPopulator {
         && (!ore.isOnlyAir() || belowBlockType.isAir());
   }
 
-
-
   private void placeBlock(PlacementPosition position, Ore ore, WorldInfo worldInfo, LimitedRegion limitedRegion) {
     if (ore.getNexoBlocks() != null && ore.getNexoBlocks().getBlockData() != null) {
       if(ore.isTall()) {

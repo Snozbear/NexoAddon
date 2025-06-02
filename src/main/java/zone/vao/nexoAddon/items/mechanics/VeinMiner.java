@@ -1,6 +1,5 @@
 package zone.vao.nexoAddon.items.mechanics;
 
-import com.github.retrooper.packetevents.protocol.stream.NetStreamOutput;
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
