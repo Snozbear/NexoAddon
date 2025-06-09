@@ -25,6 +25,7 @@ import zone.vao.nexoAddon.utils.EventUtil;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public record BigMining(int radius, int depth, boolean switchable, List<Material> materials) {
 
@@ -33,7 +34,7 @@ public record BigMining(int radius, int depth, boolean switchable, List<Material
   }
 
   public static class BigMiningListener implements Listener {
-    private static int activeBlockBreaks = 0;
+    private static AtomicInteger activeBlockBreaks = new AtomicInteger(0);
 
     @EventHandler
     public static void onBreak(BlockBreakEvent event) {
@@ -43,8 +44,8 @@ public record BigMining(int radius, int depth, boolean switchable, List<Material
       String toolId = NexoItems.idFromItem(tool);
       if (!BigMining.isBigMiningTool(toolId)) return;
 
-      if (activeBlockBreaks > 0) {
-        activeBlockBreaks--;
+      if (activeBlockBreaks.get() > 0) {
+        activeBlockBreaks.decrementAndGet();
         return;
       }
 
@@ -70,7 +71,7 @@ public record BigMining(int radius, int depth, boolean switchable, List<Material
       int directionalModifier = calculateModifier(primaryBlock, secondaryBlock);
 
       breakBlocksInRadius(player, event.getBlock().getLocation(), breakFace, bigMiningMechanic, directionalModifier, tool);
-      activeBlockBreaks = 0;
+      activeBlockBreaks.set(0);
     }
 
     private static int calculateModifier(Block primaryBlock, Block secondaryBlock) {
@@ -106,18 +107,22 @@ public record BigMining(int radius, int depth, boolean switchable, List<Material
     }
 
     private static void attemptBlockBreak(Player player, Block block, ItemStack tool, BigMining mechanic) {
-      if (isUnbreakableBlock(player, block)) return;
+      NexoAddon.getInstance().getFoliaLib().getScheduler().runAsync(attempt -> {
+        if (isUnbreakableBlock(player, block)) return;
 
-      activeBlockBreaks++;
-      BlockBreakEvent blockBreakEvent = new BlockBreakEvent(block, player);
+        activeBlockBreaks.incrementAndGet();
+        BlockBreakEvent blockBreakEvent = new BlockBreakEvent(block, player);
 
-      if (!EventUtil.callEvent(blockBreakEvent) || !mechanic.materials().isEmpty() && !mechanic.materials().contains(block.getType())) return;
+        NexoAddon.getInstance().getFoliaLib().getScheduler().runNextTick(attemptEvent -> {
+          if (!EventUtil.callEvent(blockBreakEvent) || !mechanic.materials().isEmpty() && !mechanic.materials().contains(block.getType())) return;
 
-      if (blockBreakEvent.isDropItems()) {
-        block.breakNaturally(tool, true, true);
-      } else {
-        block.setType(Material.AIR);
-      }
+          if (blockBreakEvent.isDropItems()) {
+            block.breakNaturally(tool, true, true);
+          } else {
+            block.setType(Material.AIR);
+          }
+        });
+      });
     }
 
     private static boolean isUnbreakableBlock(Player player, Block block) {

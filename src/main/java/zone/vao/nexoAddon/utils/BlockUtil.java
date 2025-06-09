@@ -4,7 +4,9 @@ import com.google.common.collect.Sets;
 import com.jeff_media.customblockdata.CustomBlockData;
 import com.nexomc.nexo.api.NexoBlocks;
 import com.nexomc.nexo.api.NexoFurniture;
+import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.mechanics.custom_block.CustomBlockMechanic;
+import com.nexomc.nexo.mechanics.furniture.FurnitureHelpers;
 import com.nexomc.nexo.mechanics.furniture.FurnitureMechanic;
 import com.tcoded.folialib.wrapper.task.WrappedBukkitTask;
 import com.tcoded.folialib.wrapper.task.WrappedTask;
@@ -78,6 +80,7 @@ public class BlockUtil {
     FurnitureMechanic previous = NexoFurniture.furnitureMechanic(finalLocation);
     if(previous == null) return;
     ItemDisplay newOne = to.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
+    if(NexoItems.itemFromId(target.getItemID()).hasColor()) FurnitureHelpers.furnitureDye(newOne, NexoItems.itemFromId(target.getItemID()).getColor());
     NexoAddon.instance.foliaLib.getScheduler().runLater(() -> {
       previous.removeBaseEntity(itemDisplay);
       NexoFurniture.furnitureMechanic(finalLocation).getHitbox().refreshHitboxes(newOne, to);
