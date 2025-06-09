@@ -13,6 +13,7 @@ import com.tcoded.folialib.wrapper.task.WrappedTask;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ItemDisplay;
+import org.bukkit.inventory.meta.ColorableArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -80,7 +81,9 @@ public class BlockUtil {
     FurnitureMechanic previous = NexoFurniture.furnitureMechanic(finalLocation);
     if(previous == null) return;
     ItemDisplay newOne = to.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
-    if(NexoItems.itemFromId(target.getItemID()).hasColor()) FurnitureHelpers.furnitureDye(newOne, NexoItems.itemFromId(target.getItemID()).getColor());
+    if(FurnitureHelpers.furnitureDye(templateEntity) != null) {
+      FurnitureHelpers.furnitureDye(newOne, FurnitureHelpers.furnitureDye(templateEntity));
+    }
     NexoAddon.instance.foliaLib.getScheduler().runLater(() -> {
       previous.removeBaseEntity(itemDisplay);
       NexoFurniture.furnitureMechanic(finalLocation).getHitbox().refreshHitboxes(newOne, to);
@@ -100,7 +103,10 @@ public class BlockUtil {
         }
 
         ItemDisplay oldFurniture = NexoFurniture.baseEntity(finalLocation);
-        target.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
+        ItemDisplay original = target.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
+        if(FurnitureHelpers.furnitureDye(templateEntity) != null) {
+          FurnitureHelpers.furnitureDye(original, FurnitureHelpers.furnitureDye(templateEntity));
+        }
         if(oldFurniture != null)
           NexoFurniture.remove(oldFurniture);
         processedShiftblocks.remove(finalLocation);
