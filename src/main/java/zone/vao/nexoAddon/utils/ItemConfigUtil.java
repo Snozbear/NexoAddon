@@ -44,6 +44,7 @@ public class ItemConfigUtil {
         loadJukeboxPlayableComponent(itemSection, component);
         loadFertilizerComponent(itemSection, component);
         loadSkullValueComponent(itemSection, component);
+        loadNoteBlockSoundComponent(itemSection, component);
       });
     }
   }
@@ -78,6 +79,13 @@ public class ItemConfigUtil {
     if (section.contains("Components.skull_value")) {
       String value = section.getString("Components.skull_value", SkullUtil.NEXOADDON_HEAD_BASE64);
       component.setSkullValue(value);
+    }
+  }
+
+  private static void loadNoteBlockSoundComponent(ConfigurationSection section, Components component) {
+    if (section.contains("Components.note_block_sound")) {
+      String soundId = section.getString("Components.note_block_sound");
+      component.setNoteBlockSound(soundId);
     }
   }
 

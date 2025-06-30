@@ -7,12 +7,14 @@ import com.nexomc.nexo.api.NexoItems;
 import com.nexomc.nexo.items.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerTextures;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.items.Components;
 
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -49,6 +51,11 @@ public class SkullUtil {
           if(profile == null) return;
 
           meta.setPlayerProfile(profile);
+
+          if (component.getNoteBlockSound() != null) {
+            trySetNoteBlockSound(meta, component.getNoteBlockSound().soundId());
+          }
+
           itemStack.setItemMeta(meta);
           ItemBuilder itemBuilder =  new ItemBuilder(itemStack);
 
@@ -60,6 +67,23 @@ public class SkullUtil {
         });
       });
     });
+  }
+
+  private static void trySetNoteBlockSound(SkullMeta meta, String soundId) {
+    String namespace = "minecraft";
+    String id = soundId;
+
+    if (soundId.contains(":")) {
+      String[] parts = soundId.split(":");
+      namespace = parts[0];
+      id = parts[1];
+    }
+
+    try {
+      Method set = meta.getClass().getMethod("setNoteBlockSound", NamespacedKey.class);
+      set.setAccessible(true);
+      set.invoke(meta, new NamespacedKey(namespace, id));
+    } catch (Throwable ignored) {}
   }
 
   private static PlayerProfile getProfileBase64(String base64, String itemId) {
