@@ -1,32 +1,35 @@
 package zone.vao.nexoAddon.events.chunk;
 
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import com.jeff_media.customblockdata.CustomBlockData;
+import com.nexomc.nexo.NexoPlugin;
+import com.nexomc.nexo.api.NexoBlocks;
+import org.bukkit.*;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.populators.orePopulator.Ore;
 
 import java.util.List;
 import java.util.Random;
 
-public class FurniturePopulator {
+public class SaplingPopulator {
+
 
   public static void onLoad(ChunkLoadEvent event){
     World world = event.getWorld();
     Chunk chunk = event.getChunk();
 
-    List<Ore> furniturePopulators = NexoAddon.getInstance()
+    List<Ore> saplingPopulators = NexoAddon.getInstance()
         .getOrePopulator()
         .getOres()
         .stream()
-        .filter(ore -> ore.getNexoFurniture() != null)
+        .filter(ore -> ore.nexoBlocks != null && NexoBlocks.isNexoStringBlock(ore.nexoBlocks.getItemID()) && NexoBlocks.stringMechanic(ore.nexoBlocks.getItemID()).isSapling())
         .toList();
 
-    if (furniturePopulators.isEmpty() || ((!event.isNewChunk()) && event.getChunk().isGenerated())) return;
+    if (saplingPopulators.isEmpty() || ((!event.isNewChunk()) && event.getChunk().isGenerated())) return;
 
-    furniturePopulators.forEach(ore -> processOre(world, chunk, ore));
+    saplingPopulators.forEach(ore -> processOre(world, chunk, ore));
   }
 
   private static void processOre(World world, Chunk chunk, Ore ore) {
@@ -102,7 +105,9 @@ public class FurniturePopulator {
       if (ore.getReplace() != null && ore.getReplace().contains(loc.getBlock().getType())) {
         loc.getBlock().setType(Material.AIR);
       }
-      ore.getNexoFurniture().place(loc);
+      NexoBlocks.place(ore.nexoBlocks.getItemID(), loc);
+      PersistentDataContainer pdc = new CustomBlockData(loc.getBlock(), NexoPlugin.instance());
+      pdc.set(new NamespacedKey(NexoPlugin.instance(), "sapling"), PersistentDataType.INTEGER, NexoBlocks.stringMechanic(ore.nexoBlocks.getItemID()).sapling().getNaturalGrowthTime());
     }, placementIndex * 5L);
   }
 

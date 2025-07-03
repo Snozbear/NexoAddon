@@ -1,5 +1,6 @@
 package zone.vao.nexoAddon.populators.orePopulator;
 
+import com.nexomc.nexo.api.NexoBlocks;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,7 +26,10 @@ public class CustomOrePopulator extends BlockPopulator {
   @Override
   public void populate(@NotNull WorldInfo worldInfo, @NotNull Random random, int chunkX, int chunkZ, @NotNull LimitedRegion limitedRegion) {
     for (Ore ore : orePopulator.getOres()) {
-      if(ore.getNexoFurniture() != null || !ore.worldNames.contains(worldInfo.getName())) continue;
+      if (ore.nexoBlocks != null && NexoBlocks.isNexoStringBlock(ore.nexoBlocks.getItemID()) && NexoBlocks.stringMechanic(ore.nexoBlocks.getItemID()).isSapling()
+          || ore.getNexoFurniture() != null ||
+          (!ore.worldNames.contains(worldInfo.getName()) && !ore.worldNames.contains("all"))
+      ) continue;
       if(ore.getIterations() instanceof Integer iterations && iterations < 0)
         replaceBlocks(worldInfo, random, chunkX, chunkZ, limitedRegion, ore);
       else
@@ -217,8 +221,6 @@ public class CustomOrePopulator extends BlockPopulator {
         && (!ore.getPlaceBelow().contains(belowBlockType))
         && (!ore.isOnlyAir() || belowBlockType.isAir());
   }
-
-
 
   private void placeBlock(PlacementPosition position, Ore ore, WorldInfo worldInfo, LimitedRegion limitedRegion) {
     if (ore.getNexoBlocks() != null && ore.getNexoBlocks().getBlockData() != null) {

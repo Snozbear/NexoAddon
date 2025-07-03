@@ -3,12 +3,14 @@ package zone.vao.nexoAddon.items;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Listener;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.items.mechanics.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class Mechanics {
@@ -16,6 +18,7 @@ public class Mechanics {
   private final String id;
   private Repair repair;
   private BigMining bigMining;
+  private VeinMiner veinMiner;
   private BedrockBreak bedrockBreak;
   private Aura aura;
   private SpawnerBreak spawnerBreak;
@@ -31,6 +34,7 @@ public class Mechanics {
   private BlockAura blockAura;
   private Signal signal;
   private Remember remember;
+  private Enchantify enchantify;
 
   public Mechanics(String id) {
     this.id = id;
@@ -42,6 +46,10 @@ public class Mechanics {
 
   public void setBigMining(int radius, int depth, boolean switchable, List<Material> materials) {
     this.bigMining = new BigMining(radius, depth, switchable, materials);
+  }
+
+  public void setVeinMiner(int distance, boolean toggleable, boolean sameMaterial, int limit, List<Material> materials, List<String> nexoIds) {
+    this.veinMiner = new VeinMiner(distance, toggleable, sameMaterial, limit, materials, nexoIds);
   }
 
   public void setBedrockBreak(int hardness, double probability, int durabilityCost, boolean disableOnFirstLayer) {
@@ -96,6 +104,10 @@ public class Mechanics {
     this.remember = new Remember(isForRemember);
   }
 
+  public void setEnchantify(Map<Enchantment, Integer> enchants, Map<Enchantment, Integer> limits, List<Material> materials, List<String> nexoIds, List<Material> materialsBlacklist, List<String> nexoIdsBlacklist) {
+    this.enchantify = new Enchantify(enchants, limits, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
+  }
+
   public static void registerListeners(NexoAddon plugin){
 
     registerListener(new BigMining.BigMiningListener(), plugin);
@@ -104,6 +116,8 @@ public class Mechanics {
 
     registerListener(new Decay.DecayListener(), plugin);
     registerListener(new DropExperience.DropExperienceListener(), plugin);
+
+    registerListener(new Enchantify.EnchantifyListener(), plugin);
 
     registerListener(new Infested.InfestedListener(), plugin);
 
@@ -121,10 +135,10 @@ public class Mechanics {
     registerListener(new Unstackable.UnstackableListener(), plugin);
 
     registerListener(new Signal.SignalListener(), plugin);
+    registerListener(new VeinMiner.VeinMinerListener(), plugin);
   }
 
   private static void registerListener(Listener listener, NexoAddon plugin){
-
     plugin.getServer().getPluginManager().registerEvents(listener, plugin);
   }
 }

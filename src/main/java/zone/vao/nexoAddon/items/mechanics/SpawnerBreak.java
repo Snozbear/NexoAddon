@@ -35,7 +35,7 @@ public record SpawnerBreak(double probability, boolean dropExperience) {
       String nexoItemId = NexoItems.idFromItem(tool);
 
       Mechanics mechanics = NexoAddon.getInstance().getMechanics().get(nexoItemId);
-      if (mechanics == null || mechanics.getSpawnerBreak() == null || !ProtectionLib.INSTANCE.canBreak(player, block.getLocation())) return;
+      if (mechanics == null || mechanics.getSpawnerBreak() == null || !ProtectionLib.canBreak(player, block.getLocation())) return;
 
       double probability = mechanics.getSpawnerBreak().probability();
       boolean dropExperience = mechanics.getSpawnerBreak().dropExperience();

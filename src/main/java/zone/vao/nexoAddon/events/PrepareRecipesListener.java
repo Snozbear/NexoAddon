@@ -31,7 +31,7 @@ public class PrepareRecipesListener implements Listener {
   @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
   public void onPrepare(PrepareSmithingEvent event) {
     SmithingInventory inventory = event.getInventory();
-    Player player = (Player) event.getView().getPlayer();
+    Player player = getPlayerSafe(event.getView());
 
     ItemStack template = inventory.getItem(0);
     ItemStack base = inventory.getItem(1);
@@ -70,9 +70,15 @@ public class PrepareRecipesListener implements Listener {
     boolean copyPdc = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_pdc", false);
     boolean copyEnchants = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_enchantments", true);
     boolean keepDurability = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".keep_durability", true);
+    boolean copyMeta = RecipeManager.getRecipeConfig().getBoolean(key.getKey() + ".copy_meta", false);
+
+    if (copyMeta) {
+      resultMeta = baseMeta.clone();
+    }
 
     if (copyEnchants) {
-      baseMeta.getEnchants().forEach((enchant, level) -> resultMeta.addEnchant(enchant, level, true));
+      ItemMeta finalResultMeta = resultMeta;
+      baseMeta.getEnchants().forEach((enchant, level) -> finalResultMeta.addEnchant(enchant, level, true));
     }
 
     if (copyTrim && baseMeta instanceof ArmorMeta baseArmorMeta) {
@@ -181,4 +187,13 @@ public class PrepareRecipesListener implements Listener {
       item.setAmount(item.getAmount() - 1);
     }
   }
+
+  public Player getPlayerSafe(InventoryView view) {
+    try {
+      return (Player) InventoryView.class.getMethod("getPlayer").invoke(view);
+    } catch (Throwable t) {
+      return (Player) view.getPlayer();
+    }
+  }
+
 }

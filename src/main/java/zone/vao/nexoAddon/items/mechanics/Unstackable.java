@@ -37,7 +37,7 @@ public record Unstackable(String next, String give, List<Material> materials, Li
       if(mechanic == null
           || mechanic.getUnstackable() == null
           || !checkIfAllowed(mechanic, event.getPlayer())
-          || !ProtectionLib.INSTANCE.canInteract(event.getPlayer(), event.getBlock().getLocation())
+          || !ProtectionLib.canInteract(event.getPlayer(), event.getBlock().getLocation())
       ) return;
 
       String nextStage = mechanic.getUnstackable().next();

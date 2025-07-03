@@ -92,7 +92,7 @@ public class BlockHardnessHandler implements PacketListener {
 
         if (progress >= hardness) {
           stopBreaking(location, digging);
-          if (EventUtil.callEvent(new BlockBreakEvent(block, player)) && ProtectionLib.INSTANCE.canBreak(player, location)) {
+          if (EventUtil.callEvent(new BlockBreakEvent(block, player)) && ProtectionLib.canBreak(player, location)) {
             Bukkit.getScheduler().runTask(NexoAddon.getInstance(), () -> {
               if(Math.random() <= probability)
                 block.getWorld().dropItemNaturally(location, new ItemStack(Material.BEDROCK));

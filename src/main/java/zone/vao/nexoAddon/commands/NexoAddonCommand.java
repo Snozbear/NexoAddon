@@ -2,6 +2,7 @@ package zone.vao.nexoAddon.commands;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,22 +25,22 @@ public class NexoAddonCommand extends BaseCommand {
   public void onTotem(CommandSender sender, String playerName, String input) {
     Player target = Bukkit.getPlayer(playerName);
     if (target == null) {
-      sender.sendMessage("§cPlayer not found.");
+      sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Player not found."));
       return;
     }
 
     if (!NexoAddon.getInstance().isPacketEventsPresent()) {
-      sender.sendMessage("§cPacketEvents is required for this command!");
+      sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>PacketEvents is required for this command!"));
       return;
     }
 
     try {
       int customModelData = Integer.parseInt(input);
       TotemUtil.playTotemAnimation(target, customModelData);
-      sender.sendMessage("§aPlayed totem animation with custom model data: " + customModelData);
+      sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Played totem animation with custom model data: " + customModelData));
     } catch (NumberFormatException e) {
       TotemUtil.playTotemAnimation(target, input);
-      sender.sendMessage("§aPlayed totem animation with Nexo item: " + input);
+      sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>Played totem animation with Nexo item: " + input));
     }
   }
 }

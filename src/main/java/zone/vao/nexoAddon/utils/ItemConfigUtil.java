@@ -2,9 +2,12 @@ package zone.vao.nexoAddon.utils;
 
 import com.nexomc.nexo.api.NexoItems;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Registry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
 import zone.vao.nexoAddon.NexoAddon;
@@ -12,10 +15,7 @@ import zone.vao.nexoAddon.items.Components;
 import zone.vao.nexoAddon.items.Mechanics;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ItemConfigUtil {
 
@@ -44,6 +44,7 @@ public class ItemConfigUtil {
         loadJukeboxPlayableComponent(itemSection, component);
         loadFertilizerComponent(itemSection, component);
         loadSkullValueComponent(itemSection, component);
+        loadNoteBlockSoundComponent(itemSection, component);
       });
     }
   }
@@ -81,6 +82,13 @@ public class ItemConfigUtil {
     }
   }
 
+  private static void loadNoteBlockSoundComponent(ConfigurationSection section, Components component) {
+    if (section.contains("Components.note_block_sound")) {
+      String soundId = section.getString("Components.note_block_sound");
+      component.setNoteBlockSound(soundId);
+    }
+  }
+
 
   public static void loadMechanics() {
     NexoAddon.getInstance().getMechanics().clear();
@@ -97,6 +105,7 @@ public class ItemConfigUtil {
 
         loadRepairMechanic(itemSection, mechanic);
         loadBigMiningMechanic(itemSection, mechanic);
+        loadVeinMinerMechanic(itemSection, mechanic);
         loadBedrockBreakMechanic(itemSection, mechanic);
         loadAuraMechanic(itemSection, mechanic);
         loadSpawnerBreak(itemSection, mechanic);
@@ -112,6 +121,7 @@ public class ItemConfigUtil {
         loadBlockAuraMechanic(itemSection, mechanic);
         loadSignalMechanic(itemSection, mechanic);
         loadRememberMechanic(itemSection, mechanic);
+        loadEnchantifyMechanic(itemSection, mechanic);
       });
     }
   }
@@ -168,6 +178,29 @@ public class ItemConfigUtil {
     }
   }
 
+  private static void loadVeinMinerMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.veinminer.distance")) {
+      int distance = section.getInt("Mechanics.veinminer.distance", 10);
+      boolean toggleable = section.getBoolean("Mechanics.veinminer.toggleable", false);
+      boolean sameMaterial = section.getBoolean("Mechanics.veinminer.same_material", true);
+      int limit = section.getInt("Mechanics.veinminer.limit", 10);
+
+      List<Material> materials = new ArrayList<>();
+      List<String> nexoIds = new ArrayList<>();
+
+      for (String s : section.getStringList("Mechanics.veinminer.whitelist")) {
+        Material material = Material.matchMaterial(s);
+        if (material != null) {
+          materials.add(material);
+        } else if (NexoItems.itemFromId(s) != null) {
+          nexoIds.add(s);
+        }
+      }
+
+      mechanic.setVeinMiner(distance, toggleable, sameMaterial, limit, materials, nexoIds);
+    }
+  }
+
   private static void loadBedrockBreakMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.bedrockbreak.hardness") && section.contains("Mechanics.bedrockbreak.probability")) {
       int hardness = section.getInt("Mechanics.bedrockbreak.hardness");
@@ -194,7 +227,7 @@ public class ItemConfigUtil {
       mechanic.setSpawnerBreak(probability, dropExperience);
     }
   }
-  
+
   private static void loadMiningToolsMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.custom_block.miningtools.items")) {
       List<String> values = section.getStringList("Mechanics.custom_block.miningtools.items");
@@ -246,14 +279,14 @@ public class ItemConfigUtil {
       mechanic.setInfested(entities, mythicMobs, probability, selector, particles, drop);
     }
   }
-  
+
   private static void loadKillMessage(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.kill_message")) {
       String deathMessage = section.getString("Mechanics.kill_message", null);
       mechanic.setKillMessage(deathMessage);
     }
   }
-  
+
   private static void loadStackableStringblockMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.custom_block.stackable.next")
         && section.contains("Mechanics.custom_block.stackable.group")
@@ -309,7 +342,7 @@ public class ItemConfigUtil {
 
   private static void loadBottledExpMechanic(ConfigurationSection section, Mechanics mechanic) {
     if (section.contains("Mechanics.bottledexp.ratio")) {
-      mechanic.setBottledExp(section.getDouble("Mechanics.bottledexp.ratio", 0.5), section.getInt("Mechanics.bottledexp.cost", 1));
+      mechanic.setBottledExp((Double) section.getDouble("Mechanics.bottledexp.ratio", 0.5), section.getInt("Mechanics.bottledexp.cost", 1));
     }
   }
 
@@ -368,4 +401,58 @@ public class ItemConfigUtil {
       mechanic.setRemember(section.getBoolean("Mechanics.furniture.remember", true));
     }
   }
+
+  private static void loadEnchantifyMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (!section.contains("Mechanics.enchantify.enchants")) return;
+
+    Map<Enchantment, Integer> enchants = new HashMap<>();
+    Map<Enchantment, Integer> limits = new HashMap<>();
+    parseEnchantments(section.getMapList("Mechanics.enchantify.enchants"), enchants, limits);
+
+    List<Material> materials = new ArrayList<>();
+    List<String> nexoIds = new ArrayList<>();
+    parseItemList(section.getStringList("Mechanics.enchantify.whitelist"), materials, nexoIds);
+
+    List<Material> materialsBlacklist = new ArrayList<>();
+    List<String> nexoIdsBlacklist = new ArrayList<>();
+    parseItemList(section.getStringList("Mechanics.enchantify.blacklist"), materialsBlacklist, nexoIdsBlacklist);
+
+    mechanic.setEnchantify(enchants, limits, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
+  }
+
+  private static void parseEnchantments(List<Map<?, ?>> enchantList, Map<Enchantment, Integer> enchants, Map<Enchantment, Integer> limits) {
+    for (Map<?, ?> map : enchantList) {
+      String enchantName = String.valueOf(map.get("enchant")).toLowerCase();
+      if (enchantName == null || enchantName.isEmpty()) continue;
+
+      if (!enchantName.contains(":")) {
+        enchantName = "minecraft:" + enchantName;
+      }
+
+      int level = (map.get("level") instanceof Number number) ? number.intValue() : 0;
+      int limit = (map.get("limit") instanceof Number l) ? l.intValue() : 0;
+
+      Enchantment enchantment = Registry.ENCHANTMENT.get(NamespacedKey.fromString(enchantName));
+      if (enchantment != null && level > 0) {
+        enchants.put(enchantment, Integer.valueOf(level));
+        if (limit > 0) {
+          limits.put(enchantment, Integer.valueOf(limit));
+        }
+      }
+    }
+  }
+
+  private static void parseItemList(List<String> rawItems, List<Material> materials, List<String> nexoIds) {
+    for (String rawItem : rawItems) {
+      Material material = Material.matchMaterial(rawItem);
+      if (material != null) {
+        materials.add(material);
+        continue;
+      }
+      if (NexoItems.itemFromId(rawItem) != null) {
+        nexoIds.add(rawItem);
+      }
+    }
+  }
+
 }

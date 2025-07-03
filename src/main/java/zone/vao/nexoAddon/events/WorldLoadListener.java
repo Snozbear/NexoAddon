@@ -1,40 +1,57 @@
 package zone.vao.nexoAddon.events;
 
+import com.nexomc.nexo.api.NexoBlocks;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldEvent;
+import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import zone.vao.nexoAddon.NexoAddon;
 import zone.vao.nexoAddon.populators.orePopulator.CustomOrePopulator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WorldLoadListener implements Listener {
 
   @EventHandler
+  public void onWorldInit(WorldInitEvent event) {
+
+    applyPopulator(event);
+  }
+
+  @EventHandler
   public void onWorldLoad(WorldLoadEvent event) {
 
-    new BukkitRunnable() {
-      @Override
-      public void run() {
-        NexoAddon.getInstance().getOrePopulator().getOres().forEach(ore -> {
-          if(ore.getNexoFurniture() != null) return;
-          for (String worldName : ore.getWorldNames()) {
-            if(!worldName.equals(event.getWorld().getName())) return;
-            CustomOrePopulator customOrePopulator = new CustomOrePopulator(NexoAddon.getInstance().getOrePopulator());
-            if(!NexoAddon.getInstance().getWorldPopulators().containsKey(worldName)) {
-              NexoAddon.getInstance().getWorldPopulators().put(worldName, new ArrayList<>());
-            }
-            NexoAddon.getInstance().addPopulatorToWorld(event.getWorld(), customOrePopulator);
-            NexoAddon.getInstance().getWorldPopulators().get(event.getWorld().getName()).add(customOrePopulator);
-            NexoAddon.getInstance().logPopulatorAdded("BlockPopulator", ore.getId(), event.getWorld());
-          }
-        });
-      }
-    }.runTaskLater(NexoAddon.getInstance(), 20L*5);
-
+    applyPopulator(event);
   }
+
+  private void applyPopulator(WorldEvent event) {
+    NexoAddon.getInstance().foliaLib.getScheduler().runLater(() -> {
+      NexoAddon.getInstance().getOrePopulator().getOres().forEach(ore -> {
+        if (ore.getNexoFurniture() != null || (
+            ore.nexoBlocks != null &&
+                NexoBlocks.isNexoStringBlock(ore.nexoBlocks.getItemID()) &&
+                NexoBlocks.stringMechanic(ore.nexoBlocks.getItemID()).isSapling())
+        ) return;
+
+        List<String> worldNames = ore.getWorldNames();
+        if (!worldNames.contains("all") && !worldNames.contains(event.getWorld().getName())) return;
+
+        CustomOrePopulator customOrePopulator = new CustomOrePopulator(NexoAddon.getInstance().getOrePopulator());
+
+        String eventWorldName = event.getWorld().getName();
+        NexoAddon addon = NexoAddon.getInstance();
+
+        addon.getWorldPopulators().computeIfAbsent(eventWorldName, k -> new ArrayList<>());
+        addon.addPopulatorToWorld(event.getWorld(), customOrePopulator);
+        addon.getWorldPopulators().get(eventWorldName).add(customOrePopulator);
+        addon.logPopulatorAdded("BlockPopulator", ore.getId(), event.getWorld());
+      });
+    }, 20L * 5);
+  }
+
 
   @EventHandler
   public void onWorldLoad(WorldUnloadEvent event) {

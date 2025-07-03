@@ -144,7 +144,7 @@ public class PopulatorsConfigUtil {
 
     List<String> worldNames = section.getStringList("worlds");
     NexoAddon.getInstance().getLogger().info(key + " worlds: " + worldNames);
-    List<World> worlds = worldNames.size() == 1 && worldNames.getFirst().equalsIgnoreCase("world")? Bukkit.getWorlds() : parseWorlds(worldNames);
+    List<World> worlds = worldNames.size() == 1 && worldNames.getFirst().equalsIgnoreCase("all")? Bukkit.getWorlds() : parseWorlds(worldNames);
     if (worlds.isEmpty()) return null;
     List<Biome> biomes = parseBiomes(worlds, section.getStringList("biomes"));
 
@@ -236,13 +236,7 @@ public class PopulatorsConfigUtil {
 
   private List<World> parseWorlds(List<String> worldNames) {
     return worldNames.stream()
-            .map(name -> {
-              World world = NexoAddon.getInstance().getServer().getWorld(name);
-              NexoAddon.getInstance().getLogger().warning(name + " found: " + (world != null));
-              //                NexoAddon.getInstance().getLogger().info("Loading world:" + name);
-              //                world = loadWorld(name);
-              return world;
-            })
+            .map(name -> NexoAddon.getInstance().getServer().getWorld(name))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
   }

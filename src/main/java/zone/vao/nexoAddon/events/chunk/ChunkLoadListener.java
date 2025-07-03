@@ -10,5 +10,6 @@ public class ChunkLoadListener implements Listener {
   public void onChunkLoad(ChunkLoadEvent event) {
 
     FurniturePopulator.onLoad(event);
+    SaplingPopulator.onLoad(event);
   }
 }

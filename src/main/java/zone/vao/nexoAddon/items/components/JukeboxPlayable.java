@@ -31,7 +31,7 @@ public record JukeboxPlayable(String songKey) {
       if(event.getBlock().getType() == Material.JUKEBOX){
 
         String soundKey = NexoAddon.getInstance().jukeboxLocations.get(event.getBlock().getLocation().toString());
-        if(soundKey == null || !ProtectionLib.INSTANCE.canBreak(event.getPlayer(), event.getBlock().getLocation())) return;
+        if(soundKey == null || !ProtectionLib.canBreak(event.getPlayer(), event.getBlock().getLocation())) return;
 
         Jukebox jukebox = (Jukebox) event.getBlock().getState();
 
@@ -78,8 +78,8 @@ public record JukeboxPlayable(String songKey) {
           && event.getClickedBlock() != null
           && event.getClickedBlock().getType() == Material.JUKEBOX
           && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)
-          && ProtectionLib.INSTANCE.canInteract(event.getPlayer(), event.getClickedBlock().getLocation())
-          && ProtectionLib.INSTANCE.canUse(event.getPlayer(), event.getClickedBlock().getLocation())
+          && ProtectionLib.canInteract(event.getPlayer(), event.getClickedBlock().getLocation())
+          && ProtectionLib.canUse(event.getPlayer(), event.getClickedBlock().getLocation())
           && event.getClickedBlock().getState() instanceof Jukebox;
     }
 
