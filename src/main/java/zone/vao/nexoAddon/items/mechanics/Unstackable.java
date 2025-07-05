@@ -50,9 +50,11 @@ public record Unstackable(String next, String give, List<Material> materials, Li
       Drop drop = new Drop(loots, false, false, newBlock != null ? newBlock.getItemID() : event.getMechanic().getItemID());
       NexoBlocks.remove(event.getBlock().getLocation(), null, drop);
 
-      BlockSounds blockSounds = newBlock.getBlockSounds();
-      if(blockSounds != null && blockSounds.hasBreakSound()){
-        event.getBlock().getWorld().playSound(event.getBlock().getLocation(), blockSounds.getBreakSound(), SoundCategory.BLOCKS, blockSounds.getBreakVolume(), blockSounds.getBreakPitch());
+      if(newBlock != null) {
+        BlockSounds blockSounds = newBlock.getBlockSounds();
+        if (blockSounds != null && blockSounds.hasBreakSound()) {
+          event.getBlock().getWorld().playSound(event.getBlock().getLocation(), blockSounds.getBreakSound(), SoundCategory.BLOCKS, blockSounds.getBreakVolume(), blockSounds.getBreakPitch());
+        }
       }
       if(!nextStage.equalsIgnoreCase("stop")) {
         NexoBlocks.place(nextStage, event.getBlock().getLocation());
