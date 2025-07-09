@@ -15,6 +15,7 @@ import zone.vao.nexoAddon.populators.orePopulator.Ore;
 import zone.vao.nexoAddon.populators.treePopulator.CustomTree;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -254,16 +255,48 @@ public class PopulatorsConfigUtil {
   }
 
   private List<Biome> parseBiomes(List<World> worlds, List<String> biomeNames) {
-    List<Biome> availableBiomes = new ArrayList<>();
-
-    for (Biome biome : getAllBiomes()) {
-      if (biomeNames.contains(biome.name().toUpperCase().replace(" ", "_"))) {
-        availableBiomes.add(biome);
-      }
+    if (Biome.class.isEnum()) {
+      return parseBiomesOld(Arrays.asList(Biome.class.getEnumConstants()), biomeNames);
+    } else {
+      return parseBiomesNew(Registry.BIOME.stream().toList(), biomeNames);
     }
-
-    return availableBiomes.isEmpty() ? getAllBiomes() : availableBiomes;
   }
+
+  private List<Biome> parseBiomesOld(List<Biome> biomes, List<String> biomeNames) {
+    List<Biome> result = new ArrayList<>();
+    try {
+      Method nameMethod = Enum.class.getMethod("name");
+      for (Biome biome : biomes) {
+        String name = ((String) nameMethod.invoke(biome)).toUpperCase().replace(" ", "_");
+        if (biomeNames.contains(name)) {
+          result.add(biome);
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return result.isEmpty() ? biomes : result;
+  }
+
+
+  private List<Biome> parseBiomesNew(Collection<Biome> biomes, List<String> biomeNames) {
+    List<Biome> result = new ArrayList<>();
+    try {
+      Method getKeyMethod = Biome.class.getMethod("getKey");
+      Method getKeyNameMethod = NamespacedKey.class.getMethod("getKey");
+      for (Biome biome : biomes) {
+        Object keyObject = getKeyMethod.invoke(biome);
+        String keyName = ((String) getKeyNameMethod.invoke(keyObject)).toUpperCase();
+        if (biomeNames.contains(keyName)) {
+          result.add(biome);
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return result.isEmpty() ? new ArrayList<>(biomes) : result;
+  }
+
 
   private List<Biome> getAllBiomes() {
     return Registry.BIOME.stream().toList();
