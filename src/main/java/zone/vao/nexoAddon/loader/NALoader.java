@@ -20,7 +20,7 @@ public class NALoader implements PluginLoader {
       String mirrorUrl = (String) field.get(null);
       repos.add(new Repo("central", mirrorUrl));
     } catch (Exception e) {
-      repos.add(new Repo("central", "https://repo1.maven.org/maven2/"));
+      repos.add(new Repo("central", "https://maven-central.storage-download.googleapis.com/maven2"));
     }
 
     repos.add(new Repo("jitpack", "https://jitpack.io/"));
