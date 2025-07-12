@@ -81,6 +81,9 @@ public class BlockUtil {
     FurnitureMechanic previous = NexoFurniture.furnitureMechanic(finalLocation);
     if(previous == null) return;
     ItemDisplay newOne = to.place(finalLocation, templateEntity.getYaw(), templateEntity.getFacing(), false);
+    if(!newOne.getLocation().equals(finalLocation)) {
+      newOne.teleport(finalLocation);
+    }
     if(FurnitureHelpers.furnitureDye(templateEntity) != null) {
       FurnitureHelpers.furnitureDye(newOne, FurnitureHelpers.furnitureDye(templateEntity));
     }
