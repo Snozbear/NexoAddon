@@ -450,7 +450,8 @@ public class ItemConfigUtil {
       String value1 = section.getString("Mechanics.furniture.conditionalbreak.value1");
       String value2 = section.getString("Mechanics.furniture.conditionalbreak.value2");
       String method = section.getString("Mechanics.furniture.conditionalbreak.method");
-      mechanic.setConditionalBreak(compare, value1, value2, method);
+      String message = section.getString("Mechanics.furniture.conditionalbreak.message");
+      mechanic.setConditionalBreak(compare, value1, value2, method, message);
     }
   }
 

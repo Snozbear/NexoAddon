@@ -109,8 +109,8 @@ public class Mechanics {
     this.enchantify = new Enchantify(enchants, limits, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
   }
 
-  public void setConditionalBreak(String compare, String value1, String value2, String method) {
-    this.conditionalBreak = new ConditionalBreak(compare, value1, value2, method);
+  public void setConditionalBreak(String compare, String value1, String value2, String method, String message) {
+    this.conditionalBreak = new ConditionalBreak(compare, value1, value2, method, message);
   }
   public static void registerListeners(NexoAddon plugin){
 
