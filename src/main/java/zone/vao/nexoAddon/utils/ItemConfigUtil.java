@@ -122,6 +122,7 @@ public class ItemConfigUtil {
         loadSignalMechanic(itemSection, mechanic);
         loadRememberMechanic(itemSection, mechanic);
         loadEnchantifyMechanic(itemSection, mechanic);
+        loadConditionalBreakMechanic(itemSection, mechanic);
       });
     }
   }
@@ -441,6 +442,18 @@ public class ItemConfigUtil {
       }
     }
   }
+
+  private static void loadConditionalBreakMechanic(ConfigurationSection section, Mechanics mechanic) {
+    if (section.contains("Mechanics.furniture.conditionalbreak.compare")
+    ) {
+      String compare = section.getString("Mechanics.furniture.conditionalbreak.compare");
+      String value1 = section.getString("Mechanics.furniture.conditionalbreak.value1");
+      String value2 = section.getString("Mechanics.furniture.conditionalbreak.value2");
+      String method = section.getString("Mechanics.furniture.conditionalbreak.method");
+      mechanic.setConditionalBreak(compare, value1, value2, method);
+    }
+  }
+
 
   private static void parseItemList(List<String> rawItems, List<Material> materials, List<String> nexoIds) {
     for (String rawItem : rawItems) {

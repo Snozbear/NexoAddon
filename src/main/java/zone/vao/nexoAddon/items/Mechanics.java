@@ -35,6 +35,7 @@ public class Mechanics {
   private Signal signal;
   private Remember remember;
   private Enchantify enchantify;
+  private ConditionalBreak conditionalBreak;
 
   public Mechanics(String id) {
     this.id = id;
@@ -108,6 +109,9 @@ public class Mechanics {
     this.enchantify = new Enchantify(enchants, limits, materials, nexoIds, materialsBlacklist, nexoIdsBlacklist);
   }
 
+  public void setConditionalBreak(String compare, String value1, String value2, String method) {
+    this.conditionalBreak = new ConditionalBreak(compare, value1, value2, method);
+  }
   public static void registerListeners(NexoAddon plugin){
 
     registerListener(new BigMining.BigMiningListener(), plugin);
@@ -136,9 +140,10 @@ public class Mechanics {
 
     registerListener(new Signal.SignalListener(), plugin);
     registerListener(new VeinMiner.VeinMinerListener(), plugin);
+
+    registerListener(new ConditionalBreak.ConditionalBreakListener(), plugin);
   }
 
   private static void registerListener(Listener listener, NexoAddon plugin){
     plugin.getServer().getPluginManager().registerEvents(listener, plugin);
-  }
-}
+  }}
